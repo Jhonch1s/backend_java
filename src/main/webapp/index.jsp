@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
     <!-- Favicons para dar iconos a la web si se usa desde móbil y se quiere anclar al inicio, etc. -->
     <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
@@ -24,9 +25,9 @@
 
     <!-- Utilidades y estilos -->
     <title>Panel Administracion · Golden Gym</title>
-    <link rel="stylesheet" href="assets/css/layout-spa.css">
-    <link rel="stylesheet" href="assets/css/utilidades.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
 
 <body class="u-bg">
