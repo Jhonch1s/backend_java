@@ -1,0 +1,160 @@
+:root {
+    /* Colores base: ajustados a tu preferencia */
+    --color-principal-oscuro: #101010;
+    --color-principal: #fff112;
+    --color-blanco: #FFFFFF;
+    --color-gris-200: #d6d6d6;
+    --color-gris-400: #9a9a9a;
+    --color-gris-700: #2a2a2a;
+    --color-rojo: #ff4d4f;
+    --gg-bg: var(--bg-900, #0f0f10);
+    --gg-surface: var(--bg-800, #141417);
+    --gg-surface-2: var(--bg-850, #19191d);
+    --gg-border: var(--border-700, #29292e);
+    --gg-text: var(--text-100, #e9e9ee);
+    --gg-text-muted: var(--text-400, #b6b6bb);
+    --gg-brand: var(--brand-500, #ffe400);
+    --gg-brand-ink: var(--brand-ink, #1b1b1b);
+    --gg-focus: var(--brand-300, #ffd84d);
+    --gg-shadow-lg: 0 28px 60px rgba(0, 0, 0, .45);
+    /* Tipografía */
+    --fuente-base: "Titillium Web", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+    /* Dimensiones */
+    --radio-md: 12px;
+    --sombra-suave: 0 8px 28px rgba(0, 0, 0, 0.35);
+    --ancho-form: 380px;
+    --transicion: 160ms ease;
+}
+
+/* Resets pequeños */
+* {
+    box-sizing: border-box;
+}
+
+/* Helpers de layout */
+.contenedor-pantalla {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+}
+
+.alinear-centro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alinear-centro-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.alinear-centro-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.fondo-oscuro {
+    background: var(--color-principal-oscuro);
+}
+
+.texto-claro {
+    color: var(--color-blanco);
+}
+
+/* Espaciados (rem) */
+.m-0 {
+    margin: 0;
+}
+
+.mt-1 {
+    margin-top: .25rem;
+}
+
+.mt-2 {
+    margin-top: .5rem;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.p-2 {
+    padding: .5rem;
+}
+
+.p-3 {
+    padding: 1rem;
+}
+
+.gap-1 {
+    gap: .375rem;
+}
+
+.gap-2 {
+    gap: .75rem;
+}
+
+/* Componentes rápidos */
+.borde-redondeado {
+    border-radius: var(--radio-md);
+}
+
+.sombra-suave {
+    box-shadow: var(--sombra-suave);
+}
+
+/* Botón primario genérico */
+.boton-primario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-weight: 700;
+    border: 0;
+    border-radius: var(--radio-md);
+    padding: .9rem 1rem;
+    background: var(--color-principal);
+    color: #000;
+    transition: transform var(--transicion), filter var(--transicion), box-shadow var(--transicion);
+    cursor: pointer;
+}
+
+.boton-primario:hover {
+    filter: brightness(0.92);
+}
+
+.boton-primario:active {
+    transform: translateY(1px) scale(0.997);
+}
+
+.boton-primario:focus-visible {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(255, 241, 18, .15);
+}
+
+/* Accesibilidad: foco visible global */
+:focus-visible {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 3px;
+}
+
+/* Tipografías rápidas */
+.titillium-negra {
+    font-family: var(--fuente-base);
+    font-weight: 900;
+    letter-spacing: .5px;
+}
+
+.texto-dorado {
+    color: var(--color-principal);
+}
