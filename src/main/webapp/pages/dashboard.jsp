@@ -33,7 +33,7 @@
 <body class="u-bg">
 
 <div class="layout">
-    <!-- Sidebar -->
+    <!-- sidebar -->
     <aside class="sidebar" aria-label="Navegación principal">
         <div class="sidebar__brand">
             <button class="sidebar__toggle" aria-label="Alternar menú" aria-expanded="false">☰</button>
@@ -58,7 +58,7 @@
                 <li><a href="#/planes/lista" data-link>📋 Lista de planes</a></li>
                 <li><a href="#/clientes/lista" data-link>📋 Lista de clientes</a></li>
             </ul>
-            <!-- Cerrar sesión -->
+            <!-- cerrar sesión -->
             <h3 class="sidebar__section">Cuenta</h3>
             <ul>
                 <li>
@@ -84,7 +84,7 @@
 <!-- TEMPLATES DE LAS VISTAS -->
 <!-- ===================== -->
 
-<!-- PLAN · CREAR (ejemplo completo) -->
+<!-- PLAN CREAR  -->
 <template id="tpl-plan-crear">
     <section class="view plan-create">
         <header class="view__header">
@@ -166,7 +166,7 @@
     </section>
 </template>
 
-<!-- PLAN · EDITAR -->
+<!-- PLAN EDITAR -->
 <template id="tpl-plan-editar">
     <section class="view plan-create">
         <header class="view__header">
@@ -275,7 +275,7 @@
     </section>
 </template>
 
-<!-- CLIENTE · CREAR -->
+<!-- CLIENTE CREAR -->
 <template id="tpl-cliente-crear">
     <section class="view plan-create">
         <header class="view__header">
@@ -357,6 +357,22 @@
                        class="plan-create__control input input--text u-w-full" required />
                 <small class="plan-create__hint">Fecha en la que se registró el cliente.</small>
             </div>
+
+            <!-- Contraseña
+            <div class="plan-create__grid u-gap-24">
+                <div class="plan-create__field u-mt-8">
+                    <label for="cli-pass" class="plan-create__label">Contraseña:</label>
+                    <input id="cli-pass" name="pass" type="password"
+                           class="plan-create__control input input--text u-w-full" required />
+                    <small class="plan-create__hint">Contraseña con la que se ingresará a la APP.</small>
+                </div>
+                <div class="plan-create__field u-mt-8">
+                    <label for="cli-pass2" class="plan-create__label">Repita contraseña:</label>
+                    <input id="cli-pass2" name="pass2" type="password"
+                           class="plan-create__control input input--text u-w-full" required />
+                </div>
+            </div>
+            -->
 
             <!-- Acciones -->
             <div class="plan-create__actions u-mt-24">

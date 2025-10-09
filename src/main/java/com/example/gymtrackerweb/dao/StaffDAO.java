@@ -13,20 +13,18 @@ public class StaffDAO {
 
 //    private dbLogger logger = new dbLogger();
 
-    public Staff iniciarSesion(Staff staff) {
-        String sql = "SELECT * FROM staff WHERE usuario_login = ? AND contrasenia = ?";
+    public Staff iniciarSesion(String usuario) {
+        String sql = "SELECT * FROM staff WHERE usuario_login = ?";
         Connection conexion = databaseConection.getInstancia().getConnection();
         try{
             PreparedStatement ps = conexion.prepareStatement(sql);
-            ps.setString(1, staff.getUsuarioLogin());
-            ps.setString(2, staff.getContrasenia());
+            ps.setString(1, usuario);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     // Si existe, llenar el objeto Staff con los datos del usuario
                     Staff usuarioEncontrado = new Staff();
                     usuarioEncontrado.setId(rs.getInt("id"));
                     usuarioEncontrado.setUsuarioLogin(rs.getString("usuario_login"));
-                    usuarioEncontrado.setContrasenia(rs.getString("contrasenia"));
                     usuarioEncontrado.setRol(rs.getInt("rol"));
                     usuarioEncontrado.setEstado(rs.getInt("estado"));
                     return usuarioEncontrado;

@@ -56,8 +56,7 @@
                     <button class="login__ver-contrasena" type="button" aria-label="Mostrar u ocultar contraseña">
                         <!-- Ícono con SVG para ahorrar memoria -->
                         <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
-                            <path
-                                    d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z" />
+                            <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z" />
                         </svg>
                     </button>
                 </div>

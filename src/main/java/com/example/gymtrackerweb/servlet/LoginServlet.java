@@ -1,8 +1,11 @@
 package com.example.gymtrackerweb.servlet;
 import java.io.*;
 
+import com.example.gymtrackerweb.dao.ClienteDAO;
 import com.example.gymtrackerweb.dao.StaffDAO;
+import com.example.gymtrackerweb.dao.UsuarioLoginDAO;
 import com.example.gymtrackerweb.model.Staff;
+import com.example.gymtrackerweb.model.UsuarioLogin;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -21,13 +24,16 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         //Obtengo el valor que viene del id de los forms
-        String usuario = request.getParameter("usuario");
+        String usuario = request.getParameter("usuario"); //
         String contrasena = request.getParameter("contrasenia");
 
         //creamos el objeto Staff con esos datos
+        UsuarioLoginDAO u = new UsuarioLoginDAO();
+        /*
         Staff staff = new Staff();
         staff.setUsuarioLogin(usuario);
-        staff.setContrasenia(contrasena);
+        staff.setContrasenia(contrasena);*/
+        /*
         try{
             StaffDAO staffDAO = new StaffDAO();
             Staff s = staffDAO.iniciarSesion(staff); //pasamos el objeto a dao ahora
@@ -42,6 +48,31 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("/pages/login.jsp").forward(request, response); //si no son incorrectas me mantiene en el login
             }
         }catch (Exception e){
+            e.printStackTrace();
+            request.setAttribute("error", "Error interno al iniciar sesion.");
+            request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
+        }*/
+
+        try{
+            String resultado = u.validarLoginFlexible(usuario, contrasena);
+            if (resultado == "cliente"){
+                // cosas con cliente
+                ClienteDAO cliente = new ClienteDAO();
+                cliente.buscarPorCi(usuario);
+                HttpSession sesion = request.getSession();
+                sesion.setAttribute("usuario", cliente);
+                response.sendRedirect(request.getContextPath() + "/pages/dashboard.jsp");
+            } else if (resultado == "staff"){
+                StaffDAO staff = new StaffDAO();
+                staff.iniciarSesion(usuario);
+                HttpSession sesion = request.getSession();
+                sesion.setAttribute("usuario", staff);
+                response.sendRedirect(request.getContextPath() + "/pages/dashboard.jsp");
+            }else {
+                request.setAttribute("error", "Usuario o contraseña incorrectos.");
+                request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
+            }
+        }catch(Exception e){
             e.printStackTrace();
             request.setAttribute("error", "Error interno al iniciar sesion.");
             request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
