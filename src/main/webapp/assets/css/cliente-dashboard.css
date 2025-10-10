@@ -1,0 +1,184 @@
+/* ===== Paleta y tokens locales (apoyado en tus vars) ===== */
+:root{
+    --gg-yellow: #fff112;           /* acento amarillo */
+    --gg-bg: #101010;               /* fondo principal dark */
+    --gg-card: #1a1a1a;             /* tarjetas / nav */
+    --gg-chip: #2a2a2a;             /* tiles internos */
+    --gg-border: #2a2a2a;           /* bordes suaves */
+    --gg-muted: #bdbdbd;            /* textos secundarios */
+    --gg-white: #f3f3f3;
+
+    --gg-nav-h: 64px;
+    --gg-gap: 16px;
+    --gg-radius: 18px;
+}
+
+/* ===== Layout fijo (sin scroll) ===== */
+html, body { height: 100%; }
+body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
+
+
+.cliente-home--fixed{
+    +  min-height: 100svh;          /* deja crecer y scrollear */
+    padding: var(--gg-gap);
+    padding-bottom: calc(var(--gg-nav-h) + env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-rows: auto 1fr;  /* hero + resto */
+    gap: var(--gg-gap);
+    box-sizing: border-box;
+}
+
+/* ===== Tarjeta base ===== */
+.tarjeta{
+    background: var(--gg-card);
+    border: 1px solid var(--gg-border);
+    border-radius: var(--gg-radius);
+    padding: 16px;
+}
+
+/* ===== Hero (perfil) ===== */
+.hero{
+    background: linear-gradient(135deg, #101010 0%, #2a2a2a 100%);
+    padding: 16px;
+    border-radius: 24px;
+    border: 1px solid var(--gg-border);
+}
+
+.hero__top{ gap: 12px; }
+.hero__avatar{
+    width: 48px; height: 48px; border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    display: grid; place-items: center;
+    font-weight: 800; letter-spacing: .3px;
+}
+.hero__meta{ color: rgba(255,255,255,.8); font-size: .9rem; }
+.hero__member{ text-align: right; }
+.hero__member-label{ color: rgba(255,255,255,.7); font-size: .75rem; }
+.hero__member-date{ font-weight: 700; }
+
+.hero__stats{
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 8px; text-align: center;
+}
+.hero__stat-number{ font-size: 1.6rem; font-weight: 800; margin: 0; }
+.hero__stat-label{ font-size: .78rem; color: rgba(255,255,255,.75); margin: 0; }
+
+/* ===== Botones (locales al home) ===== */
+.cliente-home .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 14px; text-decoration: none; font-weight: 700;
+    border: 1px solid transparent; transition: transform .1s ease, filter .2s ease, border-color .2s ease;
+}
+.btn--xl{ padding: 14px 16px; font-size: 1rem; }
+.btn--lg{ padding: 10px 14px; font-size: .95rem; }
+
+.btn--primary-yellow{
+    background: var(--gg-yellow);
+    color: #101010;
+}
+.btn--primary-yellow:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+.btn--ghost-yellow{
+    background: var(--gg-chip);
+    color: var(--gg-white);
+    border-color: var(--gg-yellow);
+}
+.btn--ghost-yellow:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+/* ===== Bloque (cards secciones) ===== */
+.bloque__head{ margin-bottom: 8px; }
+.bloque__title{
+    font-size: 1.15rem; font-weight: 800; margin: 0;
+}
+.bloque__ok{ color: var(--gg-yellow); font-weight: 800; }
+
+/* ===== Tiles de rutinas ===== */
+.lista-tiles{ display: grid; gap: 10px; }
+.tile{
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    gap: 10px; padding: 12px 14px;
+    background: var(--gg-chip);
+    border: 1px solid var(--gg-border);
+    border-radius: 14px; text-decoration: none; color: inherit;
+}
+.tile__title{ margin: 0; font-weight: 700; }
+.tile__desc{ margin: 0; color: rgba(255,255,255,.8); font-size: .9rem; }
+.tile__meta{ color: var(--gg-yellow); font-weight: 800; }
+
+/* ===== Integración con tu bottom-nav (ya existente) ===== */
+/* Si querés resaltar el activo en amarillo: */
+.bottom-nav__btn[aria-current="page"]{
+    border-color: rgba(255,241,18,.45);
+    box-shadow: 0 0 0 1px rgba(255,241,18,.25) inset;
+}
+
+/* ================== Progresos ================== */
+.prog-list{ display: grid; gap: 10px; }
+.prog-item{
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    gap: 10px; padding: 12px 14px;
+    border-radius: 14px; text-decoration: none; color: inherit;
+    border: 1px solid var(--gg-border);
+    background: var(--gg-chip);
+    position: relative;
+    overflow: hidden;
+}
+.prog-item::before{
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-radius: 14px 0 0 14px;
+    background: rgba(255,255,255,.2);
+}
+.prog-item__title{ margin: 0; font-weight: 800; }
+.prog-item__sub{ margin: 2px 0 0; font-size: .9rem; color: rgba(255,255,255,.8); }
+.prog-item__delta{ font-weight: 800; }
+
+/* Variantes de color */
+.prog-item--neg{
+    background: linear-gradient(180deg, rgba(255,165,0,.15), rgba(139,90,0,.18));
+    border-color: #8B5A00;
+}
+.prog-item--neg::before{ background: #FFA500; }
+.prog-item--neg .prog-item__delta{ color: #ff9a3c; } /* naranja - */
+
+.prog-item--pos-green{
+    background: linear-gradient(180deg, rgba(34,197,94,.15), rgba(20,120,60,.18));
+    border-color: #167a44;
+}
+.prog-item--pos-green::before{ background: #22C55E; }
+.prog-item--pos-green .prog-item__delta{ color: #22C55E; } /* verde + */
+
+.prog-item--pos-blue{
+    background: linear-gradient(180deg, rgba(59,130,246,.15), rgba(20,60,120,.18));
+    border-color: #1f4d99;
+}
+.prog-item--pos-blue::before{ background: #3B82F6; }
+.prog-item--pos-blue .prog-item__delta{ color: #3B82F6; } /* azul + */
+
+/* ================== Bottom Nav ================== */
+.bottom-nav{
+    position: fixed; left: 0; right: 0; bottom: 0;
+    height: calc(var(--gg-nav-h) + env(safe-area-inset-bottom));
+    padding: 6px 12px max(6px, env(safe-area-inset-bottom));
+    background: var(--gg-card);
+    border-top: 1px solid var(--gg-border);
+    z-index: 999;
+}
+.bottom-nav__list{
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 6px;
+    margin: 0; padding: 0; list-style: none;
+}
+.bottom-nav__btn{
+    display: grid; grid-template-rows: auto auto; justify-items: center; align-content: center;
+    min-height: 52px; border-radius: 12px; text-decoration: none; color: var(--gg-white);
+    background: rgba(255,255,255,.02); border: 1px solid var(--gg-border);
+}
+.bottom-nav__icon{ width: 20px; height: 20px; margin-top: 6px; }
+.bottom-nav__label{ font-size: .8rem; line-height: 1; margin-bottom: 6px; color: rgba(255,255,255,.8); }
+
+/* Activo en amarillo */
+.bottom-nav__btn[aria-current="page"]{
+    border-color: rgba(255,241,18,.45);
+    box-shadow: 0 0 0 1px rgba(255,241,18,.25) inset;
+    color: var(--gg-white);
+}
+.bottom-nav__btn[aria-current="page"] .bottom-nav__icon{ color: var(--gg-yellow); }
+.bottom-nav__btn[aria-current="page"] .bottom-nav__label{ color: var(--gg-yellow); }
