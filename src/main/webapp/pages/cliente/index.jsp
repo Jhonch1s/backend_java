@@ -8,6 +8,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.example.gymtrackerweb.utils.FechaUtils" %>
 <%@ page import="com.example.gymtrackerweb.model.Cliente" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="es-UY">
 <head>
@@ -46,8 +50,16 @@
             <div class="alinear-centro-left u-gap-12">
                 <div class="hero__avatar">MR</div>
                 <div>
-                    <h2 class="m-0 titillium-negrita">${usuario.nombre} ${usuario.apellido}</h2>
-                    <p class="m-0 hero__meta">25 años • 78kg • 1.75m</p>
+                    <h2 class="m-0 titillium-negrita">
+                        ${sessionScope.usuario.nombre} ${sessionScope.usuario.apellido}
+                    </h2>
+                    <p class="m-0 hero__meta">
+                        ¡Has levantado
+                        <strong>
+                            <fmt:formatNumber value="${requestScope.kgLevantadosTotal}" maxFractionDigits="0"/>
+                        </strong>
+                        Kg!
+                    </p>
                 </div>
             </div>
             <div class="hero__member">
@@ -68,51 +80,68 @@
 
         <div class="hero__stats u-mt-16">
             <div class="hero__stat">
-                <p class="hero__stat-number">12</p>
+                <p class="hero__stat-number">
+                    ${diasEntrenadosMes != null ? diasEntrenadosMes : 0}
+                </p>
                 <p class="hero__stat-label">Días este mes</p>
             </div>
             <div class="hero__stat">
-                <p class="hero__stat-number">45</p>
+                <p class="hero__stat-number">
+                    ${minPromedioSesion != null ? minPromedioSesion : 0}
+                </p>
                 <p class="hero__stat-label">Min promedio</p>
             </div>
             <div class="hero__stat">
-                <p class="hero__stat-number">156</p>
-                <p class="hero__stat-label">Total entrenamientos</p>
+                <p class="hero__stat-number">
+                    ${totalSesionesTotal != null ? totalSesionesTotal : 0}
+                </p>
+                <p class="hero__stat-label">Entrenamientos</p>
             </div>
         </div>
     </section>
 
     <!-- Rutinas -->
+    <c:set var="hayActiva" value="false"/>
+    <c:forEach var="r" items="${rutinasTop}">
+        <c:if test="${r.estado eq 'activa'}">
+            <c:set var="hayActiva" value="true"/>
+        </c:if>
+    </c:forEach>
+
     <section class="bloque tarjeta borde-redondeado sombra-suave">
         <header class="bloque__head alinear-centro-between">
             <h3 class="bloque__title">Rutinas</h3>
-            <span class="bloque__ok" aria-hidden="true">✔</span>
+            <span class="bloque__ok" aria-hidden="true">
+                <c:choose>
+                    <c:when test="${hayActiva}">✔</c:when>
+                    <c:otherwise>•</c:otherwise>
+                </c:choose>
+            </span>
         </header>
 
         <div class="lista-tiles u-mt-8">
-            <a class="tile" href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp">
-                <div class="tile__text">
-                    <p class="tile__title">Push Day</p>
-                    <p class="tile__desc">Pecho, hombros, tríceps</p>
-                </div>
-                <span class="tile__meta">45 min</span>
-            </a>
+            <c:forEach var="r" items="${rutinasTop}">
+                <a class="tile"
+                   href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp?id=${r.idRutina}">
+                    <div class="tile__text">
+                        <p class="tile__title">${r.nombre}</p>
+                        <p class="tile__desc">${r.gruposTop3}</p>
+                    </div>
+                    <span class="tile__meta ${r.estado eq 'activa' ? 'is-active' : 'is-inactive'}">
+                            ${fn:toUpperCase(r.estado)}
+                    </span>
+                </a>
+            </c:forEach>
 
-            <a class="tile" href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp">
-                <div class="tile__text">
-                    <p class="tile__title">Pull Day</p>
-                    <p class="tile__desc">Espalda, bíceps</p>
+            <c:if test="${empty rutinasTop}">
+                <div class="tile tile--empty">
+                    <div class="tile__text">
+                        <p class="tile__title">Sin rutinas asignadas</p>
+                        <p class="tile__desc">Tu entrenador pronto te asignará una rutina.</p>
+                    </div>
+                    <span class="tile__meta">—</span>
                 </div>
-                <span class="tile__meta">40 min</span>
-            </a>
-
-            <a class="tile" href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp">
-                <div class="tile__text">
-                    <p class="tile__title">Leg Day</p>
-                    <p class="tile__desc">Piernas, glúteos</p>
-                </div>
-                <span class="tile__meta">50 min</span>
-            </a>
+            </c:if>
         </div>
 
         <a class="btn btn--ghost-yellow btn--lg u-w-full u-mt-16"
@@ -120,6 +149,7 @@
             Ver todas las rutinas →
         </a>
     </section>
+
     <!-- Progresos -->
     <section class="bloque tarjeta borde-redondeado sombra-suave">
         <header class="bloque__head alinear-centro-between">
@@ -131,32 +161,39 @@
         </header>
 
         <div class="prog-list u-mt-8">
-            <!-- NEGATIVO (naranja) -->
-            <a class="prog-item prog-item--neg" href="${pageContext.request.contextPath}/pages/modulos/cliente/progreso.jsp">
-                <div class="prog-item__text">
-                    <p class="prog-item__title">Peso Corporal</p>
-                    <p class="prog-item__sub">Última medición: 78kg</p>
-                </div>
-                <span class="prog-item__delta">-2kg</span>
-            </a>
+            <c:forEach var="p" items="${progresosTop}">
+                <c:set var="claseEstado"
+                       value="${p.difKg > 0 ? 'prog-item--pos-green' : (p.difKg < 0 ? 'prog-item--neg' : 'prog-item--neu')}" />
 
-            <!-- POSITIVO (verde) -->
-            <a class="prog-item prog-item--pos-green" href="${pageContext.request.contextPath}/pages/modulos/cliente/progreso.jsp">
-                <div class="prog-item__text">
-                    <p class="prog-item__title">Press Banca</p>
-                    <p class="prog-item__sub">Último PR: 85kg</p>
-                </div>
-                <span class="prog-item__delta">+5kg</span>
-            </a>
+                <a class="prog-item ${claseEstado}"
+                   href="${pageContext.request.contextPath}/pages/modulos/cliente/progreso.jsp?ej=${p.idEjercicio}">
+                    <div class="prog-item__text">
+                        <p class="prog-item__title">${p.ejercicio}</p>
+                        <p class="prog-item__sub">
+                            Última medición:
+                            <fmt:formatNumber value="${p.ultimo}" minFractionDigits="0" maxFractionDigits="2"/>kg
+                        </p>
+                    </div>
 
-            <!-- POSITIVO (azul) -->
-            <a class="prog-item prog-item--pos-blue" href="${pageContext.request.contextPath}/pages/modulos/cliente/progreso.jsp">
-                <div class="prog-item__text">
-                    <p class="prog-item__title">Sentadillas</p>
-                    <p class="prog-item__sub">Último PR: 100kg</p>
+                    <span class="prog-item__delta">
+          <c:choose>
+              <c:when test="${p.difKg > 0}">+<fmt:formatNumber value="${p.difKg}" minFractionDigits="0" maxFractionDigits="2"/>kg</c:when>
+              <c:when test="${p.difKg < 0}"><fmt:formatNumber value="${p.difKg}" minFractionDigits="0" maxFractionDigits="2"/>kg</c:when>
+              <c:otherwise>±0kg</c:otherwise>
+          </c:choose>
+        </span>
+                </a>
+            </c:forEach>
+
+            <c:if test="${empty progresosTop}">
+                <div class="prog-item prog-item--neu">
+                    <div class="prog-item__text">
+                        <p class="prog-item__title">Sin progresos recientes</p>
+                        <p class="prog-item__sub">Registrá una nueva medición para ver cambios.</p>
+                    </div>
+                    <span class="prog-item__delta">—</span>
                 </div>
-                <span class="prog-item__delta">+10kg</span>
-            </a>
+            </c:if>
         </div>
 
         <a class="btn btn--ghost-yellow btn--lg u-w-full u-mt-16"
@@ -166,7 +203,7 @@
     </section>
 
 </main>
-<!-- Sticky bottom nav (include donde lo moviste) -->
+<!-- sticky del nav abajo -->
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 </body>
 </html>
