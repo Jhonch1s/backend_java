@@ -86,6 +86,7 @@ public class RutinaClienteDetalleDAO {
         List<RutinaClienteDetalle> lista = new ArrayList<>();
         try (Connection con = databaseConection.getInstancia().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, idCliente);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {

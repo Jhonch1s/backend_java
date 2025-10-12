@@ -34,8 +34,12 @@ public class databaseConection {
     }
 
     public static databaseConection getInstancia() {
-        if (instancia == null) {
-            instancia = new databaseConection();
+        try {
+            if (instancia == null || instancia.conexion.isClosed()) {
+                instancia = new databaseConection();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return instancia;
     }
