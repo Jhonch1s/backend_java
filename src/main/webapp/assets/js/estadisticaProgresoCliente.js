@@ -1,24 +1,15 @@
 (() => {
+
     'use strict';
-
-    //estao global minimo
-    const ctxPath = document.body.dataset?.ctx || ''; // si lo usás en tu SPA
-    const endpointsBase =
-        document.body.dataset.endpointBase ||
-        `${ctxPath}/cliente/stats`; // ej: /cliente/stats
-
-    // Podés setear "ym" externamente si lo necesitás:
-    // <body data-ym="2025-10">
+    const ctx = document.body.dataset.ctx || '';
+    const endpointsBase = document.body.dataset.endpointBase || `${ctx}/cliente/stats`;
     const ym = document.body.dataset.ym || null;
 
-    const state = {
-        range: '4w',
-        ejercicioId: null, // se setea cuando carguemos los ejercicios
-    };
+    const state = { range: '4w', ejercicioId: null };
 
-    // Utils
-    const $ = (sel) => document.querySelector(sel);
+    const $  = (sel) => document.querySelector(sel);
     const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    const nf0 = new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 });
 
     async function getJSON(url) {
         const r = await fetch(url, { credentials: 'same-origin' });
@@ -26,19 +17,16 @@
         return r.json();
     }
 
-    // Formatters (por si querés bonito)
-    const nf0 = new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 });
-    function setText(id, val) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = val;
-    }
-
-    // kpi's del mes
     async function fetchOverview() {
         const url = ym ? `${endpointsBase}/overview?ym=${ym}` : `${endpointsBase}/overview`;
         const data = await getJSON(url);
         if (!data.ok) throw new Error(data.error || 'overview error');
         return data;
+    }
+
+    function setText(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
     }
 
     function renderOverview({ dias, minTotales, minPromedio }) {
@@ -47,30 +35,88 @@
         setText('kpi-min-prom', nf0.format(minPromedio ?? 0));
     }
 
-    // Streak semanal (placeholder, para usar despues)
+// racha semanal
     async function fetchWeeklyStreak() {
-        // Ej futuro: `${endpointsBase}/weekly-streak?weeks=12`
-        // return getJSON(url);
-        return null;
+        const url = `${endpointsBase}/weekly-streak?weeks=12`;
+        const j = await getJSON(url);
+        if (!j.ok) throw new Error(j.error || 'weekly-streak error');
+        return j;
+    }
+    function agregarFlamaAsset(dot) {
+        if (!dot || dot.querySelector('.flame-wrap')) return;
+        const wrap = document.createElement('span');
+        wrap.className = 'flame-wrap';
+
+        const img = new Image();
+        img.src = `${ctx}/assets/img/streakFlame.webp?v=2`;
+        img.className = 'flame-asset';
+        img.alt = '';
+
+        wrap.appendChild(img);
+        dot.appendChild(wrap);
+    }
+
+
+    function quitarFlamaAsset(dot) {
+        if (!dot) return;
+        const el = dot.querySelector('img.flame-asset');
+        if (el) el.remove();
     }
 
     function renderWeeklyStreak(data) {
-        // data: { weeks:[{iso:'2025-W40', active:true}, ...], streak: 4 }
-        // Por ahora, sólo limpiamos/persistimos el label si llega algo.
         if (!data) return;
-        const label = $('#streak-weeks-label');
-        if (label && typeof data.streak === 'number') {
-            label.textContent = `${data.streak} semanas`;
+
+        // label con el total real
+        let totalStreak = 0;
+        if (data.streak !== undefined && data.streak !== null) {
+            const n = parseInt(data.streak, 10);
+            totalStreak = Number.isFinite(n) ? n : 0;
+        } else if (Array.isArray(data.weeks)) {
+            // fallback: calcula desde weeks vieja -> reciente
+            let s = 0; const w = data.weeks;
+            for (let i = w.length - 1; i >= 0; i--) { if (w[i]?.active) s++; else break; }
+            totalStreak = s;
         }
-        const cont = $('#weeks-streak');
-        if (cont && Array.isArray(data.weeks)) {
-            // Pintar puntitos según weeks[].active
-            const dots = cont.querySelectorAll('.week-dot');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('is-active', !!data.weeks[i]?.active);
-            });
+        const label = document.getElementById('streak-weeks-label');
+        if (label) label.textContent = `${totalStreak} semanas`;
+
+        // pintar puntos de racha
+        const cont  = document.getElementById('weeks-streak');
+        if (!cont) return;
+        const dots  = cont.querySelectorAll('.week-dot'); // 12 en total en el DOM, la ultima nunca se pinta
+        const weeks = Array.isArray(data.weeks) ? data.weeks : [];
+
+        // alinea a la derecha si llegan menos semanas que puntos, con weeksDots=11 queda el último libre siempre, cosa que de la sensasión de que se pueda seguir
+        const offset = Math.max(0, dots.length - weeks.length);
+        for (let i = 0; i < dots.length; i++) {
+            const w = weeks[i - offset]; // undefined si sobran puntos
+            dots[i].classList.toggle('is-active', !!(w && w.active));
+            dots[i].classList.remove('is-reserve', 'is-current');
+            quitarFlamaAsset(dots[i]); //quitamos algun asset previo si quedaba guardado de alguna manera de racha desactualizada
         }
+        // reservamos SIEMPRE!! el último punto (semana que entra)
+        // y además reforzar la reserva cuando la racha >= 12
+        if (dots.length > 0) {
+            const last = dots[dots.length - 1];
+            last.classList.remove('is-active');
+            last.classList.add('is-reserve');
+        }
+
+        // marcar el ultimo activo visible como "is-current", evitamos el que debe representar la sig semana
+        const reservedIndex = dots.length - 1;
+        let currentIdx = -1;
+        for (let i = dots.length - 1; i >= 0; i--) {
+            if (i === reservedIndex) continue;
+            if (dots[i].classList.contains('is-active')) { currentIdx = i; break; }
+        }
+        if (currentIdx >= 0) {
+            const currentDot = dots[currentIdx];
+            currentDot.classList.add('is-current');
+            agregarFlamaAsset(currentDot);
+        }
+
     }
+
 
     // Interacciones de UI
     function bindRangeChips() {
@@ -124,6 +170,8 @@
             renderWeeklyStreak(streak);
         } catch (err) {
             console.warn('Streak no disponible aún:', err);
+            const label = document.getElementById('streak-weeks-label');
+            if (label) label.textContent = '– semanas';
         }
 
         // 3) Binds de UI
@@ -137,4 +185,4 @@
     } else {
         init();
     }
-})();
+})()

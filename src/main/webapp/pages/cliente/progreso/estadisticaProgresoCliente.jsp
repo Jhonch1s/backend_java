@@ -18,17 +18,18 @@
 
 <body class="fondo-oscuro texto-claro"
       data-endpoint-base="${pageContext.request.contextPath}/cliente/stats"
-      data-ym="">
+      data-ym=""
+      data-ctx="${pageContext.request.contextPath}">
 <main class="stats-page">
 
-    <!-- 1) Encabezado + KPIs del mes + Racha semanal -->
+    <!-- encabezado + KPIs del mes + racha a lo duolingo -->
     <header class="panel" id="blk-overview">
         <div class="panel__head">
             <h1 class="panel__title">Estadísticas &amp; Progreso</h1>
             <span class="texto-dorado">Cliente</span>
         </div>
 
-        <!-- KPIs del mes actual -->
+        <!-- KPIs (medidas clave de progreso) del mesc actula-->
         <div class="kpi-row u-mt-12">
             <div class="kpi">
                 <p class="kpi__num" id="kpi-dias">–</p>
@@ -44,14 +45,14 @@
             </div>
         </div>
 
-        <!-- Racha semanal (semanas consecutivas entrenando) -->
+        <!-- racha -->
         <div class="u-mt-12">
             <div class="panel__head">
                 <strong>Racha semanal</strong>
                 <span id="streak-weeks-label" class="texto-dorado">– semanas</span>
             </div>
             <div class="weeks-streak u-mt-8" id="weeks-streak">
-                <!-- 12 puntitos (semanas); se marcan con .is-active vía JS -->
+                <!-- 12 puntitos (semanas), se marcan con .is-active vía JS a partir de datos de la bd -->
                 <span class="week-dot"></span>
                 <span class="week-dot"></span>
                 <span class="week-dot"></span>
