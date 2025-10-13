@@ -43,7 +43,6 @@ public class RegistroGymDAO {
                 if (rs.next()) {
                     int id = rs.getInt(1);
                     r.setIdRegistro(id);
-                    // 'fecha' la calcula la BD (GENERATED STORED). Si querés, la podés refrescar con findById.
                     return id;
                 }
             }
@@ -51,7 +50,7 @@ public class RegistroGymDAO {
         throw new SQLException("No se obtuvo clave generada para registro_gym");
     }
 
-    // Aquí actualizamos la hora de salida de una sesión (cierra la sesión) ya que por defecto está en null. */
+    // actualizamos la hora de salida de una sesión (cierra la sesión) ya que por defecto está en null. */
     public boolean updateSalida(int idRegistro, LocalDateTime salida) throws SQLException {
         final String sql = "UPDATE registro_gym SET salida = ? WHERE id_registro = ?";
         Connection conn= databaseConection.getInstancia().getConnection();
@@ -255,4 +254,49 @@ public class RegistroGymDAO {
             }
         }
     }
+
+    // Sesion abierta? (cerrar es null)
+    public Optional<RegistroGym> findSesionAbierta(String ciCliente) throws SQLException {
+        final String sql = """
+        SELECT id_registro, ci_cliente, fecha, entrada, salida
+        FROM registro_gym
+        WHERE ci_cliente = ? AND salida IS NULL
+        ORDER BY entrada DESC
+        LIMIT 1
+        """;
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, ciCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return Optional.of(RegistroGym.fromResultSet(rs));
+                return Optional.empty();
+            }
+        }
+    }
+
+    public boolean tieneSesionAbierta(String ciCliente) throws SQLException {
+        return findSesionAbierta(ciCliente).isPresent();
+    }
+
+    public int minutosTotalesMes(String ciCliente, LocalDate anyDayOfMonth) throws SQLException {
+        LocalDate ini = anyDayOfMonth.withDayOfMonth(1);
+        LocalDate fin = anyDayOfMonth.withDayOfMonth(anyDayOfMonth.lengthOfMonth());
+        final String sql = """
+        SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, entrada, salida)), 0)
+        FROM registro_gym
+        WHERE ci_cliente = ?
+          AND fecha BETWEEN ? AND ?
+          AND salida IS NOT NULL
+        """;
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, ciCliente);
+            ps.setDate(2, Date.valueOf(ini));
+            ps.setDate(3, Date.valueOf(fin));
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
+
 }

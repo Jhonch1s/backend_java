@@ -188,3 +188,7 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 .tile--progress.is-down  { /* rojo/negativo */    background: #2a1414; border: 1px solid #a33d3d; }
 .tile--progress .tile__meta { font-weight: 700; }
 
+#btnCheckin.is-open   { background-color: #ff0101 !important; color:#fff !important; border-color:#ff0101 !important; }
+#btnCheckin.is-closed { background-color:var(--gg-yellow) !important; color:#000 !important; border-color:var(--gg-yellow) !important; }
+#btnCheckin.is-busy   { opacity:.7; pointer-events:none; }
+#btnCheckin.is-open, #btnCheckin.is-closed { background-image:none !important; }

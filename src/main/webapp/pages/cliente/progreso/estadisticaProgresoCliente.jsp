@@ -1,11 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: jhonc
-  Date: 08/10/2025
-  Time: 21:26
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es-UY">
@@ -14,82 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Estadísticas & Progreso · Golden Gym</title>
 
-    <!-- Tipografía + Normalize -->
+    <!-- Fuentes y CSS base del proyecto (ya los tenés) -->
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-          integrity="sha512-NhSC1X0f3zp3p2JtYh8C2W4TyTX0b6x1n00x4bZ4Zk3E2b9GmZy1wKkPe4v5YyX1Y9i6w5W2rszj0o9uGZ7xwA=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Estilos existentes del proyecto -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css"> <!--por estilos del nav.. etc-->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/estadisticaProgresoCliente.css">
 
-    <!-- CSS del dashboard cliente -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
-
-    <style>
-        /* ------- extras mínimos para esta vista ------- */
-        .stats-page{
-            min-height: 100svh;
-            padding: 16px;
-            padding-bottom: calc(var(--gg-nav-h) + 12px + env(safe-area-inset-bottom));
-            display: grid; gap: 16px;
-            background: var(--gg-bg, #101010); color: var(--gg-white, #f3f3f3);
-            box-sizing: border-box;
-        }
-        .kpi-row{
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-        }
-        .kpi{
-            background: var(--gg-card, #1a1a1a); border: 1px solid var(--gg-border, #2a2a2a);
-            border-radius: 16px; padding: 12px; text-align: center;
-        }
-        .kpi__num{ margin: 0; font-size: 1.6rem; font-weight: 800; }
-        .kpi__label{ margin: 2px 0 0; color: rgba(255,255,255,.8); font-size: .8rem; }
-
-        .panel{ background: var(--gg-card,#1a1a1a); border: 1px solid var(--gg-border,#2a2a2a);
-            border-radius: 18px; padding: 14px; }
-        .panel__head{ display:flex; align-items:center; justify-content:space-between; }
-        .panel__title{ margin:0; font-size:1.1rem; font-weight:800; }
-
-        .exercise-picker{ display:grid; gap:10px; }
-        .select{
-            width: 100%; background: #121212; color: var(--gg-white); border:1px solid #2a2a2a;
-            border-radius: 12px; padding: 10px 12px;
-        }
-
-        .charts{ display:grid; gap: 12px; }
-        .chart-card{
-            background: #121212; border:1px solid #2a2a2a; border-radius:16px; padding: 10px;
-        }
-        .chart-card__title{ margin:0 0 8px 0; font-weight:700; font-size:.95rem; color: rgba(255,255,255,.9); }
-        .chart-inset{
-            border-radius:12px; background:#0f0f0f; border:1px dashed rgba(255,255,255,.08);
-            display:grid; place-items:center; min-height: 160px;
-        }
-        .chart-inset small{ color: rgba(255,255,255,.6); }
-
-        .prs{ display:grid; gap:10px; }
-        .pr-item{
-            display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px;
-            background: var(--gg-chip,#2a2a2a); border:1px solid var(--gg-border,#2a2a2a); border-radius:14px;
-            padding: 12px;
-        }
-        .pr-title{ margin:0; font-weight:800; }
-        .pr-sub{ margin:2px 0 0; color: rgba(255,255,255,.8); font-size:.9rem; }
-        .pr-meta{ font-weight:800; color: var(--gg-yellow,#fff112); }
-
-        .actions{ display:grid; gap:10px; }
-        .actions .btn{ width:100%; }
-    </style>
 </head>
 
-<body class="fondo-oscuro texto-claro">
+<body class="fondo-oscuro texto-claro"
+      data-endpoint-base="${pageContext.request.contextPath}/cliente/stats"
+      data-ym="">
 <main class="stats-page">
-    <!-- Encabezado -->
-    <header class="panel">
+
+    <!-- 1) Encabezado + KPIs del mes + Racha semanal -->
+    <header class="panel" id="blk-overview">
         <div class="panel__head">
             <h1 class="panel__title">Estadísticas &amp; Progreso</h1>
             <span class="texto-dorado">Cliente</span>
@@ -98,110 +31,158 @@
         <!-- KPIs del mes actual -->
         <div class="kpi-row u-mt-12">
             <div class="kpi">
-                <p class="kpi__num" id="kpi-dias">12</p>
+                <p class="kpi__num" id="kpi-dias">–</p>
                 <p class="kpi__label">Días este mes</p>
             </div>
             <div class="kpi">
-                <p class="kpi__num" id="kpi-tiempo-total">540</p>
+                <p class="kpi__num" id="kpi-min-tot">–</p>
                 <p class="kpi__label">Min totales</p>
             </div>
             <div class="kpi">
-                <p class="kpi__num" id="kpi-promedio">45</p>
+                <p class="kpi__num" id="kpi-min-prom">–</p>
                 <p class="kpi__label">Min promedio</p>
+            </div>
+        </div>
+
+        <!-- Racha semanal (semanas consecutivas entrenando) -->
+        <div class="u-mt-12">
+            <div class="panel__head">
+                <strong>Racha semanal</strong>
+                <span id="streak-weeks-label" class="texto-dorado">– semanas</span>
+            </div>
+            <div class="weeks-streak u-mt-8" id="weeks-streak">
+                <!-- 12 puntitos (semanas); se marcan con .is-active vía JS -->
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
+                <span class="week-dot"></span>
             </div>
         </div>
     </header>
 
-    <!-- Progreso por ejercicio -->
-    <section class="panel">
+    <!-- 2) Selector de rango global (afecta gráficos del ejercicio) -->
+    <section class="panel" id="blk-range">
+        <div class="panel__head">
+            <h2 class="panel__title">Rango</h2>
+            <div class="chips" id="chips-range">
+                <button class="chip is-active" data-range="4w">Últimas 4 sem</button>
+                <button class="chip" data-range="90d">90 d</button>
+                <button class="chip" data-range="6m">6 m</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3) Progreso por ejercicio -->
+    <section class="panel" id="blk-exercise">
         <div class="panel__head">
             <h2 class="panel__title">Progreso por ejercicio</h2>
-            <span class="texto-dorado">PRs &amp; tendencia</span>
+            <span class="texto-dorado">Fuerza &amp; volumen</span>
         </div>
 
-        <!-- Selector de ejercicio -->
-        <div class="exercise-picker u-mt-8">
+        <!-- Selector de ejercicio (se completa dinámicamente) -->
+        <div class="u-mt-8">
             <label for="sel-ej" class="u-visually-hidden">Elegir ejercicio</label>
             <select id="sel-ej" class="select">
-                <!-- Rellenar dinámicamente con tus ejercicios -->
-                <option value="press_banca">Press banca</option>
-                <option value="sentadillas">Sentadillas</option>
-                <option value="peso_muerto">Peso muerto</option>
+                <!-- opciones inyectadas por JS: value = id_ejercicio -->
             </select>
         </div>
 
-        <!-- Mini-gráficas -->
-        <div class="charts u-mt-12">
+        <!-- Mini-KPIs del ejercicio -->
+        <div class="mini-kpis u-mt-12" id="mini-kpis">
+            <div class="mini">
+                <p class="mini__num" id="mk-e1rm">–</p>
+                <p class="mini__label">Mejor e1RM</p>
+            </div>
+            <div class="mini">
+                <p class="mini__num" id="mk-bestset">–</p>
+                <p class="mini__label">Mejor marca (kg×reps)</p>
+            </div>
+            <div class="mini">
+                <p class="mini__num" id="mk-delta">–</p>
+                <p class="mini__label">Δ e1RM (ventana)</p>
+            </div>
+            <div class="mini">
+                <p class="mini__num" id="mk-vol4w">–</p>
+                <p class="mini__label">Volumen 4 sem</p>
+            </div>
+        </div>
+
+        <!-- Gráficos principales -->
+        <div class="subgrid u-mt-12">
+            <!-- Tendencia de fuerza (e1RM) -->
             <article class="chart-card">
-                <h3 class="chart-card__title">Peso usado (kg) a lo largo del tiempo</h3>
+                <h3 class="chart-card__title">Tendencia de fuerza (e1RM)</h3>
                 <div class="chart-inset">
-                    <!-- Canvas opcional (Chart.js) -->
-                    <!-- <canvas id="chart-peso" width="320" height="160"></canvas> -->
-                    <small>Gráfico de líneas aquí</small>
+                    <!-- <canvas id="chart-e1rm"></canvas> -->
+                    <small id="ph-e1rm">Gráfico de líneas aquí</small>
                 </div>
             </article>
 
+            <!-- Volumen y frecuencia por semana -->
             <article class="chart-card">
-                <h3 class="chart-card__title">Repeticiones a lo largo del tiempo</h3>
+                <h3 class="chart-card__title">Volumen &amp; frecuencia (semanal)</h3>
                 <div class="chart-inset">
-                    <!-- <canvas id="chart-reps" width="320" height="160"></canvas> -->
-                    <small>Gráfico de líneas aquí</small>
+                    <!-- <canvas id="chart-volume-weekly"></canvas> -->
+                    <small id="ph-volume">Barras/mixto aquí</small>
+                </div>
+            </article>
+
+            <!-- Curva carga–reps -->
+            <article class="chart-card">
+                <h3 class="chart-card__title">Curva carga–reps</h3>
+                <div class="chart-inset">
+                    <!-- <canvas id="chart-scatter"></canvas> -->
+                    <small id="ph-scatter">Scatter aquí</small>
                 </div>
             </article>
         </div>
     </section>
 
-    <!-- PRs -->
-    <section class="panel">
+    <!-- 4) PRs y mejores del período -->
+    <section class="panel" id="blk-prs">
         <div class="panel__head">
-            <h2 class="panel__title">PRs (mejores marcas)</h2>
-            <span class="texto-dorado">Top por ejercicio</span>
+            <h2 class="panel__title">PRs y mejores del período</h2>
+            <span class="texto-dorado" id="label-periodo">–</span>
         </div>
 
-        <div class="prs u-mt-8">
-            <!-- Ejemplos (luego rellenas desde tu DAO) -->
-            <div class="pr-item">
-                <div>
-                    <p class="pr-title">Press banca</p>
-                    <p class="pr-sub">Fecha: 2025-09-18 · 5 reps × 85 kg</p>
-                </div>
-                <span class="pr-meta">85 kg</span>
-            </div>
-
-            <div class="pr-item">
-                <div>
-                    <p class="pr-title">Sentadillas</p>
-                    <p class="pr-sub">Fecha: 2025-09-10 · 3 reps × 100 kg</p>
-                </div>
-                <span class="pr-meta">100 kg</span>
-            </div>
+        <div class="prs u-mt-8" id="list-prs">
+            <!-- Items inyectados por JS:
+                 .pr-item > .pr-title | .pr-sub (fecha, reps×kg, e1RM) | .pr-meta (badge PR) -->
         </div>
     </section>
 
-    <!-- Acciones -->
-    <section class="actions">
-        <a class="btn btn--ghost-yellow btn--lg"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/historial.jsp">
-            Ver historial completo →
-        </a>
-        <a class="btn btn--ghost-yellow btn--lg"
+    <!-- 5) Empty states (ocultos por default) -->
+    <section class="panel u-hide" id="empty-exercise">
+        <p>No hay registros para este ejercicio en el rango seleccionado.</p>
+        <a class="btn btn--ghost-yellow btn--sm"
            href="${pageContext.request.contextPath}/pages/modulos/cliente/abm-progreso.jsp">
             Gestionar registros de progreso →
         </a>
     </section>
+
+    <!-- 6) Acciones (historial completo / ABM progreso) -->
+    <section class="panel" id="blk-actions">
+        <div class="grid-2">
+            <a class="btn btn--ghost-yellow btn--lg"
+               href="${pageContext.request.contextPath}/pages/modulos/cliente/historial.jsp">
+                Ver historial completo →
+            </a>
+            <a class="btn btn--ghost-yellow btn--lg"
+               href="${pageContext.request.contextPath}/pages/modulos/cliente/abm-progreso.jsp">
+                Gestionar registros de progreso →
+            </a>
+        </div>
+    </section>
 </main>
-
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
-
-<!-- Hook opcional para gráficos (más adelante) -->
-<!--
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Ejemplo mínimo:
-  // const ctx = document.getElementById('chart-peso');
-  // new Chart(ctx, { type: 'line', data: {...}, options: {...} });
-</script>
--->
+<script src="${pageContext.request.contextPath}/assets/js/estadisticaProgresoCliente.js" defer></script>
 </body>
 </html>
-

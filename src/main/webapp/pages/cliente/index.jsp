@@ -38,11 +38,11 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 
-    <!-- NUEVO: estilos mínimos para el dashboard cliente (usa tus variables) -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
+    <!-- rstilos para el dashboard cliente, forzamos actualizar estilos al cambiar css con ?v=20251011a-->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css?v=20251011a">
 </head>
 
-<body class="fondo-oscuro texto-claro">
+<body class="fondo-oscuro texto-claro" data-ctx="${pageContext.request.contextPath}"> <!--context path para que el js pueda leerlo-->
 <main id="app" class="cliente-home cliente-home--fixed">
     <!-- Perfil / hero -->
     <section class="hero tarjeta borde-redondeado sombra-suave">
@@ -72,11 +72,21 @@
         </header>
 
         <div class="u-mt-12">
-            <a href="${pageContext.request.contextPath}/pages/modulos/cliente/ingreso.jsp"
-               class="btn btn--primary-yellow btn--xl u-w-full alinear-centro-center u-gap-8">
-                <span class="emoji" aria-hidden="true">🏷️</span> Registrar Entrada
-            </a>
+            <button id="btnCheckin"
+                    type="button"
+                    class="btn btn--primary-yellow btn--xl u-w-full alinear-centro-center u-gap-8"
+                    data-state="unknown"
+                    data-endpoint="/cliente/checkin">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+
+                <span id="btnCheckinLabel">Cargando...</span>
+            </button>
         </div>
+
 
         <div class="hero__stats u-mt-16">
             <div class="hero__stat">
@@ -189,7 +199,7 @@
                 <div class="prog-item prog-item--neu">
                     <div class="prog-item__text">
                         <p class="prog-item__title">Sin progresos recientes</p>
-                        <p class="prog-item__sub">Registrá una nueva medición para ver cambios.</p>
+                        <p class="prog-item__sub">Registra una nueva medición para ver cambios.</p>
                     </div>
                     <span class="prog-item__delta">—</span>
                 </div>
@@ -205,6 +215,7 @@
 </main>
 <!-- sticky del nav abajo -->
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
+<script src="${pageContext.request.contextPath}/assets/js/cliente-dashboard.js" defer></script>
 </body>
 </html>
 
