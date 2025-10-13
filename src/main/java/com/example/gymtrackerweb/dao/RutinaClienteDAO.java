@@ -2,7 +2,10 @@ package com.example.gymtrackerweb.dao;
 
 
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.EjercicioConProgresoView;
+import com.example.gymtrackerweb.dto.RutinaClienteView;
 import com.example.gymtrackerweb.model.RutinaCliente;
+import com.example.gymtrackerweb.model.enums.Objetivo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -86,5 +89,39 @@ public class RutinaClienteDAO {
             System.out.println("Error al obtener rutina_cliente: " + e.getMessage());
         }
         return null;
+    }
+
+    public List<RutinaClienteView> RutinasDeCliente(String clienteId){
+        List<RutinaClienteView> rutinaLista = new ArrayList<>();
+        String sql = "SELECT r.id, r.nombre, r.objetivo, r.duracion_semanas, rc.estado, " +
+                "GROUP_CONCAT(DISTINCT gm.nombre SEPARATOR ', ') AS grupos_musculares " +
+                "FROM rutina_cliente rc " +
+                "INNER JOIN rutina r ON rc.id_rutina = r.id " +
+                "INNER JOIN detalle_rutina dr ON r.id = dr.id_rutina " +
+                "INNER JOIN ejercicio e ON dr.id_ejercicio = e.id " +
+                "INNER JOIN grupo_muscular gm ON e.id_grupo_muscular = gm.id " +
+                "WHERE rc.id_cliente = ? " +
+                "GROUP BY r.id, r.nombre, r.objetivo, r.duracion_semanas, rc.estado";
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, clienteId);
+            ResultSet resultado = sentencia.executeQuery();
+            while (resultado.next()) {
+                RutinaClienteView view = new RutinaClienteView();
+                view.setId(resultado.getInt("id"));
+                view.setNombre(resultado.getString("nombre"));
+                String obj = resultado.getString("objetivo");
+                view.setObjetivo(Objetivo.valueOf(obj.toUpperCase()));
+                view.setDuracionSemanas(resultado.getInt("duracion_semanas"));
+                view.setEstado(resultado.getString("estado"));
+                view.setGruposMusculares(resultado.getString("grupos_musculares"));
+
+                rutinaLista.add(view);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return rutinaLista;
     }
 }

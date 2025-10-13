@@ -1,0 +1,234 @@
+.pantalla {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.pantalla.activa {
+    display: block;
+}
+
+.lista-ejercicios {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+    gap: 1.1rem;
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px solid rgba(255, 241, 18, 0.15);
+    border-radius: 20px;
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 241, 18, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+/* Esquinas decorativas */
+.lista-ejercicios::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg,
+    rgba(255, 241, 18, 0.08) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(255, 241, 18, 0.08) 100%);
+    border-radius: 22px;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+.tarjeta-ejercicio {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.tarjeta-ejercicio_contenido h3 {
+    margin: 0;
+    font-size: 1.3rem; /* Título más grande */
+    font-weight: 700;
+}
+
+.tarjeta-ejercicio_contenido p {
+    margin: 0.25rem 0 0 0; /* Pequeño espacio arriba */
+    font-size: 1rem; /* Descripción más grande */
+    color: var(--color-gris-200);
+}
+
+.tarjeta-ejercicio:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tarjeta-ejercicio__icono {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    margin-right: 1rem;
+}
+
+.tarjeta-ejercicio_contenido {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1; /* para que tome todo el espacio disponible */
+}
+
+/* Alinear todo en el centro del viewport */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Pantalla de progresos debe empezar desde arriba */
+#pantalla-progreso {
+    justify-content: flex-start;
+    align-items: stretch;
+    padding-top: 2rem;
+    max-width: 600px;
+}
+
+/* Botón volver */
+.volver {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--color-principal);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.volver:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Bloque de contenido */
+.bloque {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bloque h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-principal);
+    font-size: 1.1rem;
+}
+
+.bloque ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bloque li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-gris-200);
+}
+
+.bloque li:last-child {
+    border-bottom: none;
+}
+
+/* Formulario nuevo registro */
+.nuevo-registro {
+    background: rgba(255, 241, 18, 0.05);
+    border: 1px solid rgba(255, 241, 18, 0.2);
+}
+
+.nuevo-registro label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-principal);
+    font-weight: 600;
+}
+
+.nuevo-registro input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-blanco);
+    margin-bottom: 1rem;
+}
+
+.nuevo-registro input::placeholder {
+    color: var(--color-gris-400);
+}
+
+.nuevo-registro input:focus {
+    outline: none;
+    border-color: var(--color-principal);
+    box-shadow: 0 0 0 3px rgba(255, 241, 18, 0.1);
+}
+
+/* Estilos responsivos para el contorno */
+@media (max-width: 767px) {
+    .lista-ejercicios {
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-top: 1rem;
+    }
+
+    .lista-ejercicios::before {
+        border-radius: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .lista-ejercicios {
+        max-width: 500px; /* un poco más ancho en tablets */
+        gap: 1.5rem;
+        padding: 2.5rem;
+        border-radius: 24px;
+    }
+
+    .lista-ejercicios::before {
+        border-radius: 26px;
+    }
+
+    .tarjeta-ejercicio {
+        padding: 2rem;
+    }
+
+    .tarjeta-ejercicio__icono {
+        width: 56px;
+        height: 56px;
+    }
+
+    .tarjeta-ejercicio_contenido h3 {
+        font-size: 1.3rem; /* Aún más grande en pantallas grandes */
+    }
+
+    .tarjeta-ejercicio_contenido p {
+        font-size: 1rem; /* Descripción más grande en pantallas grandes */
+    }
+}
