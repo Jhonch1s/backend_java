@@ -55,8 +55,8 @@
                         for (EjercicioConProgresoView e : ejercicios) {
                             int numeroSVG = Math.min(contador, maxSVG);
                 %>
-                <div class="tarjeta-ejercicio" onclick="verProgreso('<%= e.getNombreEjercicio() %>')">
-                    <div class="tarjeta-ejercicio__icono">
+                <div class="tarjeta-ejercicio" data-ejercicio-id="<%= e.getIdEjercicio() %>" data-ejercicio-nombre="<%= e.getNombreEjercicio() %>">
+                <div class="tarjeta-ejercicio__icono">
                         <img src="${pageContext.request.contextPath}/assets/img/svgs/hexagon-number-<%= numeroSVG %>.svg"
                              width="34" height="34" alt="Icono ejercicio" />
                     </div>
@@ -71,6 +71,7 @@
                             <% } %>
                         </p>
                     </div>
+
                 </div>
                 <%
                         contador++;
@@ -82,48 +83,155 @@
             </div>
         </section>
         <section id="pantalla-progreso" class="pantalla">
-            <button class="btn-volver" onclick="volver()">← Volver</button>
+            <button class="btn-volver boton-primario">← Volver</button>
             <h2 id="nombre-ejercicio"></h2>
 
-            <h3 class="texto-dorado">Registros recientes</h3>
-            <ul id="registros-recientes" class="lista-detalle"></ul>
+            <div class="bloque">
+                <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <!-- SVG gráfico de estadísticas -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/>
+                        <path d="m19 9-5 5-4-4-3 3"/>
+                    </svg>
+                    Registros recientes
+                </h3>
+                <div id="registros-recientes" class="contenedor-tarjetas"></div>
+            </div>
 
-            <h3 class="texto-dorado">Mejores PRs</h3>
-            <ul id="mejores-prs" class="lista-detalle"></ul>
+            <div class="bloque">
+                <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <!-- SVG trofeo -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                        <path d="M4 22h16"/>
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                    </svg>
+                    Mejores PRs
+                </h3>
+                <div id="mejores-prs" class="contenedor-tarjetas"></div>
+            </div>
         </section>
+
+
     </main>
 </div>
 <script>
-    const pantallaLista = document.getElementById("pantalla-lista");
-    const pantallaProgreso = document.getElementById("pantalla-progreso");
-    const nombreEjercicio = document.getElementById("nombre-ejercicio");
+    document.addEventListener("DOMContentLoaded", () => {
+        const contextPath = '<%= request.getContextPath() %>';
+        const pantallaLista = document.getElementById("pantalla-lista");
+        const pantallaProgreso = document.getElementById("pantalla-progreso");
+        const nombreEjercicio = document.getElementById("nombre-ejercicio");
 
-    async function verProgreso(nombre) {
-        nombreEjercicio.textContent = nombre;
+        async function verProgresoPorId(id, nombre) {
+            if (!id) {
+                console.error("ID de ejercicio no definido");
+                alert("No se pudo obtener el ID del ejercicio.");
+                return;
+            }
 
-        try {
-            const resp = await fetch(`detalle-progreso?nombre=${encodeURIComponent(nombre)}`);
-            const data = await resp.json();
+            try {
+                const resp = await fetch(contextPath + "/detalle-progreso?id=" + encodeURIComponent(id));
+                const data = await resp.json();
+                console.log("Datos recibidos:", data);
 
-            document.getElementById("registros-recientes").innerHTML =
-                data.registros.map(r => `<li>${r.fecha} → ${r.peso} kg × ${r.reps}</li>`).join("");
+                if (!Array.isArray(data.registros)) {
+                    throw new Error("Respuesta inválida del servidor");
+                }
 
-            document.getElementById("mejores-prs").innerHTML =
-                data.prs.map(r => `<li>${r.peso} kg × ${r.reps} (${r.fecha})</li>`).join("");
+                nombreEjercicio.textContent = nombre;
 
-            pantallaLista.classList.remove("activa");
-            pantallaProgreso.classList.add("activa");
-            window.scrollTo({ top: 0 });
-        } catch (err) {
-            console.error("Error cargando progreso:", err);
+                // Mostrar registros recientes
+                const registrosList = document.getElementById("registros-recientes");
+                registrosList.innerHTML = "";
+
+                if (Array.isArray(data.registros) && data.registros.length > 0) {
+                    data.registros.forEach(r => {
+                        const tarjeta = document.createElement("div");
+                        tarjeta.className = "tarjeta-registro";
+
+                        const fecha = document.createElement("strong");
+                        fecha.className = "registro-fecha";
+                        fecha.textContent = r.fecha || "sin fecha";
+
+                        const peso = document.createElement("p");
+                        peso.className = "registro-detalle";
+                        peso.textContent = (r.pesoUsado != null) ? String(r.pesoUsado) + " kg" : "-";
+
+                        const reps = document.createElement("p");
+                        reps.className = "registro-detalle";
+                        reps.textContent = (r.repeticiones != null) ? String(r.repeticiones) + " reps" : "-";
+
+                        tarjeta.appendChild(fecha);
+                        tarjeta.appendChild(peso);
+                        tarjeta.appendChild(reps);
+                        registrosList.appendChild(tarjeta);
+                    });
+                } else {
+                    registrosList.innerHTML = "<div class='tarjeta-registro'>No hay registros recientes</div>";
+                }
+
+                // Mostrar PRs (mismo formato que registros)
+                const prsList = document.getElementById("mejores-prs");
+                prsList.innerHTML = "";
+
+                if (Array.isArray(data.prs) && data.prs.length > 0) {
+                    data.prs.forEach(r => {
+                        const tarjeta = document.createElement("div");
+                        tarjeta.className = "tarjeta-registro";
+
+                        const fecha = document.createElement("strong");
+                        fecha.className = "registro-fecha";
+                        fecha.textContent = r.fecha || "sin fecha";
+
+                        const peso = document.createElement("p");
+                        peso.className = "registro-detalle";
+                        peso.textContent = (r.pesoUsado != null) ? String(r.pesoUsado) + " kg" : "-";
+
+                        const reps = document.createElement("p");
+                        reps.className = "registro-detalle";
+                        reps.textContent = (r.repeticiones != null) ? String(r.repeticiones) + " reps" : "-";
+
+                        tarjeta.appendChild(fecha);
+                        tarjeta.appendChild(peso);
+                        tarjeta.appendChild(reps);
+                        prsList.appendChild(tarjeta);
+                    });
+                } else {
+                    prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
+                }
+
+
+
+                pantallaLista.classList.remove("activa");
+                pantallaProgreso.classList.add("activa");
+                window.scrollTo({ top: 0 });
+            } catch (err) {
+                console.error("Error cargando progreso:", err);
+                alert("No se pudo cargar el progreso. Verificá la consola.");
+            }
         }
-    }
 
-    function volver() {
-        pantallaProgreso.classList.remove("activa");
-        pantallaLista.classList.add("activa");
-    }
+        const btnVolver = document.querySelector(".btn-volver");
+        btnVolver.addEventListener("click", () => {
+            pantallaProgreso.classList.remove("activa");
+            pantallaLista.classList.add("activa");
+            document.getElementById("registros-recientes").innerHTML = "";
+            document.getElementById("mejores-prs").innerHTML = "";
+        });
+
+        document.querySelectorAll(".tarjeta-ejercicio").forEach(el => {
+            el.addEventListener("click", () => {
+                const id = parseInt(el.dataset.ejercicioId, 10);
+                const nombre = el.dataset.ejercicioNombre;
+                verProgresoPorId(id, nombre);
+            });
+        });
+    });
 </script>
+
 
 </body>
 </html>

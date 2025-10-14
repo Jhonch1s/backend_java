@@ -184,6 +184,22 @@ public class ProgresoEjercicioDAO {
         return lista;
     }
 
+    public int obtenerIdPorNombre(String nombre) {
+        String sql = "SELECT id FROM ejercicio WHERE nombre = ?";
+        try (Connection con = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombre);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
 
 
 }

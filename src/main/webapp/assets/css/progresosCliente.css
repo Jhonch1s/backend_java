@@ -4,10 +4,15 @@
     align-items: center;
     padding: 1.5rem;
     width: 100%;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .pantalla.activa {
-    display: block;
+    display: flex;
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .lista-ejercicios {
@@ -97,7 +102,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* <-- antes decía center */
     min-height: 100vh;
 }
 
@@ -232,3 +237,69 @@ main {
         font-size: 1rem; /* Descripción más grande en pantallas grandes */
     }
 }
+
+.pantalla {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.pantalla:not(.activa) {
+    display: none !important;
+}
+
+.pantalla.activa {
+    display: flex !important;
+}
+
+.contenedor-tarjetas {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.tarjeta-registro {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.tarjeta-registro:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tarjeta-registro strong {
+    color: var(--color-principal);
+    font-size: 1.1rem;
+}
+
+.tarjeta-registro p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-blanco);
+}
+
+
+.registro-fecha {
+    color: var(--color-principal);
+    font-size: 1.1rem;
+    display: block;
+}
+
+.registro-detalle {
+    color: var(--color-blanco);
+    font-size: 1rem;
+    font-weight: normal;
+    display: inline-block; /* cambiar de block a inline-block */
+    margin-top: 0; /* opcional, para que no haya salto de línea */
+    white-space: nowrap; /* evita que se rompa la línea */
+}
+
+
+
+
+
+
+

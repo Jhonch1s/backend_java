@@ -48,5 +48,8 @@ public class ProgresoEjercicioServlet extends HttpServlet {
         // Redirigir al JSP (ruta absoluta)
         RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/cliente/progreso/progresosCliente.jsp");
         dispatcher.forward(request, response);
+        System.out.println("Cliente ID: " + clienteId);
+        System.out.println("Ejercicios encontrados: " + progreso.size());
+
     }
 }
