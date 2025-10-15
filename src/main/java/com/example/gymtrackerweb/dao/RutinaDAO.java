@@ -1,13 +1,12 @@
 package com.example.gymtrackerweb.dao;
 
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.RutinaCard;
 import com.example.gymtrackerweb.model.Rutina;
 import com.example.gymtrackerweb.model.enums.Objetivo;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,6 +135,60 @@ public class RutinaDAO {
         }
         return null;
     }
+
+    public List<RutinaCard> ultimas3PorCliente(String idCliente) throws SQLException {
+        final String sql = """
+            SELECT
+              r.id AS id_rutina,
+              r.nombre AS nombre,
+              rc.estado AS estado,
+              rc.fecha_asignacion AS fecha_asignacion,
+              CASE
+                WHEN COUNT(DISTINCT gm.nombre) > 2 THEN
+                  CONCAT(
+                    SUBSTRING_INDEX(
+                      GROUP_CONCAT(DISTINCT gm.nombre ORDER BY gm.nombre SEPARATOR ', '),
+                      ', ', 2
+                    ),
+                    ', ...'
+                  )
+                ELSE
+                  GROUP_CONCAT(DISTINCT gm.nombre ORDER BY gm.nombre SEPARATOR ', ')
+              END AS grupos_top3
+            FROM rutina_cliente rc
+            JOIN rutina r               ON r.id = rc.id_rutina
+            LEFT JOIN detalle_rutina dr ON dr.id_rutina = r.id
+            LEFT JOIN ejercicio e        ON e.id = dr.id_ejercicio
+            LEFT JOIN grupo_muscular gm  ON gm.id = e.grupo_muscular_id
+            WHERE rc.id_cliente = ?
+            GROUP BY rc.id, r.id, r.nombre, rc.estado, rc.fecha_asignacion
+            ORDER BY rc.fecha_asignacion DESC, rc.id DESC
+            LIMIT 3
+            """;
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<RutinaCard> out = new ArrayList<>();
+                while (rs.next()) {
+                    String grupos = rs.getString("grupos_top3");
+                    if (grupos == null || grupos.isBlank()) grupos = "—";
+                    LocalDate f = null;
+                    Date d = rs.getDate("fecha_asignacion");
+                    if (d != null) f = d.toLocalDate();
+                    out.add(new RutinaCard(
+                            rs.getInt("id_rutina"),
+                            rs.getString("nombre"),
+                            grupos,
+                            rs.getString("estado"),
+                            f
+                    ));
+                }
+                return out;
+            }
+        }
+    }
+
 
 
 }

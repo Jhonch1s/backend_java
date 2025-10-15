@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 
 public class EjercicioConProgresoView {
+    private int idRutina;
     private String nombreRutina;
     private int idEjercicio;
     private String nombreEjercicio;
@@ -15,13 +16,21 @@ public class EjercicioConProgresoView {
 
     }
 
-    public EjercicioConProgresoView(String nombreRutina, int idEjercicio, String nombreEjercicio, BigDecimal pesoUsado, int repeticiones, Date fechaUltimoRegistro){
+    public EjercicioConProgresoView(int idRutina,String nombreRutina, int idEjercicio, String nombreEjercicio, BigDecimal pesoUsado, int repeticiones, Date fechaUltimoRegistro){
+        this.idRutina = idRutina;
         this.nombreRutina = nombreRutina;
         this.idEjercicio = idEjercicio;
         this.nombreEjercicio = nombreEjercicio;
         this.pesoUsado = pesoUsado;
         this.repeticiones = repeticiones;
         this.fechaUltimoRegistro = fechaUltimoRegistro;
+    }
+    public void setIdRutina(int idRutina) {
+        this.idRutina = idRutina;
+    }
+
+    public int getIdRutina() {
+        return idRutina;
     }
 
     public String getNombreRutina() {

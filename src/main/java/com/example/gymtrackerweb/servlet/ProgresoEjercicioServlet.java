@@ -37,19 +37,37 @@ public class ProgresoEjercicioServlet extends HttpServlet {
 
         // Obtener la cédula del cliente
         String clienteId = cliente.getCi();
+        String rutinaIdParam = request.getParameter("id");
+        int rutinaId = -1;
+
+        try {
+            rutinaId = Integer.parseInt(rutinaIdParam);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de rutina inválido");
+            return;
+        }
 
         // Consultar los ejercicios con progreso
         ProgresoEjercicioDAO progresosDAO = new ProgresoEjercicioDAO();
-        List<EjercicioConProgresoView> progreso = progresosDAO.listarEjerciciosConProgreso(clienteId);
+        List<EjercicioConProgresoView> progreso = progresosDAO.listarEjerciciosConProgreso(clienteId, rutinaId);
 
-        // Pasar la lista al JSP
+        // Extraer el nombre de la rutina si hay ejercicios
+        String nombreRutina = null;
+        if (progreso != null && !progreso.isEmpty()) {
+            nombreRutina = progreso.get(0).getNombreRutina();
+        }
+
+        // Pasar atributos al JSP
         request.setAttribute("ejercicios", progreso);
+        request.setAttribute("nombreRutina", nombreRutina != null ? nombreRutina : "Rutina sin nombre");
 
-        // Redirigir al JSP (ruta absoluta)
+        // Redirigir al JSP
         RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/cliente/progreso/progresosCliente.jsp");
         dispatcher.forward(request, response);
+
+        // Logging opcional
         System.out.println("Cliente ID: " + clienteId);
         System.out.println("Ejercicios encontrados: " + progreso.size());
-
+        System.out.println("Nombre rutina: " + nombreRutina);
     }
 }

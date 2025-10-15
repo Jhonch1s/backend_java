@@ -16,6 +16,13 @@
 <div class="app">
     <main>
         <section id="pantalla-lista" class="pantalla activa">
+            <%
+                String nombreRutina = (String) request.getAttribute("nombreRutina");
+                if (nombreRutina == null || nombreRutina.isBlank()) {
+                    nombreRutina = "Rutina sin nombre";
+                }
+            %>
+
             <h1 class="titillium-negra texto-dorado" style="display: flex; align-items: center; gap: 0.5rem; margin-top: -0.5rem; margin-bottom: 0.5rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 24 24" fill="none"
                      stroke="var(--color-principal)" stroke-width="1.75" stroke-linecap="round"
@@ -28,8 +35,9 @@
                     <path d="M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2" />
                     <path d="M22 12h-1" />
                 </svg>
-                Fuerza 5x5 – Básica
+                <%= nombreRutina %>
             </h1>
+
 
             <h2 class="plan-create__label" style="display: flex; align-items: center; gap: 0.75rem;">
                 Listado de Ejercicios

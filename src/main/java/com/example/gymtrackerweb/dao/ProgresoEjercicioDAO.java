@@ -3,12 +3,12 @@ package com.example.gymtrackerweb.dao;
 
 import com.example.gymtrackerweb.db.databaseConection;
 import com.example.gymtrackerweb.dto.EjercicioConProgresoView;
+import com.example.gymtrackerweb.dto.ProgresoCard;
 import com.example.gymtrackerweb.model.ProgresoEjercicio;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,10 +87,12 @@ public class ProgresoEjercicioDAO {
         return progresoLista;
     }
 
-    public List<EjercicioConProgresoView> listarEjerciciosConProgreso(String clienteId){
+    public List<EjercicioConProgresoView> listarEjerciciosConProgreso(String clienteId, int rutinaID){
         List<EjercicioConProgresoView> progresoLista = new ArrayList<>();
         String sql = """
-            SELECT 
+            SELECT\s
+                r.id AS id_rutina,
+                r.nombre AS nombre_rutina,
                 e.id AS id_ejercicio,
                 e.nombre AS nombre_ejercicio,
                 pe.peso_usado,
@@ -109,15 +111,17 @@ public class ProgresoEjercicioDAO {
                 LIMIT 1
             )
             WHERE rc.id_cliente = ?
-              AND rc.estado = 'ACTIVA'
+              AND r.id = ?
         """;
         Connection conexion = databaseConection.getInstancia().getConnection();
         try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
             sentencia.setString(1, clienteId);
+            sentencia.setInt(2, rutinaID);
             ResultSet resultado = sentencia.executeQuery();
             while(resultado.next()){
                 EjercicioConProgresoView view = new EjercicioConProgresoView();
-
+                view.setIdRutina(resultado.getInt("id_rutina"));
+                view.setNombreRutina(resultado.getString("nombre_rutina"));
                 view.setIdEjercicio(resultado.getInt("id_ejercicio"));
                 view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
                 view.setPesoUsado(resultado.getBigDecimal("peso_usado")); // o Double según tu modelo
@@ -199,7 +203,101 @@ public class ProgresoEjercicioDAO {
         return 0;
     }
 
+    public BigDecimal obtenerKgLevantadosTotal(String idCliente) throws Exception {
+        String sql = """
+            SELECT COALESCE(SUM(peso_usado * COALESCE(repeticiones, 1)), 0) AS total
+            FROM progreso_ejercicio
+            WHERE TRIM(id_cliente) = TRIM(?)
+        """;
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
 
+            ps.setString(1, idCliente == null ? null : idCliente.trim());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                BigDecimal total = rs.getBigDecimal("total");
+                return (total != null) ? total : BigDecimal.ZERO;
+            }
+        }
+    }
+
+
+    public BigDecimal obtenerKgLevantadosEnMes(String idCliente, int anio, int mes1a12) throws Exception {
+        String sql = """
+        SELECT COALESCE(SUM(peso_usado * COALESCE(repeticiones, 1)), 0) AS total
+        FROM progreso_ejercicio
+        WHERE TRIM(id_cliente) = TRIM(?)
+          AND fecha >= ?
+          AND fecha < ?
+    """;
+        LocalDate desde = LocalDate.of(anio, mes1a12, 1);
+        LocalDate hasta = desde.plusMonths(1);
+
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, idCliente == null ? null : idCliente.trim());
+            ps.setDate(2, java.sql.Date.valueOf(desde));
+            ps.setDate(3, java.sql.Date.valueOf(hasta));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                BigDecimal total = rs.getBigDecimal("total");
+                return (total != null) ? total : BigDecimal.ZERO;
+            }
+        }
+    }
+
+    public List<ProgresoCard> ultimos3Progresos(String idCliente) throws SQLException {
+        final String sql = """
+            WITH pe AS (
+              SELECT p.id_cliente, p.id_ejercicio, p.fecha, p.peso_usado,
+                     ROW_NUMBER() OVER (PARTITION BY p.id_cliente, p.id_ejercicio
+                                        ORDER BY p.fecha DESC) AS rn
+              FROM progreso_ejercicio p
+              WHERE p.id_cliente = ?
+            ),
+            curr AS (
+              SELECT id_ejercicio, fecha AS fecha_ult, peso_usado AS ultimo
+              FROM pe WHERE rn = 1
+            ),
+            prev AS (
+              SELECT id_ejercicio, peso_usado AS previo
+              FROM pe WHERE rn = 2
+            )
+            SELECT e.id AS id_ejercicio, e.nombre AS ejercicio,
+                   c.fecha_ult, c.ultimo,
+                   (c.ultimo - COALESCE(pv.previo, c.ultimo)) AS dif_kg
+            FROM curr c
+            JOIN ejercicio e  ON e.id = c.id_ejercicio
+            LEFT JOIN prev pv ON pv.id_ejercicio = c.id_ejercicio
+            ORDER BY c.fecha_ult DESC
+            LIMIT 3
+            """;
+
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<ProgresoCard> out = new ArrayList<>();
+                while (rs.next()) {
+                    Date d = rs.getDate("fecha_ult");
+                    LocalDate f = d != null ? d.toLocalDate() : null;
+                    out.add(new ProgresoCard(
+                            rs.getInt("id_ejercicio"),
+                            rs.getString("ejercicio"),
+                            f,
+                            rs.getDouble("ultimo"),
+                            rs.getDouble("dif_kg")
+                    ));
+                }
+                return out;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
 
 }

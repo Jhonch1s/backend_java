@@ -2,9 +2,9 @@ package com.example.gymtrackerweb.servlet;
 import java.io.*;
 
 import com.example.gymtrackerweb.dao.ClienteDAO;
-import com.example.gymtrackerweb.model.Cliente;
 import com.example.gymtrackerweb.dao.StaffDAO;
 import com.example.gymtrackerweb.dao.UsuarioLoginDAO;
+import com.example.gymtrackerweb.model.Cliente;
 import com.example.gymtrackerweb.model.Staff;
 import com.example.gymtrackerweb.model.UsuarioLogin;
 import jakarta.servlet.ServletException;
@@ -54,48 +54,39 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
         }*/
 
-        try {
+        try{
             String resultado = u.validarLoginFlexible(usuario, contrasena);
-
             if ("cliente".equals(resultado)) {
-                // Crear DAO y obtener el objeto Cliente
-                ClienteDAO clienteDAO = new ClienteDAO();
-                Cliente c = clienteDAO.buscarPorCi(usuario); // obtenemos el Cliente real
-
-                if (c != null) {
-                    // Guardamos el objeto Cliente en la sesión, no el DAO
-                    HttpSession sesion = request.getSession();
-                    sesion.setAttribute("usuario", c);
-
-                    // Redirigimos al JSP de progreso
-                    response.sendRedirect(request.getContextPath() + "/progreso-ejercicios");
-                } else {
-                    // Cliente no encontrado
+                // cosas con cliente
+                ClienteDAO clienteDao = new ClienteDAO();
+                Cliente cliente = clienteDao.buscarPorCi(usuario);
+                if(cliente == null){
                     request.setAttribute("error", "Cliente no encontrado.");
                     request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
+                    return;
                 }
-
+                HttpSession sesion = request.getSession();
+                sesion.setAttribute("usuario", cliente);
+                response.sendRedirect(request.getContextPath() + "/cliente");
+                return;
             } else if ("staff".equals(resultado)) {
-                // Lógica para staff
-                StaffDAO staffDAO = new StaffDAO();
-                Staff staff = staffDAO.iniciarSesion(usuario); // suponer que devuelve Staff
-                if (staff != null) {
-                    HttpSession sesion = request.getSession();
-                    sesion.setAttribute("usuario", staff);
-                    response.sendRedirect(request.getContextPath() + "/pages/dashboard.jsp");
-                } else {
-                    request.setAttribute("error", "Usuario o contraseña incorrectos.");
+                StaffDAO staff = new StaffDAO();
+                staff.iniciarSesion(usuario);
+                if(staff == null){
+                    request.setAttribute("error", "Staff no encontrado.");
                     request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
+                    return;
                 }
-            } else {
-                // Usuario o contraseña incorrectos
+                HttpSession sesion = request.getSession();
+                sesion.setAttribute("usuario", staff);
+                response.sendRedirect(request.getContextPath() + "/pages/dashboard.jsp");
+            }else {
                 request.setAttribute("error", "Usuario o contraseña incorrectos.");
                 request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
             }
-
-        } catch (Exception e) {
+        }catch(Exception e){
             e.printStackTrace();
-            request.setAttribute("error", "Error interno al iniciar sesión.");
+            request.setAttribute("error", "Error interno al iniciar sesion.");
             request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
         }
     }
