@@ -53,6 +53,7 @@ public class ProgresoEjercicioDAO {
             sentencia.setDate(3, p.getFecha());
             sentencia.setInt(4, p.getPesoUsado());
             sentencia.setInt(5, p.getRepeticiones());
+            sentencia.setInt(6, p.getId());
 
             sentencia.executeUpdate();
             System.out.println("Progreso ejercicio modificado correctamente.");
@@ -71,8 +72,10 @@ public class ProgresoEjercicioDAO {
             ResultSet resultado = sentencia.executeQuery();
             while(resultado.next()){
                 ProgresoEjercicio progreso = new ProgresoEjercicio();
-                progreso.setId(resultado.getInt("id"));
-                progreso.setId(resultado.getInt("id_cliente"));
+                //Get int id? Deberia ser id_progreso
+                progreso.setId(resultado.getInt("id_progreso"));
+                //Doble serId deberia de IdCliente
+                progreso.setIdCliente(resultado.getInt("id_cliente"));
                 progreso.setIdEjercicio(resultado.getInt("id_ejercicio"));
                 progreso.setFecha(resultado.getDate("fecha"));
                 progreso.setPesoUsado(resultado.getInt("peso_usado"));
