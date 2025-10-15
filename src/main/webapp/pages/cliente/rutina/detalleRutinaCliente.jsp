@@ -1,11 +1,9 @@
-<%@ page import="com.example.gymtrackerweb.model.RutinaClienteDetalle" %>
-<%@ page import="com.example.gymtrackerweb.model.Cliente" %>
 <%@ page import="com.example.gymtrackerweb.dao.RutinaClienteDetalleDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.example.gymtrackerweb.dao.DetalleRutinaDAO" %>
-<%@ page import="com.example.gymtrackerweb.model.DetalleRutina" %>
 <%@ page import="com.example.gymtrackerweb.dao.EjercicioDAO" %>
-<%@ page import="com.example.gymtrackerweb.model.Ejercicio" %><%--
+<%@ page import="com.example.gymtrackerweb.dao.DetalleRutinaViewDAO" %>
+<%@ page import="com.example.gymtrackerweb.model.*" %><%--
   Created by IntelliJ IDEA.
   User: jhonc
   Date: 08/10/2025
@@ -89,118 +87,44 @@
 
         .actions{ display:grid; gap:10px; }
         .actions .btn{ width:100%; }
+
+        .linkblanco {color: var(--color-blanco); text-decoration: none}
     </style>
 </head>
 
 <body class="fondo-oscuro texto-claro">
 <main class="stats-page">
-    <!-- Encabezado -->
-    <header class="panel">
-        <div class="panel__head">
-            <h1 class="panel__title">Estadísticas &amp; Progreso</h1>
-            <span class="texto-dorado">Cliente</span>
-        </div>
-
-        <!-- KPIs del mes actual -->
-        <div class="kpi-row u-mt-12">
-            <div class="kpi">
-                <p class="kpi__num" id="kpi-dias">12</p>
-                <p class="kpi__label">Días este mes</p>
-            </div>
-            <div class="kpi">
-                <p class="kpi__num" id="kpi-tiempo-total">540</p>
-                <p class="kpi__label">Min totales</p>
-            </div>
-            <div class="kpi">
-                <p class="kpi__num" id="kpi-promedio">45</p>
-                <p class="kpi__label">Min promedio</p>
-            </div>
-        </div>
-    </header>
-
-    <!-- Progreso por ejercicio -->
-    <section class="panel">
-        <div class="panel__head">
-            <h2 class="panel__title">Progreso por ejercicio</h2>
-            <span class="texto-dorado">PRs &amp; tendencia</span>
-        </div>
-
-        <!-- Selector de ejercicio -->
-        <div class="exercise-picker u-mt-8">
-            <label for="sel-ej" class="u-visually-hidden">Elegir ejercicio</label>
-            <select id="sel-ej" class="select">
-                <!-- Rellenar dinámicamente con tus ejercicios -->
-                <option value="press_banca">Press banca</option>
-                <option value="sentadillas">Sentadillas</option>
-                <option value="peso_muerto">Peso muerto</option>
-            </select>
-        </div>
-
-        <!-- Mini-gráficas -->
-        <div class="charts u-mt-12">
-            <article class="chart-card">
-                <h3 class="chart-card__title">Peso usado (kg) a lo largo del tiempo</h3>
-                <div class="chart-inset">
-                    <!-- Canvas opcional (Chart.js) -->
-                    <!-- <canvas id="chart-peso" width="320" height="160"></canvas> -->
-                    <small>Gráfico de líneas aquí</small>
-                </div>
-            </article>
-
-            <article class="chart-card">
-                <h3 class="chart-card__title">Repeticiones a lo largo del tiempo</h3>
-                <div class="chart-inset">
-                    <!-- <canvas id="chart-reps" width="320" height="160"></canvas> -->
-                    <small>Gráfico de líneas aquí</small>
-                </div>
-            </article>
-        </div>
-    </section>
 
     <%
         Cliente usuario = (Cliente) session.getAttribute("usuario");
     %>
-    <% DetalleRutinaDAO rcdDao = new DetalleRutinaDAO();
-       EjercicioDAO ejeDao = new EjercicioDAO();
-        List<DetalleRutina> rutinas = rcdDao.listarDetallesPorRutina(Integer.parseInt(request.getParameter("rutina")));
+    <% DetalleRutinaViewDAO rcdDao = new DetalleRutinaViewDAO();
+        List<DetalleRutinaView> rutinas = rcdDao.listarDetallesPorRutina(Integer.parseInt(request.getParameter("id")));
         int totalRutinas = rutinas.size(); %>
     <!-- PRs -->
     <section class="panel">
         <div class="panel__head">
-            <h2 class="panel__title">Mis rutinas</h2>
-            <span class="texto-dorado">Total: <%= totalRutinas %></span>
+            <h2 class="panel__title">Ejercicios</h2>
+            <span class="texto-dorado">Ejercicios: <%= totalRutinas %></span>
         </div>
 
         <div class="prs u-mt-8">
             <%
-                for (DetalleRutina i : rutinas) {
-                    Ejercicio eje = ejeDao.buscarPorId(i.getId_ejercicio());
+                for (DetalleRutinaView i : rutinas) {
             %>
 
             <div class="pr-item">
                 <div>
-                    <p class="pr-title"><a href="<%= eje.getUrl() %>"><%= eje.getNombre() %></a></p>
-                    <p class="pr-sub"><%= eje.getDificultad() %> · Grupo muscular: <%= eje.getGrupoMuscular()%> · Series: <%= i.getSeries()%> · Repeticiones: <%= i.getRepeticiones() %></p>
+                    <p class="pr-title"><%= i.getNombre_ejercicio() %></p>
+                    <p class="pr-sub"><%= i.getDificultad_ejercicio() %> · Grupo muscular: <%= i.getGrupo_muscular_ejercicio()%> · Series: <%= i.getSeries()%> · Repeticiones: <%= i.getRepeticiones() %></p>
                 </div>
-                <span class="pr-meta">Más detalles &gt;</span>
+                <span class="pr-meta"><% if (i.getUrl_ejercicio() != null) { %><a class="linkblanco" href="<%= i.getUrl_ejercicio() %>">Más detalles</a><% } %></span>
             </div>
             <%
                 }
             %>
 
         </div>
-    </section>
-
-    <!-- Acciones -->
-    <section class="actions">
-        <a class="btn btn--ghost-yellow btn--lg"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/historial.jsp">
-            Ver historial completo →
-        </a>
-        <a class="btn btn--ghost-yellow btn--lg"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/abm-progreso.jsp">
-            Gestionar registros de progreso →
-        </a>
     </section>
 </main>
 

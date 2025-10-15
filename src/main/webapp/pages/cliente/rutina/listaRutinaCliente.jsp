@@ -90,68 +90,7 @@
 
 <body class="fondo-oscuro texto-claro">
 <main class="stats-page">
-    <!-- Encabezado -->
-    <header class="panel">
-        <div class="panel__head">
-            <h1 class="panel__title">Estadísticas &amp; Progreso</h1>
-            <span class="texto-dorado">Cliente</span>
-        </div>
 
-        <!-- KPIs del mes actual -->
-        <div class="kpi-row u-mt-12">
-            <div class="kpi">
-                <p class="kpi__num" id="kpi-dias">12</p>
-                <p class="kpi__label">Días este mes</p>
-            </div>
-            <div class="kpi">
-                <p class="kpi__num" id="kpi-tiempo-total">540</p>
-                <p class="kpi__label">Min totales</p>
-            </div>
-            <div class="kpi">
-                <p class="kpi__num" id="kpi-promedio">45</p>
-                <p class="kpi__label">Min promedio</p>
-            </div>
-        </div>
-    </header>
-
-    <!-- Progreso por ejercicio -->
-    <section class="panel">
-        <div class="panel__head">
-            <h2 class="panel__title">Progreso por ejercicio</h2>
-            <span class="texto-dorado">PRs &amp; tendencia</span>
-        </div>
-
-        <!-- Selector de ejercicio -->
-        <div class="exercise-picker u-mt-8">
-            <label for="sel-ej" class="u-visually-hidden">Elegir ejercicio</label>
-            <select id="sel-ej" class="select">
-                <!-- Rellenar dinámicamente con tus ejercicios -->
-                <option value="press_banca">Press banca</option>
-                <option value="sentadillas">Sentadillas</option>
-                <option value="peso_muerto">Peso muerto</option>
-            </select>
-        </div>
-
-        <!-- Mini-gráficas -->
-        <div class="charts u-mt-12">
-            <article class="chart-card">
-                <h3 class="chart-card__title">Peso usado (kg) a lo largo del tiempo</h3>
-                <div class="chart-inset">
-                    <!-- Canvas opcional (Chart.js) -->
-                    <!-- <canvas id="chart-peso" width="320" height="160"></canvas> -->
-                    <small>Gráfico de líneas aquí</small>
-                </div>
-            </article>
-
-            <article class="chart-card">
-                <h3 class="chart-card__title">Repeticiones a lo largo del tiempo</h3>
-                <div class="chart-inset">
-                    <!-- <canvas id="chart-reps" width="320" height="160"></canvas> -->
-                    <small>Gráfico de líneas aquí</small>
-                </div>
-            </article>
-        </div>
-    </section>
     <%
         Cliente usuario = (Cliente) session.getAttribute("usuario");
     %>
@@ -175,7 +114,7 @@
                     <p class="pr-title"><%= i.getRutinaNombre() %></p>
                     <p class="pr-sub"><%= i.getEstado() %> · Asignada el <%= i.getFechaAsignacion() %></p>
                 </div>
-                <span class="pr-meta">Más detalles &gt;</span>
+                <span class="pr-meta"><a href="detallerutina?id=<%= i.getId() %>">Más detalles</a></span>
             </div>
             <%
                 }
@@ -184,17 +123,6 @@
         </div>
     </section>
 
-    <!-- Acciones -->
-    <section class="actions">
-        <a class="btn btn--ghost-yellow btn--lg"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/historial.jsp">
-            Ver historial completo →
-        </a>
-        <a class="btn btn--ghost-yellow btn--lg"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/abm-progreso.jsp">
-            Gestionar registros de progreso →
-        </a>
-    </section>
 </main>
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
