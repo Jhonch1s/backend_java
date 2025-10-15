@@ -118,7 +118,7 @@
     }
 
 
-    // Interacciones de UI
+    // Interacciones de UI con chips de rangos
     function bindRangeChips() {
         const chips = $('#chips-range');
         if (!chips) return;
@@ -142,16 +142,178 @@
         });
     }
 
-    // ======= Render de paneles por ejercicio (placeholders) =======
-    async function refreshExercisePanels() {
-        // En próximos pasos:
-        // - fetch overview del ejercicio (e1RM, best set, Δ, volumen 4w)
-        // - fetch trend e1RM
-        // - fetch volumen semanal + frecuencia
-        // - fetch scatter carga–reps
-        // - fetch PRs período
-        // y luego renderizar en sus placeholders.
+    function refreshExercisePanels() {
+        if (!state.ejercicioId) return;
+        // Por ahora solo actualizamos los mini-KPIs
+        fetchMiniKpis(state.ejercicioId)
+            .then(renderMiniKpis)
+            .catch(() => console.warn('Error al cargar mini-KPIs'));
     }
+
+    //ejercicios del cliente
+    async function fetchExercises() {
+        const base = document.body.dataset.endpointBase; // ej: /app/cliente/stats
+        const res = await fetch(`${base}/exercises`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return { ok: false, items: [] };
+        return res.json();
+    }
+    function renderExerciseSelect(items) {
+        const sel = document.getElementById('sel-ej');
+        sel.innerHTML = ''; // limpiamo
+        if (!items?.length) {
+            document.getElementById('empty-exercise')?.classList.remove('u-hide');
+            return;
+        }
+        // opciones
+        const frag = document.createDocumentFragment();
+        for (const it of items) {
+            const opt = document.createElement('option');
+            opt.value = it.id;
+            opt.textContent = it.nombre;
+            frag.appendChild(opt);
+        }
+        sel.appendChild(frag);
+
+        // disparamos evento para que los gráficos carguen el primer ejercicio
+        document.dispatchEvent(new CustomEvent('exercise:change', { detail: { ejercicioId: sel.value } }));
+    }
+
+    function bindExerciseSelectChange() {
+        const sel = document.getElementById('sel-ej');
+        sel.addEventListener('change', () => {
+            document.dispatchEvent(new CustomEvent('exercise:change', { detail: { ejercicioId: sel.value } }));
+        });
+    }
+    // Mini kpis del ejercicio
+    async function fetchMiniKpis(ejercicioId) {
+        const base = document.body.dataset.endpointBase; // /cliente/stats en teoria
+        const url = `${base}/exercise/mini?ej=${encodeURIComponent(ejercicioId)}`;
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return { ok:false };
+        return res.json();
+    }
+    //fallback
+    function n2(v, fd='–'){ return (v==null) ? fd : Number(v).toLocaleString('es-UY', {maximumFractionDigits: 2}); }
+
+    function renderMiniKpis(data){
+        // e1RM kg
+        document.getElementById('mk-e1rm').textContent = data.ok && data.bestE1rm!=null
+            ? `${n2(data.bestE1rm)} kg`
+            : '–';
+
+        // Mejor set kg×reps
+        const best = data.ok ? data.bestSet : null;
+        document.getElementById('mk-bestset').textContent = best
+            ? `${n2(best.kg)}×${best.reps} kg·reps`
+            : '–';
+
+        // Δ e1RM kg, con signo
+        const deltaEl = document.getElementById('mk-delta');
+        if (data.ok && data.deltaE1rm != null){
+            const val = Number(data.deltaE1rm);
+            deltaEl.textContent = `${val>0? '+' : ''}${val.toFixed(2)} kg`;
+            deltaEl.classList.toggle('is-up', val>0);
+            deltaEl.classList.toggle('is-down', val<0);
+        } else {
+            deltaEl.textContent = '–';
+            deltaEl.classList.remove('is-up','is-down');
+        }
+
+        // Volumen 4 sem kg x reps
+        document.getElementById('mk-vol4w').textContent = data.ok && data.vol4w!=null
+            ? `${n2(data.vol4w)} kg·reps`
+            : '–';
+    }
+
+
+    document.addEventListener('exercise:change', async (e) => {
+        const id = e.detail.ejercicioId;
+        const data = await fetchMiniKpis(id);
+        renderMiniKpis(data);
+    });
+
+    // ayudas (i) centrada en pantalla
+    const HELP_TEXT = {
+        bestE1rm: '<strong>Mejor e1RM</strong><br>Estimación de tu 1RM con fórmula de Epley: peso × (1 + repeticiones/30).',
+        bestSet:  '<strong>Mejor marca (kg×reps)</strong><br>Serie con mayor volumen total (peso × repeticiones).',
+        delta:    '<strong>Δ e1RM (ventana)</strong><br>Cambio promedio del e1RM entre las últimas 4 semanas y las 4 previas.',
+        vol4w:    '<strong>Volumen 4 sem</strong><br>Suma de todos los pesos levantados (kg×reps) en los últimos 28 días.'
+    };
+
+    function openInfoModal(key) {
+        const overlay = document.createElement('div');
+        overlay.className = 'info-overlay';
+
+        const modal = document.createElement('div');
+        modal.className = 'info-modal';
+        modal.innerHTML = `
+    <button class="close-info" aria-label="Cerrar">×</button>
+    ${HELP_TEXT[key] || '<strong>Sin descripción</strong>'}
+  `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        const close = () => overlay.remove();
+        overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+        modal.querySelector('.close-info').addEventListener('click', close);
+    }
+
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('.info-dot');
+        if (btn) {
+            e.preventDefault();
+            openInfoModal(btn.dataset.help);
+        }
+    });
+
+    //graficas!! D:
+    let chartE1RM, chartVolume, chartScatter;
+
+    function initCharts() {
+        // --- e1RM tendencia (líneas)
+        const ctx1 = document.createElement('canvas');
+        document.getElementById('ph-e1rm').replaceWith(ctx1);
+        chartE1RM = new Chart(ctx1, {
+            type: 'line',
+            data: { labels: [], datasets: [{
+                    label: 'e1RM (kg)',
+                    data: [],
+                    tension: .3,
+                    borderColor: '#ff9800',
+                    pointRadius: 3,
+                    fill: false
+                }]},
+            options: { plugins:{legend:{display:false}}, scales:{x:{}, y:{beginAtZero:true}} }
+        });
+
+        // --- Volumen semanal (barras)
+        const ctx2 = document.createElement('canvas');
+        document.getElementById('ph-volume').replaceWith(ctx2);
+        chartVolume = new Chart(ctx2, {
+            type: 'bar',
+            data: { labels: [], datasets: [{
+                    label: 'Volumen (kg·reps)',
+                    data: [],
+                    backgroundColor: '#d92bcd'
+                }]},
+            options: { plugins:{legend:{display:false}}, scales:{x:{}, y:{beginAtZero:true}} }
+        });
+
+        // --- Curva carga-reps (scatter)
+        const ctx3 = document.createElement('canvas');
+        document.getElementById('ph-scatter').replaceWith(ctx3);
+        chartScatter = new Chart(ctx3, {
+            type: 'scatter',
+            data: { datasets: [{
+                    label: 'Carga × Reps',
+                    data: [],
+                    backgroundColor: '#9724A6'
+                }]},
+            options: { plugins:{legend:{display:false}}, scales:{x:{title:{text:'Reps',display:true}}, y:{title:{text:'Carga (kg)',display:true}}} }
+        });
+    }
+
 
     // init
     async function init() {
@@ -177,6 +339,11 @@
         // 3) Binds de UI
         bindRangeChips();
         bindExerciseSelector();
+
+        // 4) select de ejercicios
+        const data = await fetchExercises();
+        if (data.ok) renderExerciseSelect(data.items);
+        bindExerciseSelectChange();
     }
 
     // Correr cuando el documento esté listo
@@ -185,4 +352,21 @@
     } else {
         init();
     }
+    //comenzamos con los chips y los rangos
+    const rangeSelector = document.getElementById('rangeSelector');
+    let currentRange = '4w';
+
+    rangeSelector?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.chip');
+        if (!btn) return;
+
+        // toggle visual
+        rangeSelector.querySelectorAll('.chip').forEach(c => c.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        // estado + broadcast
+        currentRange = btn.dataset.range;
+        document.dispatchEvent(new CustomEvent('range:change', { detail: { range: currentRange } }));
+    });
+
 })()

@@ -69,26 +69,29 @@
         </div>
     </header>
 
-    <!-- 2) Selector de rango global (afecta gráficos del ejercicio) -->
+    <!-- Selector de rango global para los graficos -->
     <section class="panel" id="blk-range">
-        <div class="panel__head">
-            <h2 class="panel__title">Rango</h2>
-            <div class="chips" id="chips-range">
-                <button class="chip is-active" data-range="4w">Últimas 4 sem</button>
-                <button class="chip" data-range="90d">90 d</button>
-                <button class="chip" data-range="6m">6 m</button>
+        <div class="chip-scroll">
+            <div id="rangeSelector" class="chip-group">
+                <button class="chip is-active" data-range="4w">4 sem</button>
+                <button class="chip" data-range="3m">3 meses</button>
+                <button class="chip" data-range="6m">6 meses</button>
+                <button class="chip" data-range="12m">12 meses</button>
+                <button class="chip" data-range="all">Todo</button>
+                <button class="chip" data-range="custom">Personalizado</button>
             </div>
         </div>
+
     </section>
 
-    <!-- 3) Progreso por ejercicio -->
+    <!-- Progreso por ejercicio -->
     <section class="panel" id="blk-exercise">
         <div class="panel__head">
             <h2 class="panel__title">Progreso por ejercicio</h2>
             <span class="texto-dorado">Fuerza &amp; volumen</span>
         </div>
 
-        <!-- Selector de ejercicio (se completa dinámicamente) -->
+        <!-- Selector de ejercicio dinamico -->
         <div class="u-mt-8">
             <label for="sel-ej" class="u-visually-hidden">Elegir ejercicio</label>
             <select id="sel-ej" class="select">
@@ -96,24 +99,36 @@
             </select>
         </div>
 
-        <!-- Mini-KPIs del ejercicio -->
+        <!-- Mini-KPIs del ejercicio elegido -->
         <div class="mini-kpis u-mt-12" id="mini-kpis">
             <div class="mini">
                 <p class="mini__num" id="mk-e1rm">–</p>
-                <p class="mini__label">Mejor e1RM</p>
+                <p class="mini__label">Mejor e1RM
+                    <button class="info-dot" data-help="bestE1rm" aria-label="¿Qué es esto?">i</button>
+                </p>
             </div>
+
             <div class="mini">
                 <p class="mini__num" id="mk-bestset">–</p>
-                <p class="mini__label">Mejor marca (kg×reps)</p>
+                <p class="mini__label">Mejor marca (kg×reps)
+                    <button class="info-dot" data-help="bestSet" aria-label="¿Qué es esto?">i</button>
+                </p>
             </div>
+
             <div class="mini">
                 <p class="mini__num" id="mk-delta">–</p>
-                <p class="mini__label">Δ e1RM (ventana)</p>
+                <p class="mini__label">Δ e1RM (ventana)
+                    <button class="info-dot" data-help="delta" aria-label="¿Qué es esto?">i</button>
+                </p>
             </div>
+
             <div class="mini">
                 <p class="mini__num" id="mk-vol4w">–</p>
-                <p class="mini__label">Volumen 4 sem</p>
+                <p class="mini__label">Volumen 4 sem
+                    <button class="info-dot" data-help="vol4w" aria-label="¿Qué es esto?">i</button>
+                </p>
             </div>
+
         </div>
 
         <!-- Gráficos principales -->
@@ -184,6 +199,7 @@
     </section>
 </main>
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/estadisticaProgresoCliente.js" defer></script>
 </body>
 </html>

@@ -2,6 +2,8 @@ package com.example.gymtrackerweb.dao;
 
 
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.EjercicioMin;
+import com.example.gymtrackerweb.dto.EjercicioMiniKpis;
 import com.example.gymtrackerweb.dto.ProgresoCard;
 import com.example.gymtrackerweb.model.ProgresoEjercicio;
 
@@ -181,4 +183,117 @@ public class ProgresoEjercicioDAO {
             }
         }
     }
+    //de: jhon, para listar ejercicios en select html
+    public List<EjercicioMin> listarEjerciciosPorCliente(String idCliente) throws SQLException {
+        String sql = """
+        SELECT DISTINCT e.id, e.nombre
+        FROM progreso_ejercicio p
+        JOIN ejercicio e ON e.id = p.id_ejercicio
+        WHERE p.id_cliente = ?
+        ORDER BY e.nombre ASC
+    """;
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<EjercicioMin> out = new ArrayList<>();
+                while (rs.next()) {
+                    out.add(new EjercicioMin(rs.getInt("id"), rs.getString("nombre")));
+                }
+                return out;
+            }
+        }
+    }
+
+    //este SQL es duro.... por no hacerlo en front use IA porque está bravo
+    // Fórmula e1RM (Epley): e1rm = peso * (1 + reps/30.0)
+    public EjercicioMiniKpis miniKpis(String idCliente, int idEj) throws SQLException {
+        final String sql = """
+      WITH base AS (
+        SELECT
+          fecha,
+          peso_usado AS kg,
+          repeticiones AS reps,
+          (peso_usado * (1 + repeticiones/30.0)) AS e1rm,
+          (peso_usado * repeticiones) AS vol
+        FROM progreso_ejercicio
+        WHERE id_cliente = ? AND id_ejercicio = ?
+      ),
+      sema AS (
+        SELECT YEARWEEK(fecha, 3) AS yw, AVG(e1rm) AS e1rm_avg
+        FROM base
+        GROUP BY YEARWEEK(fecha, 3)
+      ),
+      ult4 AS ( SELECT e1rm_avg FROM sema ORDER BY yw DESC LIMIT 4 ),
+      prev4 AS ( SELECT e1rm_avg FROM sema ORDER BY yw DESC LIMIT 4 OFFSET 4 )
+      SELECT
+        (SELECT MAX(e1rm) FROM base)                                        AS best_e1rm,
+        (SELECT (kg*reps) FROM base ORDER BY (kg*reps) DESC, fecha DESC LIMIT 1) AS best_set_vol,
+        (SELECT kg        FROM base ORDER BY (kg*reps) DESC, fecha DESC LIMIT 1) AS best_set_kg,
+        (SELECT reps      FROM base ORDER BY (kg*reps) DESC, fecha DESC LIMIT 1) AS best_set_reps,
+        (SELECT COALESCE(SUM(vol),0) FROM base WHERE fecha >= (CURDATE() - INTERVAL 28 DAY)) AS vol4w,
+        (SELECT COALESCE(AVG(e1rm_avg),NULL) FROM ult4)
+        - (SELECT COALESCE(AVG(e1rm_avg),NULL) FROM prev4)                  AS delta_e1rm
+    """;
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, idCliente);
+            ps.setInt(2, idEj);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return new EjercicioMiniKpis(0,0,0,0,null);
+
+                double bestE1rm = getD0(rs, "best_e1rm");
+                double bestSetKg = getD0(rs, "best_set_kg");
+                int    bestSetReps = rs.getInt("best_set_reps");
+                double bestSetVol = getD0(rs, "best_set_vol");
+                double vol4w = getD0(rs, "vol4w");
+                Double delta = getD(rs, "delta_e1rm");
+
+                // Fallback para Δ si no hay 8 semanas
+                if (delta == null) {
+                    final String sqlFallback = """
+                  SELECT
+                    (SELECT AVG(peso_usado * (1 + repeticiones/30.0))
+                       FROM progreso_ejercicio
+                      WHERE id_cliente=? AND id_ejercicio=?
+                      ORDER BY YEARWEEK(fecha,3) DESC LIMIT 1) AS last_avg,
+                    (SELECT AVG(peso_usado * (1 + repeticiones/30.0))
+                       FROM progreso_ejercicio
+                      WHERE id_cliente=? AND id_ejercicio=?
+                      ORDER BY YEARWEEK(fecha,3) ASC  LIMIT 1) AS first_avg
+                """;
+                    try (PreparedStatement ps2 = conn.prepareStatement(sqlFallback)) {
+                        ps2.setString(1, idCliente); ps2.setInt(2, idEj);
+                        ps2.setString(3, idCliente); ps2.setInt(4, idEj);
+                        try (ResultSet r2 = ps2.executeQuery()) {
+                            if (r2.next()) {
+                                Double last  = getD(r2, "last_avg");
+                                Double first = getD(r2, "first_avg");
+                                if (last != null && first != null) delta = last - first;
+                            }
+                        }
+                    }
+                }
+
+                return new EjercicioMiniKpis(bestE1rm,bestSetKg,bestSetReps,vol4w,delta);
+            }
+        }
+    }
+    // convertir DECIMAL a double
+    private static Double getD(ResultSet rs, String col) throws SQLException {
+        java.math.BigDecimal bd = rs.getBigDecimal(col);
+        return (bd == null) ? null : bd.doubleValue();
+    }
+
+    private static double getD0(ResultSet rs, String col) throws SQLException {
+        java.math.BigDecimal bd = rs.getBigDecimal(col);
+        return (bd == null) ? 0.0 : bd.doubleValue();
+    }
+
+
+
 }

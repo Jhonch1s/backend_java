@@ -64,13 +64,13 @@
 .chip{
     padding:8px 10px;
     border-radius:999px;
-    border:1px solid #2a2a2a;
-    background:#121212;
+    border:1px solid #202020;
+    background: #454545;
     font-size:.85rem;
 }
 
 .chip.is-active{
-    background:#2a2a2a;
+    background:var(--gg-yellow);
 }
 
 .select{
@@ -96,6 +96,7 @@
     border:1px solid #2a2a2a;
     border-radius:14px;
     padding:10px;
+    text-align: center;
 }
 
 .mini__num{
@@ -188,8 +189,8 @@
     border-radius: 50%;
     background:#3a3a3a;
     border:1px solid #5a5a5a;
-    position: relative;           /* para el pseudo-elemento */
-    overflow: hidden;             /* aseguramos que nada salga del círculo */
+    position: relative;
+    overflow: hidden;
     transition: transform .25s;
 }
 
@@ -203,10 +204,8 @@
     transform: scale(1.06);
     animation: pulse-dot 1.6s ease-in-out infinite;
 }
-/* El punto deja ver overflow, para que la flama pueda salir */
 .week-dot { overflow: visible; position: relative; }
 
-/* Contenedor de la flama con MÁSCARA radial (feather en bordes) */
 .week-dot .flame-wrap{
     position: absolute;
     left: 50%; top: 60%;
@@ -214,7 +213,6 @@
     width: 20px; height: 20px;
     pointer-events: none; z-index: 2;
 
-    /* 👇 feather: centro opaco, bordes transparentes */
     -webkit-mask-image: radial-gradient(circle at 50% 55%, rgba(0,0,0,1) 62%, rgba(0,0,0,0) 92%);
     mask-image: radial-gradient(circle at 50% 55%, rgba(0,0,0,1) 62%, rgba(0,0,0,0) 92%);
     -webkit-mask-repeat: no-repeat;
@@ -222,11 +220,149 @@
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
 }
-
-/* La imagen queda NÍTIDA (sin blur) dentro del wrap */
 .week-dot .flame-asset{
     width: 100%; height: 100%;
     object-fit: contain;
     border-radius: 30%;
-    /* sin blur aquí */
 }
+.chip-scroll {
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- grupo desplazable --- */
+.chip-group {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 0.25rem;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+}
+.chip {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chip.is-active {
+    color: #000;
+    border-color: transparent;
+}
+/* ocultar scrollbars */
+.chip-group::-webkit-scrollbar { display: none; }
+.chip-group { scrollbar-width: none; }
+
+/*parches para el scroll lateral que no quiere andaaar*/
+.panel, .panel > *, .subgrid > *, .grid-2 > * {
+    min-width: 0;
+    min-inline-size: 0;
+}
+/* grilla de charts */
+.subgrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);   /* mobile */
+    gap: 12px;
+}
+@media (min-width: 700px) {
+    .subgrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* botones de acciones */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+/* wrapper que recorta y no contagia ancho maldito */
+#blk-range .chip-scroll {
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* carrusel de chips desplazable */
+#blk-range .chip-group {
+    display: flex;
+    gap: .5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    max-inline-size: 100%;
+    contain: inline-size; /* evita contagiar ese ancho al resto de secciones */
+}
+#blk-range .chip-group::-webkit-scrollbar { display: none; }
+#blk-range .chip-group { scrollbar-width: none; }
+
+#mk-delta.is-up { color: #4caf50; }
+#mk-delta.is-down { color: #f44336; }
+
+.info-dot{
+    inline-size:1.25rem; block-size:1.25rem;
+    margin-left:.35rem;
+    border-radius:999px; border:1px solid var(--clr-border,#888);
+    background:transparent; color:currentColor; font-weight:700; font-size:.75rem;
+    line-height:1.1rem; text-align:center; cursor:pointer;
+}
+.info-pop{
+    position:absolute; z-index:30; max-inline-size:22rem;
+    padding:.65rem .75rem; border-radius:.5rem;
+    background:#111; color:#eee; border:1px solid #333;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+    font-size:.85rem; line-height:1.25rem;
+}
+.info-pop a{ text-decoration:underline; }
+.mini{ position:relative; } /* ancla el popover al mini */
+/* Fondo translúcido */
+.info-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn .2s ease;
+}
+
+/* Caja de texto centrada */
+.info-modal {
+    background: #111;
+    color: #eee;
+    border: 1px solid #333;
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    max-width: 24rem;
+    margin: 0 1rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    font-size: .9rem;
+    line-height: 1.4;
+    text-align: left;
+    animation: popIn .25s ease;
+}
+
+.info-modal strong {
+    color: var(--clr-accent, #ff9800);
+}
+
+.info-modal button.close-info {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    position: absolute;
+    top: .5rem;
+    right: .75rem;
+    cursor: pointer;
+}
+
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+@keyframes popIn  { from {scale:.9; opacity:0;} to {scale:1; opacity:1;} }
