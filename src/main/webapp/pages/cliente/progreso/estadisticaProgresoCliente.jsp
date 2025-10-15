@@ -137,7 +137,6 @@
             <article class="chart-card">
                 <h3 class="chart-card__title">Tendencia de fuerza (e1RM)</h3>
                 <div class="chart-inset">
-                    <!-- <canvas id="chart-e1rm"></canvas> -->
                     <small id="ph-e1rm">Gráfico de líneas aquí</small>
                 </div>
             </article>
@@ -146,7 +145,6 @@
             <article class="chart-card">
                 <h3 class="chart-card__title">Volumen &amp; frecuencia (semanal)</h3>
                 <div class="chart-inset">
-                    <!-- <canvas id="chart-volume-weekly"></canvas> -->
                     <small id="ph-volume">Barras/mixto aquí</small>
                 </div>
             </article>
@@ -155,7 +153,6 @@
             <article class="chart-card">
                 <h3 class="chart-card__title">Curva carga–reps</h3>
                 <div class="chart-inset">
-                    <!-- <canvas id="chart-scatter"></canvas> -->
                     <small id="ph-scatter">Scatter aquí</small>
                 </div>
             </article>
@@ -199,7 +196,7 @@
     </section>
 </main>
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/estadisticaProgresoCliente.js" defer></script>
 </body>
 </html>

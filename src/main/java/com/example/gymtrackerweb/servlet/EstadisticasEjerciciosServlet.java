@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @WebServlet("/cliente/stats/exercises")
 public class EstadisticasEjerciciosServlet extends HttpServlet {
-    private ProgresoEjercicioDAO dao; // o tu DAO de progreso
+    private ProgresoEjercicioDAO dao;
 
     @Override public void init() { dao = new ProgresoEjercicioDAO(); }
 

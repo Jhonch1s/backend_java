@@ -366,3 +366,5 @@
 
 @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
 @keyframes popIn  { from {scale:.9; opacity:0;} to {scale:1; opacity:1;} }
+
+.chart-inset canvas { width: 100% !important; height: 220px !important; }

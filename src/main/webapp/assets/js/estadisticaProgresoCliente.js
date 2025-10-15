@@ -174,6 +174,7 @@
         }
         sel.appendChild(frag);
 
+        state.ejercicioId = sel.value;
         // disparamos evento para que los gráficos carguen el primer ejercicio
         document.dispatchEvent(new CustomEvent('exercise:change', { detail: { ejercicioId: sel.value } }));
     }
@@ -230,7 +231,13 @@
         const id = e.detail.ejercicioId;
         const data = await fetchMiniKpis(id);
         renderMiniKpis(data);
+
+        // refrescar charts con el rango actual
+        document.dispatchEvent(new CustomEvent('charts:refresh', {
+            detail: { ejercicioId: id, range: state.range || '4w' }
+        }));
     });
+
 
     // ayudas (i) centrada en pantalla
     const HELP_TEXT = {
@@ -271,49 +278,95 @@
     let chartE1RM, chartVolume, chartScatter;
 
     function initCharts() {
-        // --- e1RM tendencia (líneas)
-        const ctx1 = document.createElement('canvas');
-        document.getElementById('ph-e1rm').replaceWith(ctx1);
-        chartE1RM = new Chart(ctx1, {
-            type: 'line',
-            data: { labels: [], datasets: [{
-                    label: 'e1RM (kg)',
-                    data: [],
-                    tension: .3,
-                    borderColor: '#ff9800',
-                    pointRadius: 3,
-                    fill: false
-                }]},
-            options: { plugins:{legend:{display:false}}, scales:{x:{}, y:{beginAtZero:true}} }
-        });
+        console.log("📊 initCharts() lanzado");
 
-        // --- Volumen semanal (barras)
-        const ctx2 = document.createElement('canvas');
-        document.getElementById('ph-volume').replaceWith(ctx2);
-        chartVolume = new Chart(ctx2, {
-            type: 'bar',
-            data: { labels: [], datasets: [{
-                    label: 'Volumen (kg·reps)',
-                    data: [],
-                    backgroundColor: '#d92bcd'
-                }]},
-            options: { plugins:{legend:{display:false}}, scales:{x:{}, y:{beginAtZero:true}} }
-        });
+        // Tendencia e1RM
+        const ph1 = document.getElementById('ph-e1rm');
+        if (ph1) {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'chart-e1rm';
+            ph1.replaceWith(canvas);
+            const ctx = canvas.getContext('2d');
+            chartE1RM = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [{
+                        label: 'e1RM (kg)',
+                        data: [],
+                        borderColor: '#ff9800',
+                        tension: .3,
+                        pointRadius: 3
+                    }]},
+                options: { plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+            });
+        }
 
-        // --- Curva carga-reps (scatter)
-        const ctx3 = document.createElement('canvas');
-        document.getElementById('ph-scatter').replaceWith(ctx3);
-        chartScatter = new Chart(ctx3, {
-            type: 'scatter',
-            data: { datasets: [{
-                    label: 'Carga × Reps',
-                    data: [],
-                    backgroundColor: '#9724A6'
-                }]},
-            options: { plugins:{legend:{display:false}}, scales:{x:{title:{text:'Reps',display:true}}, y:{title:{text:'Carga (kg)',display:true}}} }
-        });
+        // Volumen semanal
+        const ph2 = document.getElementById('ph-volume');
+        if (ph2) {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'chart-volume-weekly';
+            ph2.replaceWith(canvas);
+            const ctx = canvas.getContext('2d');
+            chartVolume = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: [], datasets: [{
+                        label: 'Volumen (kg·reps)',
+                        data: [],
+                        backgroundColor: '#9724A6'
+                    }]},
+                options: { plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+            });
+        }
+
+        // Scatter carga–reps
+        const ph3 = document.getElementById('ph-scatter');
+        if (ph3) {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'chart-scatter';
+            ph3.replaceWith(canvas);
+            const ctx = canvas.getContext('2d');
+            chartScatter = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets: [{
+                        label: 'Carga × Reps',
+                        data: [],
+                        backgroundColor: '#D92BCD'
+                    }]},
+                options: {
+                    plugins:{legend:{display:false}},
+                    scales:{x:{title:{text:'Reps',display:true}},
+                        y:{title:{text:'Carga (kg)',display:true},beginAtZero:true}}
+                }
+            });
+        }
     }
 
+
+    document.addEventListener('charts:refresh', async e => {
+        const { ejercicioId, range } = e.detail;
+        const base = document.body.dataset.endpointBase;
+
+        // endpoint que devuelva JSON {}
+        const res = await fetch(`${base}/exercise/series?ej=${ejercicioId}&r=${range}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.ok) return;
+
+        // actualizar los 3 charts
+        updateChart(chartE1RM, data.series.map(x => x.label), data.series.map(x => x.e1rm));
+        updateChart(chartVolume, data.volumeWeekly.map(x => x.weekLabel), data.volumeWeekly.map(x => x.volume));
+        updateScatter(chartScatter, data.scatter.map(x => ({x:x.reps, y:x.kg})));
+    });
+
+    function updateChart(chart, labels, values){
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = values;
+        chart.update();
+    }
+    function updateScatter(chart, points){
+        chart.data.datasets[0].data = points;
+        chart.update();
+    }
 
     // init
     async function init() {
@@ -344,13 +397,24 @@
         const data = await fetchExercises();
         if (data.ok) renderExerciseSelect(data.items);
         bindExerciseSelectChange();
+
+
+
     }
 
     // Correr cuando el documento esté listo
+    function boot() {
+        init();// KPIs, streak, selects, binds...
+        initCharts();  // crea los canvas + instancias Chart.js
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            initCharts();
+        });
     } else {
-        init();
+        boot();
     }
     //comenzamos con los chips y los rangos
     const rangeSelector = document.getElementById('rangeSelector');
@@ -360,13 +424,19 @@
         const btn = e.target.closest('.chip');
         if (!btn) return;
 
-        // toggle visual
         rangeSelector.querySelectorAll('.chip').forEach(c => c.classList.remove('is-active'));
         btn.classList.add('is-active');
 
-        // estado + broadcast
         currentRange = btn.dataset.range;
-        document.dispatchEvent(new CustomEvent('range:change', { detail: { range: currentRange } }));
+        state.range = currentRange;// <-- guarda en state
+
+        // si hay ejercicio seleccionado, refrescar charts
+        if (state.ejercicioId) {
+            document.dispatchEvent(new CustomEvent('charts:refresh', {
+                detail: { ejercicioId: state.ejercicioId, range: currentRange }
+            }));
+        }
     });
+
 
 })()
