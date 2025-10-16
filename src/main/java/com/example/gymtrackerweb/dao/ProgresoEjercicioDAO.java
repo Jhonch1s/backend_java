@@ -31,7 +31,7 @@ public class ProgresoEjercicioDAO {
     }
 
     public void eliminarProgresoEjercicio(ProgresoEjercicio p){
-        String sql = "DELETE FROM progreso_ejercicio WHERE id = ?";
+        String sql = "DELETE FROM progreso_ejercicio WHERE id_progreso = ?";
         try{
             Connection conexion = databaseConection.getInstancia().getConnection();
             PreparedStatement sentencia = conexion.prepareStatement(sql);
@@ -44,7 +44,7 @@ public class ProgresoEjercicioDAO {
     }
 
     public void actualizarProgresoEjercicio(ProgresoEjercicio p){
-        String sql = "UPDATE progreso_ejercicio SET id_cliente = ?, id_ejercicio = ?, fecha = ?, peso_usado = ?, repeticiones = ? WHERE id = ?";
+        String sql = "UPDATE progreso_ejercicio SET id_cliente = ?, id_ejercicio = ?, fecha = ?, peso_usado = ?, repeticiones = ? WHERE id_progreso = ?";
         try{
             Connection conexion = databaseConection.getInstancia().getConnection();
             PreparedStatement sentencia = conexion.prepareStatement(sql);
@@ -72,9 +72,7 @@ public class ProgresoEjercicioDAO {
             ResultSet resultado = sentencia.executeQuery();
             while(resultado.next()){
                 ProgresoEjercicio progreso = new ProgresoEjercicio();
-                //Get int id? Deberia ser id_progreso
                 progreso.setId(resultado.getInt("id_progreso"));
-                //Doble serId deberia de IdCliente
                 progreso.setIdCliente(resultado.getInt("id_cliente"));
                 progreso.setIdEjercicio(resultado.getInt("id_ejercicio"));
                 progreso.setFecha(resultado.getDate("fecha"));
@@ -183,5 +181,31 @@ public class ProgresoEjercicioDAO {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public List<ProgresoEjercicio> listarProgresoEjercicioDeUsuarioOrdenadoFecha(ProgresoEjercicio p,boolean Ascendiente){
+        List<ProgresoEjercicio> progresoLista = new ArrayList<>();
+        String orden = Ascendiente ? "ASC" : "DESC";
+        String sql = "SELECT * FROM progreso_ejercicio WHERE id_cliente = ? ORDER BY fecha " + orden;
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try{
+            PreparedStatement sentencia = conexion.prepareStatement(sql);
+            sentencia.setInt(1, p.getIdCliente());
+            ResultSet resultado = sentencia.executeQuery();
+            while(resultado.next()){
+                ProgresoEjercicio progreso = new ProgresoEjercicio();
+                progreso.setId(resultado.getInt("id_progreso"));
+                progreso.setIdCliente(resultado.getInt("id_cliente"));
+                progreso.setIdEjercicio(resultado.getInt("id_ejercicio"));
+                progreso.setFecha(resultado.getDate("fecha"));
+                progreso.setPesoUsado(resultado.getInt("peso_usado"));
+                progreso.setRepeticiones(resultado.getInt("repeticiones"));
+
+                progresoLista.add(progreso);
+            }
+        }catch(Exception err){
+            System.out.println("Error: "+err.getMessage());
+        }
+        return progresoLista;
     }
 }

@@ -35,7 +35,7 @@ public class ProgresoServlet extends HttpServlet {
             progresoEjercicio.setIdCliente(Integer.parseInt(usuario.getCi()));
 
             //Consigo la lista y la guardo en el request
-            List<ProgresoEjercicio> lista = dao.listarProgresoEjercicioDeUsuario(progresoEjercicio);
+            List<ProgresoEjercicio> lista = dao.listarProgresoEjercicioDeUsuarioOrdenadoFecha(progresoEjercicio,false);
             request.setAttribute("listaProgresos", lista);
 
             EjercicioDAO ejercicioDAO = new EjercicioDAO();
@@ -48,7 +48,7 @@ public class ProgresoServlet extends HttpServlet {
         }
     }
 
-    //Utilizo el post para realizar los cambios en la bd
+    //Post para realizar los cambios en la bd
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Cliente usuario = (Cliente) request.getSession().getAttribute("usuario");
         if (usuario == null) {
@@ -89,7 +89,7 @@ public class ProgresoServlet extends HttpServlet {
             }
 
             // Vuelve a cargar la lista progreso
-            response.sendRedirect(request.getContextPath() + "/cliente/progreso");
+            response.sendRedirect(request.getContextPath() + "/progreso");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
