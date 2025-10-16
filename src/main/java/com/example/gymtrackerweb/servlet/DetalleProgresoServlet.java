@@ -54,26 +54,42 @@ public class DetalleProgresoServlet extends HttpServlet {
         List<ProgresoEjercicio> registros = dao.obtenerRegistrosDetallados(idEjercicio, idCliente);
         if (registros == null) registros = new ArrayList<>();
 
+        // Ordenar por fecha descendente (más reciente primero)
+        registros.sort((a, b) -> b.getFecha().compareTo(a.getFecha()));
+
         List<ProgresoEjercicio> prs = calcularPRs(registros);
 
-        // Transformar a DTOs con fecha formateada
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        List<ProgresoDetalleView> registrosDTO = registros.stream()
-                .map(r -> new ProgresoDetalleView(
-                        r.getFecha().toLocalDate().format(formatter),
-                        r.getPesoUsado(),
-                        r.getRepeticiones()
-                ))
-                .toList();
+        // Registros
+        List<ProgresoDetalleView> registrosDTO = new ArrayList<>();
+        for (int i = 0; i < registros.size(); i++) {
+            ProgresoEjercicio actual = registros.get(i);
+            int diferencia = 0;
+            if (i + 1 < registros.size()) {
+                ProgresoEjercicio anterior = registros.get(i + 1);
+                diferencia = actual.getPesoUsado() - anterior.getPesoUsado();
+            }
 
-        List<ProgresoDetalleView> prsDTO = prs.stream()
-                .map(r -> new ProgresoDetalleView(
-                        r.getFecha().toLocalDate().format(formatter),
-                        r.getPesoUsado(),
-                        r.getRepeticiones()
-                ))
-                .toList();
+            registrosDTO.add(new ProgresoDetalleView(
+                    actual.getFecha().toLocalDate().format(formatter),
+                    actual.getPesoUsado(),
+                    actual.getRepeticiones(),
+                    diferencia
+            ));
+        }
+
+        // PRs
+        List<ProgresoDetalleView> prsDTO = new ArrayList<>();
+        for (ProgresoEjercicio pr : prs) {
+            prsDTO.add(new ProgresoDetalleView(
+                    pr.getFecha().toLocalDate().format(formatter),
+                    pr.getPesoUsado(),
+                    pr.getRepeticiones(),
+                    null // No calculamos diferencia en PRs
+            ));
+        }
+
 
         Map<String, Object> data = new HashMap<>();
         data.put("registros", registrosDTO);
@@ -81,12 +97,12 @@ public class DetalleProgresoServlet extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
+
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .create();
 
         response.getWriter().write(gson.toJson(data));
-
     }
 
     private List<ProgresoEjercicio> calcularPRs(List<ProgresoEjercicio> registros) {

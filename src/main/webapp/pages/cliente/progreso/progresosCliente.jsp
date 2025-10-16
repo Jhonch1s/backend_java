@@ -7,6 +7,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Rutina - Cliente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/progresosCliente.css" />
@@ -72,7 +75,7 @@
                         <h3 class="texto-dorado"><%= e.getNombreEjercicio() %></h3>
                         <p class="plan-create__label">
                             <% if (e.getPesoUsado() != null) { %>
-                            Último: <%= e.getPesoUsado() %> kg × <%= e.getRepeticiones() %>
+                            Último: <%= e.getPesoUsado() %> kg × <%= e.getRepeticiones() %> Reps
                             (<%= new java.text.SimpleDateFormat("dd/MM").format(e.getFechaUltimoRegistro()) %>)
                             <% } else { %>
                             Sin registros aún
@@ -157,60 +160,97 @@
 
                 if (Array.isArray(data.registros) && data.registros.length > 0) {
                     data.registros.forEach(r => {
+                        console.log("Registro recibido:", r);
+
                         const tarjeta = document.createElement("div");
-                        tarjeta.className = "tarjeta-registro";
+                        tarjeta.classList.add("tarjeta-registro");
+
+                        // Determinar clase por diferencia
+                        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
+                            if (r.diferenciaPeso > 0) {
+                                tarjeta.classList.add("mejora"); // verde
+                            } else {
+                                tarjeta.classList.add("retroceso"); // rojo
+                            }
+                        } else {
+                            tarjeta.classList.add("sin-cambio"); // azul
+                        }
 
                         const fecha = document.createElement("strong");
-                        fecha.className = "registro-fecha";
-                        fecha.textContent = r.fecha || "sin fecha";
+                        fecha.className = "registro-fecha titillium-negra";
+                        fecha.textContent = (r.fecha || "sin fecha").trim();
 
-                        const peso = document.createElement("p");
-                        peso.className = "registro-detalle";
-                        peso.textContent = (r.pesoUsado != null) ? String(r.pesoUsado) + " kg" : "-";
+                        const detalle = document.createElement("p");
+                        detalle.className = "registro-detalle titillium-base";
 
-                        const reps = document.createElement("p");
-                        reps.className = "registro-detalle";
-                        reps.textContent = (r.repeticiones != null) ? String(r.repeticiones) + " reps" : "-";
-
+                        let texto = "";
+                        if (r.pesoUsado != null && r.repeticiones != null) {
+                            texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
+                        } else if (r.pesoUsado != null) {
+                            texto = r.pesoUsado + " kg";
+                        } else if (r.repeticiones != null) {
+                            texto = r.repeticiones + " Repeticiones";
+                        } else {
+                            texto = "-";
+                        }
+                        detalle.textContent = texto.trim();
                         tarjeta.appendChild(fecha);
-                        tarjeta.appendChild(peso);
-                        tarjeta.appendChild(reps);
+                        tarjeta.appendChild(detalle);
+
+                        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
+                            const diferencia = document.createElement("p");
+                            diferencia.className = "registro-diferencia titillium-base";
+                            const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
+                            diferencia.textContent = (simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
+                            tarjeta.appendChild(diferencia);
+                        }
+
                         registrosList.appendChild(tarjeta);
                     });
                 } else {
                     registrosList.innerHTML = "<div class='tarjeta-registro'>No hay registros recientes</div>";
                 }
 
-                // Mostrar PRs (mismo formato que registros)
+
+                // Mostrar PRs (sin diferencia)
                 const prsList = document.getElementById("mejores-prs");
                 prsList.innerHTML = "";
 
                 if (Array.isArray(data.prs) && data.prs.length > 0) {
                     data.prs.forEach(r => {
+                        console.log("PR recibido:", r); // Verificás que venga 'diferenciaPeso', pero no lo usamos
+
                         const tarjeta = document.createElement("div");
                         tarjeta.className = "tarjeta-registro";
 
                         const fecha = document.createElement("strong");
-                        fecha.className = "registro-fecha";
-                        fecha.textContent = r.fecha || "sin fecha";
+                        fecha.className = "registro-fecha titillium-negra";
+                        fecha.textContent = (r.fecha || "sin fecha").trim();
 
-                        const peso = document.createElement("p");
-                        peso.className = "registro-detalle";
-                        peso.textContent = (r.pesoUsado != null) ? String(r.pesoUsado) + " kg" : "-";
+                        const detalle = document.createElement("p");
+                        detalle.className = "registro-detalle titillium-base";
 
-                        const reps = document.createElement("p");
-                        reps.className = "registro-detalle";
-                        reps.textContent = (r.repeticiones != null) ? String(r.repeticiones) + " reps" : "-";
+                        let texto = "";
 
+                        if (r.pesoUsado != null && r.repeticiones != null) {
+                            texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
+                        } else if (r.pesoUsado != null) {
+                            texto = r.pesoUsado + " kg";
+                        } else if (r.repeticiones != null) {
+                            texto = r.repeticiones + " Repeticiones";
+                        } else {
+                            texto = "-";
+                        }
+
+                        detalle.textContent = texto.trim();
                         tarjeta.appendChild(fecha);
-                        tarjeta.appendChild(peso);
-                        tarjeta.appendChild(reps);
+                        tarjeta.appendChild(detalle);
+
                         prsList.appendChild(tarjeta);
                     });
                 } else {
                     prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
                 }
-
 
 
                 pantallaLista.classList.remove("activa");
@@ -239,7 +279,5 @@
         });
     });
 </script>
-
-
 </body>
 </html>
