@@ -69,7 +69,7 @@
     position: relative;
 }
 
-<
+
 /* Sacar las flechitas de arriba/ abajo en input */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
