@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ProgresoClientes.css">
 
     <!-- rstilos para el dashboard cliente, forzamos actualizar estilos al cambiar css con ?v=20251011a-->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css?v=20251011a">
@@ -206,88 +207,6 @@
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script src="${pageContext.request.contextPath}/assets/js/progresoCliente.js" defer></script>
 
-<style>
-    .btn-accion {
-        background: transparent;
-        border: none;
-        color: var(--color-blanco);
-        font-size: 1.4rem;
-        cursor: pointer;
-        transition: color .2s ease;
-    }
-    .btn-accion:hover { color: var(--color-principal); }
-
-    .modal {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.7);
-        z-index: 1000;
-    }
-
-    .icono {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        fill: var(--color-blanco);
-        height: 2rem;
-        width: 2rem;
-        transition: all .2s ease;
-    }
-
-    .icono:hover {
-        fill: var(--color-principal);
-        transform: scale(1.2);
-    }
-
-    #svg-eliminar{
-        height: 2.2rem;
-        width: 2.2rem;
-    }
-    #svg-eliminar:hover {
-        fill: var(--color-rojo);
-    }
-
-    <%-- X para cerrar --%>
-    .modal-cerrar {
-        position: absolute;
-        top: 25px;
-        right: 16px;
-        background: transparent;
-        border: none;
-        color: var(--color-rojo);
-        cursor: pointer;
-        padding: .25rem;
-        transition: all 0.2s ease;
-        width: 2.5rem;
-        height: 2.5rem;
-    }
-
-    .modal-cerrar:hover {
-        transform: scale(1.15);
-        color: #ff6b6b;
-    }
-
-    .modal__contenido {
-        position: relative;
-    }
-
-    <%-- Sacar las flechitas de arriba/abajo en input --%>
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    input[type="date"]:focus::before {
-        color: var(--gg-focus);
-    }
-    .modal.oculto { display: none; }
-    .modal__contenido { width: min(90%, 400px); background: var(--gg-surface); }
-    label { display: block; font-weight: 600; margin-bottom: .25rem; }
-</style>
 
 </body>
 </html>
