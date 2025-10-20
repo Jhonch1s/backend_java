@@ -1,15 +1,26 @@
+/* ==========================================================================
+   ESTRUCTURA GENERAL Y PANTALLAS
+   ========================================================================== */
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+}
+
 .pantalla {
     display: none;
     flex-direction: column;
-    align-items: center;
-    padding: 1rem;
     width: 100%;
-    max-width: 100%;
+    max-width: 600px; /* Ancho base para móvil/tablet pequeña */
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 1rem;
     opacity: 0;
     transform: translateX(30px);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    box-sizing: border-box;
-    margin: 0 auto;
 }
 
 .pantalla.activa {
@@ -18,67 +29,37 @@
     transform: translateX(0);
 }
 
+#pantalla-progreso {
+    align-items: stretch;
+    padding-top: 2rem;
+}
+
+/* ==========================================================================
+   COMPONENTE: LISTA DE EJERCICIOS (Pantalla Inicial)
+   ========================================================================== */
+
 .lista-ejercicios {
     display: flex;
     flex-direction: column;
-    margin: 0.5rem auto;
     gap: 0.75rem;
     width: 100%;
-    max-width: 100%;
+    margin: 0.5rem auto;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 241, 18, 0.15);
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    position: relative;
-    box-sizing: border-box;
-}
-
-/* Esquinas decorativas */
-.lista-ejercicios::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg,
-    rgba(255, 241, 18, 0.08) 0%,
-    transparent 20%,
-    transparent 80%,
-    rgba(255, 241, 18, 0.08) 100%);
-    border-radius: 22px;
-    z-index: -1;
-    opacity: 0.4;
 }
 
 .tarjeta-ejercicio {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    gap: 0.75rem;
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     padding: 0.875rem;
     transition: background-color 0.2s ease;
     cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
-    gap: 0.75rem;
-}
-
-.tarjeta-ejercicio_contenido h3 {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.2;
-    font-family: var(--fuente-base);
-}
-
-.tarjeta-ejercicio_contenido p {
-    margin: 0.25rem 0 0 0;
-    font-size: 0.98rem;
-    color: var(--color-gris-200);
-    line-height: 1.4;
 }
 
 .tarjeta-ejercicio:hover {
@@ -98,88 +79,51 @@
 }
 
 .tarjeta-ejercicio_contenido {
+    flex: 1;
+}
+
+.tarjeta-ejercicio_contenido h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.tarjeta-ejercicio_contenido p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.98rem;
+    color: var(--color-gris-200);
+}
+
+
+/* ==========================================================================
+   COMPONENTES: PANTALLA DE PROGRESO
+   ========================================================================== */
+
+.contenedor-botones-volver {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1; /* para que tome todo el espacio disponible */
+    gap: 0.5rem;
+    width: 100%;
 }
 
-/* Alinear todo en el centro del viewport */
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* <-- antes decía center */
-    min-height: 100vh;
-}
-
-/* Pantalla de progresos debe empezar desde arriba */
-#pantalla-progreso {
-    justify-content: flex-start;
-    align-items: stretch;
-    padding-top: 2rem;
-    max-width: 600px;
-}
-
-/* Botón volver */
-.volver {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--color-principal);
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    transition: background-color 0.2s ease;
-}
-
-.volver:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-/* Botón volver - variante utilizada en JSP: .btn-volver */
-.btn-volver {
+.btn-volver, #btn-volver-limitado {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem 1rem;
+    padding: 1rem;
     border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
     margin-bottom: 0.75rem;
 }
 
-/* Título del ejercicio (cuando se carga la vista de progreso) */
 #nombre-ejercicio {
     text-align: center;
-    width: 100%;
-    display: block;
-    font-family: var(--fuente-base);
     font-weight: 800;
     color: var(--color-blanco);
     margin: 0 auto 1rem auto;
-    padding: 0 0.5rem;
+    font-size: 1.25rem; /* Base para móvil */
 }
 
-/* Tamaños responsivos para el título */
-@media (max-width: 480px) {
-    #nombre-ejercicio {
-        font-size: 1.25rem;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 1023px) {
-    #nombre-ejercicio {
-        font-size: 1.6rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    #nombre-ejercicio {
-        font-size: 1.95rem;
-    }
-}
-
-/* Bloque de contenido */
 .bloque {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
@@ -192,237 +136,106 @@ main {
     margin: 0 0 1rem 0;
     color: var(--color-principal);
     font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.bloque ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.bloque li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--color-gris-200);
-}
-
-.bloque li:last-child {
-    border-bottom: none;
-}
-
-/* Formulario nuevo registro */
-.nuevo-registro {
-    background: rgba(255, 241, 18, 0.05);
-    border: 1px solid rgba(255, 241, 18, 0.2);
-}
-
-.nuevo-registro label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--color-principal);
-    font-weight: 600;
-}
-
-.nuevo-registro input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--color-blanco);
-    margin-bottom: 1rem;
-}
-
-.nuevo-registro input::placeholder {
-    color: var(--color-gris-400);
-}
-
-.nuevo-registro input:focus {
-    outline: none;
-    border-color: var(--color-principal);
-    box-shadow: 0 0 0 3px rgba(255, 241, 18, 0.1);
-}
-
-/* Mobile First Approach */
-/* Estilos base para móviles */
-.pantalla {
-    padding: 0.75rem;
-}
-
-.lista-ejercicios {
-    padding: 0.875rem;
-    gap: 0.75rem;
-}
-
-.tarjeta-ejercicio__icono {
-    width: 36px;
-    height: 36px;
-}
-
-#pantalla-progreso {
-    padding: 0.75rem;
-}
-
-/* Mobile sizes for fecha and detalle (base) */
-.registro-fecha {
-    /* updated base sizing for mobile */
-    font-size: 1.1rem;
-}
-
-.registro-detalle {
-    font-size: 1rem;
-}
-
-/* Tablet (768px y superior) */
-@media (min-width: 768px) {
-    .pantalla {
-        padding: 1.5rem;
-    }
-
-    .lista-ejercicios {
-        max-width: 600px;
-        padding: 1.5rem;
-        gap: 1rem;
-        border-radius: 16px;
-    }
-
-    .tarjeta-ejercicio {
-        padding: 1.25rem;
-    }
-
-    .tarjeta-ejercicio__icono {
-        width: 48px;
-        height: 48px;
-    }
-
-    .tarjeta-ejercicio_contenido h3 {
-        font-size: 1.1rem;
-    }
-
-    .tarjeta-ejercicio_contenido p {
-        font-size: 1rem;
-    }
-
-    .tarjeta-registro {
-        padding: 1.5rem 1.5rem;
-        /* tablet: wider right column */
-        grid-template-columns: 1fr 120px;
-    }
-
-    .registro-fecha {
-        font-size: 1.6rem;
-    }
-    .registro-detalle {
-        font-size: 1.25rem;
-    }
-}
-
-/* Desktop (1024px y superior) */
-@media (min-width: 1024px) {
-    .lista-ejercicios {
-        padding: 2rem;
-        gap: 1.25rem;
-        border-radius: 20px;
-    }
-
-    .tarjeta-ejercicio {
-        padding: 1.5rem;
-    }
-
-    .tarjeta-ejercicio__icono {
-        width: 52px;
-        height: 52px;
-    }
-
-    .tarjeta-ejercicio_contenido h3 {
-        font-size: 1.2rem;
-    }
-
-    .tarjeta-ejercicio_contenido p {
-        font-size: 1.1rem;
-    }
-
-    #pantalla-progreso {
-        max-width: 800px;
-        padding: 2rem;
-    }
-
-    .tarjeta-registro {
-        padding: 1.75rem 2rem;
-        /* desktop: even wider right column */
-        grid-template-columns: 1fr 190px;
-    }
-
-    .registro-fecha {
-        font-size: 1.95rem;
-        padding-bottom: 0.9rem;
-        margin-bottom: 0.85rem;
-    }
-
-    .registro-detalle {
-        font-size: 1.2rem;
-        line-height: 1.6;
-    }
-}
-
-.pantalla {
-    width: 100%;
-    min-height: 100vh;
-}
-
-.pantalla:not(.activa) {
-    display: none !important;
-}
-
-.pantalla.activa {
-    display: flex !important;
+.bloque h3 svg, .bloque h3 svg * {
+    stroke: var(--color-blanco) !important;
+    fill: none !important;
 }
 
 .contenedor-tarjetas {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.9rem;
     margin-top: 1rem;
 }
 
-/* base tarjeta-registro block removed (consolidated below) */
+/* ==========================================================================
+   COMPONENTE: TARJETA DE REGISTRO (El principal)
+   ========================================================================== */
+
 .tarjeta-registro {
     display: grid;
-    grid-template-columns: 1fr 70px;
+    grid-template-columns: 1fr 70px; /* Columna flexible a la izq, fija a la der */
     gap: 0.25rem 0.5rem;
-    align-items: start;
-    min-height: 56px;
-    padding: 0.875rem 1rem;
+    padding: 0.875rem 1rem 0.875rem 20px; /* Espacio para la barra de color */
     border-radius: 16px;
-    transition: background-color 0.2s ease, transform 0.2s ease;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    font-family: var(--fuente-base); /* <-- FUENTE UNIFICADA */
 }
 
-/* Diferencia de valor: verde, rojo, azul */
+.tarjeta-registro:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+/* Barra de color a la izquierda */
+.tarjeta-registro::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    border-radius: 14px 0 0 14px;
+    background: transparent;
+}
+
+/* Elementos de la tarjeta */
+.registro-fecha {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-blanco);
+}
+
+.registro-detalle {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    margin-top: 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-blanco);
+    line-height: 1.2;
+}
+
+.registro-diferencia {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3; /* Ocupa ambas filas */
+    justify-self: end;
+    align-self: center;
+    font-size: 1.15rem; /* <--- AHORA COINCIDE CON LA FECHA */
+    font-weight: 750; /* <--- AHORA COINCIDE CON LA FECHA */
+    white-space: nowrap;
+    color: inherit; /* Hereda el color del estado */
+}
+
+
+/* --- Modificadores de Estado (Colores) --- */
+
 .tarjeta-registro.mejora {
     background: linear-gradient(180deg, rgba(34,197,94,0.18), rgba(20,120,60,0.22));
     border: 1.5px solid #22C55E;
     box-shadow: 0 0 0 2px #22C55E33;
+    color: #22C55E; /* Color para .registro-diferencia */
 }
-.tarjeta-registro.mejora::before {
-    background: #22C55E;
-}
-.tarjeta-registro.mejora .registro-diferencia {
-    color: #22C55E;
-}
+.tarjeta-registro.mejora::before { background: #22C55E; }
 
 .tarjeta-registro.retroceso {
     background: linear-gradient(180deg, rgba(220,38,38,0.18), rgba(120,20,20,0.22));
     border: 1.5px solid #DC2626;
     box-shadow: 0 0 0 2px #DC262633;
-}
-.tarjeta-registro.retroceso::before {
-    background: #DC2626;
-}
-.tarjeta-registro.retroceso .registro-diferencia {
     color: #DC2626;
 }
+.tarjeta-registro.retroceso::before { background: #DC2626; }
 
 .tarjeta-registro.sin-cambio {
     background: linear-gradient(180deg, rgba(37,99,235,0.18), rgba(30,64,175,0.22));
@@ -430,201 +243,76 @@ main {
     box-shadow: 0 0 0 2px #2563EB33;
 }
 
-.tarjeta-registro.sin-cambio .registro-diferencia {
-    color: #2563EB;
-}
+/* --- Variante para Mejores PRs --- */
 
-
-
-.tarjeta-registro:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-}
-
-/* Stack fecha above detalle in the left column */
-.tarjeta-registro .registro-fecha {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2; /* first row */
-    align-self: start;
-    margin: 0;
-}
-
-.tarjeta-registro .registro-detalle {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3; /* second row */
-    align-self: start;
-    margin: 0.25rem 0 0 0; /* small gap under fecha */
-}
-
-/* Solo la diferencia va a la derecha y ocupa ambas filas */
-.tarjeta-registro .registro-diferencia {
-    grid-column: 2 / 3;
-    grid-row: 1 / 3;
-    justify-self: end;
-    align-self: center;
-    margin-left: 0;
-}
-
-.registro-fecha {
-    margin: 0 0 0.1rem 0;
-    font-size: 1.15rem;
-    font-weight: 800;
-    letter-spacing: 0.4px;
-    color: var(--color-principal);
-    display: block;
-    grid-column: 1;
-    overflow-wrap: anywhere;
-    font-family: "Titillium Web", sans-serif !important;
-}
-
-.registro-detalle {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.95);
-    line-height: 1.2;
-    display: block;
-    grid-column: 1;
-    overflow-wrap: anywhere;
-    font-family: "Titillium Web", sans-serif !important;
-}
-
-.registro-diferencia {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin: 0;
-    align-self: center;
-    white-space: nowrap;
-    font-family: "Titillium Web", sans-serif !important;
-    color: inherit;
-}
-
-.tarjeta-registro {
-    background: var(--card-gradient);
-    border: none;
-    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-}
-
-.tarjeta-registro:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-}
-
-#registros-recientes .tarjeta-registro .registro-fecha,
-#registros-recientes .tarjeta-registro .registro-detalle,
-#mejores-prs .tarjeta-registro .registro-fecha,
-#mejores-prs .tarjeta-registro .registro-detalle {
-    color: var(--color-blanco);
-}
-
-.tarjeta-registro {
-    position: relative;
-    /* keep small inner gutter so content doesn't overlap the left bar */
-    padding-left: 20px;
-    overflow: hidden; /* ensure the left bar is clipped to the card bounds */
-}
-
-.tarjeta-registro::before{
-    content: "";
-    position: absolute;
-    left: 0; /* flush to the very left edge */
-    top: 0;
-    bottom: 0;
-    width: 6px;
-    border-radius: 14px 0 0 14px; /* match tarjeta border radius */
-    background: transparent;
-    z-index: 0; /* keep bar behind card content */
-}
-
-/* Make card children render above the bar */
-.tarjeta-registro > * {
-    position: relative;
-    z-index: 1;
-}
-
-
-/* Mejores PRs - gold variant (similar to prog-item--neg but golden) */
 #mejores-prs .tarjeta-registro {
     background: linear-gradient(180deg, rgba(255,215,0,.08), rgba(80,60,10,.12));
     border: 1.5px solid #8B5A00;
 }
-
 #mejores-prs .tarjeta-registro::before { background: #FFD700; }
-#mejores-prs .tarjeta-registro:hover{
-    box-shadow: 0 18px 40px rgba(255,215,0,0.12);
+#mejores-prs .tarjeta-registro:hover { box-shadow: 0 18px 40px rgba(255,215,0,0.12); }
+#mejores-prs .registro-fecha { color: var(--color-principal); }
+
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Right column (delta / PR value) */
-.registro-diferencia {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--accent-success);
-    margin: 0;
-    align-self: center;
-    white-space: nowrap;
-    font-family: var(--fuente-base);
+#pantalla-progreso .tarjeta-registro {
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
-#mejores-prs .tarjeta-registro > :last-child { color: var(--accent-gold); }
+/* ==========================================================================
+   MEDIA QUERIES (Diseño Responsivo)
+   ========================================================================== */
 
-/* Larger delta numbers on tablet/desktop */
+/* --- Tablet (768px y más) --- */
 @media (min-width: 768px) {
-    .registro-fecha {
-        font-size: 1.25rem;
-        margin-bottom: 0.15rem;
-    }
-    .registro-detalle {
-        font-size: 1.15rem;
-    }
-    .registro-diferencia { font-size: 1rem; }
+    #nombre-ejercicio { font-size: 1.6rem; }
+
     .tarjeta-registro {
         grid-template-columns: 1fr 100px;
-        padding: 1rem 1.25rem;
-        min-height: 64px;
+        padding: 1rem 1.25rem 1rem 20px;
     }
+    .registro-fecha { font-size: 1.25rem; }
+    .registro-detalle { font-size: 1.15rem; }
+    .registro-diferencia { font-size: 1.2rem; }
 }
 
+/* --- Escritorio (1024px y más) --- */
 @media (min-width: 1024px) {
-    .registro-fecha {
-        font-size: 1.35rem;
-        margin-bottom: 0.2rem;
-    }
-    .registro-detalle {
-        font-size: 1.2rem;
-    }
-    .registro-diferencia { font-size: 1.15rem; }
+    .pantalla { max-width: 800px; }
+    #nombre-ejercicio { font-size: 1.95rem; }
+
     .tarjeta-registro {
         grid-template-columns: 1fr 120px;
-        padding: 1.25rem 1.5rem;
-        min-height: 72px;
+        padding: 1.25rem 1.5rem 1.25rem 20px;
     }
+    .registro-fecha { font-size: 1.35rem; }
+    .registro-detalle { font-size: 1.2rem; }
+    .registro-diferencia { font-size: 1.3rem; }
 }
 
-
-/* Estilo adicional para que los registros se vean más definidos */
-.contenedor-tarjetas {
+/* Centrar y estilizar el título principal de la rutina */
+#pantalla-lista > h1 {
     display: flex;
-    flex-direction: column;
-    gap: 0.9rem; /* reduced spacing between cards */
-    margin-top: 1rem;
+    align-items: center;
+    align-self: center; /* La línea clave para centrar */
+    gap: 0.5rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-/* Hacer los SVG dentro de los encabezados de bloque blancos */
-.bloque h3 svg,
-.bloque h3 svg * {
-    stroke: var(--color-blanco) !important;
-    fill: none !important;
+/* Centrar y estilizar el subtítulo "Listado de Ejercicios" */
+#pantalla-lista > h2 {
+    display: flex;
+    align-items: center;
+    align-self: center; /* La línea clave para centrar */
+    gap: 0.75rem;
 }
-
-
-
-
-
-
-
-
-

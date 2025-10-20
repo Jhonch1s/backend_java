@@ -50,24 +50,48 @@ public class DetalleProgresoServlet extends HttpServlet {
             return;
         }
 
+        String limiteStr = request.getParameter("limite");
+        Integer limite = null;
+        if (limiteStr != null) {
+            try {
+                limite = Integer.parseInt(limiteStr);
+            } catch (NumberFormatException e) {
+                // Ignorar si el formato es inválido, se devolverán todos
+            }
+        }
+
         ProgresoEjercicioDAO dao = new ProgresoEjercicioDAO();
-        List<ProgresoEjercicio> registros = dao.obtenerRegistrosDetallados(idEjercicio, idCliente);
-        if (registros == null) registros = new ArrayList<>();
+        List<ProgresoEjercicio> registrosCompletos = dao.obtenerRegistrosDetallados(idEjercicio, idCliente);
+        if (registrosCompletos == null) registrosCompletos = new ArrayList<>();
 
         // Ordenar por fecha descendente (más reciente primero)
-        registros.sort((a, b) -> b.getFecha().compareTo(a.getFecha()));
+        registrosCompletos.sort((a, b) -> b.getFecha().compareTo(a.getFecha()));
 
-        List<ProgresoEjercicio> prs = calcularPRs(registros);
+        // 2. Aplicar el límite si existe
+        List<ProgresoEjercicio> registrosParaEnviar;
+        boolean hayMasRegistros = false;
+
+        if (limite != null && limite > 0 && registrosCompletos.size() > limite) {
+            registrosParaEnviar = registrosCompletos.subList(0, limite);
+            hayMasRegistros = true; // Informamos que hay más registros que no se enviaron
+        } else {
+            registrosParaEnviar = registrosCompletos; // Enviar la lista completa
+        }
+
+        // El cálculo de PRs se hace sobre la lista completa siempre
+        List<ProgresoEjercicio> prs = calcularPRs(registrosCompletos);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // Registros
+        // 3. Procesar la lista a enviar (que puede estar limitada o no)
         List<ProgresoDetalleView> registrosDTO = new ArrayList<>();
-        for (int i = 0; i < registros.size(); i++) {
-            ProgresoEjercicio actual = registros.get(i);
+        for (int i = 0; i < registrosParaEnviar.size(); i++) {
+            ProgresoEjercicio actual = registrosParaEnviar.get(i);
             int diferencia = 0;
-            if (i + 1 < registros.size()) {
-                ProgresoEjercicio anterior = registros.get(i + 1);
+            // La lógica de diferencia debe mirar la lista completa para ser precisa
+            int indiceOriginal = registrosCompletos.indexOf(actual);
+            if (indiceOriginal + 1 < registrosCompletos.size()) {
+                ProgresoEjercicio anterior = registrosCompletos.get(indiceOriginal + 1);
                 diferencia = actual.getPesoUsado() - anterior.getPesoUsado();
             }
 
@@ -94,6 +118,7 @@ public class DetalleProgresoServlet extends HttpServlet {
         Map<String, Object> data = new HashMap<>();
         data.put("registros", registrosDTO);
         data.put("prs", prsDTO);
+        data.put("hayMasRegistros", hayMasRegistros);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");

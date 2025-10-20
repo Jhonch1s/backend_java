@@ -1,0 +1,106 @@
+/* =====================================
+   ESTILOS PARA TABLA Y LISTADOS
+   ===================================== */
+
+.view-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Para que en móvil el botón se ponga abajo */
+    gap: 1rem;
+    border-bottom: 1px solid var(--gg-border);
+    padding-bottom: 1.5rem;
+}
+
+.tabla-container {
+    background-color: var(--gg-surface);
+    border: 1px solid var(--gg-border);
+    border-radius: 16px;
+    overflow-x: auto; /* Permite scroll horizontal en móvil */
+}
+
+.tabla-entidades {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.tabla-entidades th,
+.tabla-entidades td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gg-border);
+    white-space: nowrap; /* Evita que el texto se rompa */
+}
+
+.tabla-entidades thead th {
+    font-weight: 700;
+    color: var(--gg-text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.tabla-entidades tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-entidades tbody tr:hover {
+    background-color: var(--gg-surface-2);
+}
+
+/* ID del Plan */
+.tabla-entidades__id {
+    font-weight: 700;
+    color: var(--gg-text-muted);
+}
+
+/* Badges de Estado (Activo/Inactivo) */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge--activo {
+    background-color: rgba(74, 222, 128, 0.1); /* Verde claro */
+    color: #4ADE80;
+}
+
+.badge--inactivo {
+    background-color: rgba(248, 113, 113, 0.1); /* Rojo claro */
+    color: #F87171;
+}
+
+/* Botones de Acción */
+.u-text-right {
+    text-align: right;
+}
+
+.btn--icon {
+    background: transparent;
+    border: none;
+    padding: 0.4rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.btn--icon:hover {
+    opacity: 1;
+    background-color: var(--gg-surface-2);
+}
+
+.btn--peligro {
+    color: var(--color-rojo);
+}
+
+.btn--peligro:hover {
+    color: white;
+    background-color: var(--color-rojo);
+}

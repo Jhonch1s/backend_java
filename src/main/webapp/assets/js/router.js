@@ -1,67 +1,29 @@
-// router.js
-// Pequeño enrutador por hash (#/ruta) que inyecta <template> en #app-view
-
+// Defines which template corresponds to each route
 export const routes = {
+    '/planes/lista': 'tpl-planes-lista',
     '/planes/nuevo': 'tpl-plan-crear',
     '/planes/editar': 'tpl-plan-editar',
-    '/clientes/nuevo': 'tpl-cliente-crear',
-    '/clientes/editar': 'tpl-cliente-editar',
-    '/planes/lista': 'tpl-planes-lista',
     '/clientes/lista': 'tpl-clientes-lista',
+    '/clientes/nuevo': 'tpl-cliente-crear',
+    // Add other routes here, e.g., '/clientes/editar': 'tpl-cliente-editar',
 };
 
-export function getPathFromHash() {
-    // Normaliza "#/planes/nuevo" -> "/planes/nuevo"
-    const h = window.location.hash || '';
-    const clean = h.startsWith('#') ? h.slice(1) : h;
-    return clean || '/';
+// Gets the path and query parameters (?id=X) from the current hash
+export function getRouteInfo() {
+    const hash = window.location.hash || '#/';
+    // Clean the # and separate the path from parameters
+    const [path, queryString] = hash.substring(1).split('?');
+    const params = new URLSearchParams(queryString);
+    // Return the path (ensuring it's at least '/') and parameters
+    return { path: path || '/', params };
 }
 
-export function renderRoute() {
-    const view = document.getElementById('app-view');
-    const path = getPathFromHash();
-
-    // Marca el main como "cargando" para accesibilidad
-    view.setAttribute('aria-busy', 'true');
-
-    // Mapea rutas a templates
-    const tplId = routes[path];
-    if (!tplId) {
-        view.innerHTML = `<div class="main__placeholder"><h1>404</h1><p>Sección no encontrada.</p></div>`;
-        view.setAttribute('aria-busy', 'false');
-        view.focus();
-        markActiveLink(path);
-        return;
-    }
-
-    const tpl = document.getElementById(tplId);
-    if (!tpl) {
-        view.innerHTML = `<div class="main__placeholder"><h1>Error</h1><p>No existe el template "${tplId}".</p></div>`;
-        view.setAttribute('aria-busy', 'false');
-        view.focus();
-        markActiveLink(path);
-        return;
-    }
-
-    // Inyección del contenido del template
-    view.innerHTML = '';
-    view.appendChild(tpl.content.cloneNode(true));
-
-    // Foco en el título de la vista (si existe)
-    const h1 = view.querySelector('.view__title') || view.querySelector('h1');
-    if (h1) h1.setAttribute('tabindex', '-1');
-
-    // Listo
-    view.setAttribute('aria-busy', 'false');
-    (h1 || view).focus();
-
-    markActiveLink(path);
-}
-
+// Highlights the active link in the sidebar
 export function markActiveLink(path) {
-    // Resalta el link activo en el sidebar
     document.querySelectorAll('.sidebar__nav a[data-link]').forEach(a => {
         const href = a.getAttribute('href') || '';
-        a.classList.toggle('is-active', href.replace('#', '') === path);
+        // Compare the current path with the link's href (removing # and query params)
+        const linkPath = href.split('?')[0].replace('#', '');
+        a.classList.toggle('is-active', linkPath === path);
     });
 }

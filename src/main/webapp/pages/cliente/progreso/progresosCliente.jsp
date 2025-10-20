@@ -7,6 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Rutina - Cliente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -26,7 +27,7 @@
                 }
             %>
 
-            <h1 class="titillium-negra texto-dorado" style="display: flex; align-items: center; gap: 0.5rem; margin-top: -0.5rem; margin-bottom: 0.5rem;">
+            <h1 class="titillium-negra texto-dorado">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 24 24" fill="none"
                      stroke="var(--color-principal)" stroke-width="1.75" stroke-linecap="round"
                      stroke-linejoin="round">
@@ -42,7 +43,7 @@
             </h1>
 
 
-            <h2 class="plan-create__label" style="display: flex; align-items: center; gap: 0.75rem;">
+            <h2 class="plan-create__label">
                 Listado de Ejercicios
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                      stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round"
@@ -94,32 +95,32 @@
             </div>
         </section>
         <section id="pantalla-progreso" class="pantalla">
-            <button class="btn-volver boton-primario">← Volver</button>
+            <div class="contenedor-botones-volver">
+                <button class="btn-volver boton-primario">← Volver a la lista</button>
+                <button id="btn-volver-limitado" class="boton-primario" style="display: none;">← Ver solo recientes</button>
+            </div>
             <h2 id="nombre-ejercicio"></h2>
 
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <!-- SVG gráfico de estadísticas -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 3v18h18"/>
-                        <path d="m19 9-5 5-4-4-3 3"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/assets/img/growth.png"
+                         width="32"
+                         height="32"
+                         alt="Icono de gráfico">
                     Registros recientes
                 </h3>
                 <div id="registros-recientes" class="contenedor-tarjetas"></div>
+                <button id="btn-ver-mas" class="boton-primario btn-historial" style="display: none; margin-top: 1rem; width: 100%;">
+                    Ver historial completo
+                </button>
             </div>
 
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <!-- SVG trofeo -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-principal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-                        <path d="M4 22h16"/>
-                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-                    </svg>
+                    <img src="${pageContext.request.contextPath}/assets/img/svgs/cup-svg.svg"
+                         width="32"
+                         height="32"
+                         alt="Icono de copa">
                     Mejores PRs
                 </h3>
                 <div id="mejores-prs" class="contenedor-tarjetas"></div>
@@ -136,53 +137,69 @@
         const pantallaProgreso = document.getElementById("pantalla-progreso");
         const nombreEjercicio = document.getElementById("nombre-ejercicio");
 
-        async function verProgresoPorId(id, nombre) {
+        // --- Referencias a todos los botones ---
+        const btnVerMas = document.getElementById("btn-ver-mas");
+        const btnVolverPrincipal = document.querySelector(".btn-volver");
+        const btnVolverLimitado = document.getElementById("btn-volver-limitado"); // Nuevo botón
+        let ejercicioIdActual = null;
+        let ejercicioNombreActual = null;
+
+        async function verProgresoPorId(id, nombre, limite = null) {
             if (!id) {
                 console.error("ID de ejercicio no definido");
-                alert("No se pudo obtener el ID del ejercicio.");
                 return;
             }
 
+            ejercicioIdActual = id;
+            ejercicioNombreActual = nombre;
+            let url = contextPath + "/detalle-progreso?id=" + encodeURIComponent(id);
+            if (limite) {
+                url += "&limite=" + limite;
+            }
+
             try {
-                const resp = await fetch(contextPath + "/detalle-progreso?id=" + encodeURIComponent(id));
+                const resp = await fetch(url);
                 const data = await resp.json();
                 console.log("Datos recibidos:", data);
 
                 if (!Array.isArray(data.registros)) {
                     throw new Error("Respuesta inválida del servidor");
                 }
-
                 nombreEjercicio.textContent = nombre;
 
-                // Mostrar registros recientes
+                // --- Lógica para mostrar el botón "Volver" correcto ---
+                if (limite) {
+                    // Si estamos en vista limitada (ej: 5), mostramos el volver principal.
+                    btnVolverPrincipal.style.display = 'inline-flex';
+                    btnVolverLimitado.style.display = 'none';
+                } else {
+                    // Si estamos en vista completa, ocultamos el principal y mostramos el nuevo.
+                    btnVolverPrincipal.style.display = 'none';
+                    btnVolverLimitado.style.display = 'inline-flex';
+                }
+
                 const registrosList = document.getElementById("registros-recientes");
                 registrosList.innerHTML = "";
-
                 if (Array.isArray(data.registros) && data.registros.length > 0) {
-                    data.registros.forEach(r => {
-                        console.log("Registro recibido:", r);
-
+                    // Añadimos 'index' para la animación en cascada
+                    data.registros.forEach((r, index) => {
                         const tarjeta = document.createElement("div");
                         tarjeta.classList.add("tarjeta-registro");
 
-                        // Determinar clase por diferencia
-                        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
-                            if (r.diferenciaPeso > 0) {
-                                tarjeta.classList.add("mejora"); // verde
-                            } else {
-                                tarjeta.classList.add("retroceso"); // rojo
-                            }
-                        } else {
-                            tarjeta.classList.add("sin-cambio"); // azul
-                        }
+                        // --- LÓGICA DE ANIMACIÓN ---
+                        // Aplicamos un retraso creciente a cada tarjeta.
+                        tarjeta.style.animationDelay = `${index * 0.07}s`;
 
+                        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
+                            tarjeta.classList.add(r.diferenciaPeso > 0 ? "mejora" : "retroceso");
+                        } else {
+                            tarjeta.classList.add("sin-cambio");
+                        }
                         const fecha = document.createElement("strong");
                         fecha.className = "registro-fecha titillium-negra";
                         fecha.textContent = (r.fecha || "sin fecha").trim();
-
                         const detalle = document.createElement("p");
                         detalle.className = "registro-detalle titillium-base";
-
                         let texto = "";
                         if (r.pesoUsado != null && r.repeticiones != null) {
                             texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
@@ -196,42 +213,40 @@
                         detalle.textContent = texto.trim();
                         tarjeta.appendChild(fecha);
                         tarjeta.appendChild(detalle);
-
                         if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
                             const diferencia = document.createElement("p");
-                            diferencia.className = "registro-diferencia titillium-base";
+                            diferencia.className = "registro-diferencia"; // Ya no necesitas "titillium-base"
+
+                            // --- LÍNEAS MODIFICADAS ---
                             const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
-                            diferencia.textContent = (simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
+                            const icono = r.diferenciaPeso > 0 ? "↑ " : "↓ "; // <-- AÑADIMOS EL ICONO
+
+                            diferencia.textContent = (icono + simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
+                            // --- FIN DE MODIFICACIÓN ---
+
                             tarjeta.appendChild(diferencia);
                         }
-
                         registrosList.appendChild(tarjeta);
                     });
                 } else {
                     registrosList.innerHTML = "<div class='tarjeta-registro'>No hay registros recientes</div>";
                 }
 
-
-                // Mostrar PRs (sin diferencia)
                 const prsList = document.getElementById("mejores-prs");
                 prsList.innerHTML = "";
-
                 if (Array.isArray(data.prs) && data.prs.length > 0) {
-                    data.prs.forEach(r => {
-                        console.log("PR recibido:", r); // Verificás que venga 'diferenciaPeso', pero no lo usamos
-
+                    // Añadimos 'index' también aquí para consistencia
+                    data.prs.forEach((r, index) => {
                         const tarjeta = document.createElement("div");
                         tarjeta.className = "tarjeta-registro";
+                        tarjeta.style.animationDelay = `${index * 0.07}s`; // Animación
 
                         const fecha = document.createElement("strong");
                         fecha.className = "registro-fecha titillium-negra";
                         fecha.textContent = (r.fecha || "sin fecha").trim();
-
                         const detalle = document.createElement("p");
                         detalle.className = "registro-detalle titillium-base";
-
                         let texto = "";
-
                         if (r.pesoUsado != null && r.repeticiones != null) {
                             texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
                         } else if (r.pesoUsado != null) {
@@ -241,40 +256,60 @@
                         } else {
                             texto = "-";
                         }
-
                         detalle.textContent = texto.trim();
                         tarjeta.appendChild(fecha);
                         tarjeta.appendChild(detalle);
-
                         prsList.appendChild(tarjeta);
                     });
                 } else {
                     prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
                 }
 
+                if (data.hayMasRegistros) {
+                    btnVerMas.style.display = 'block';
+                } else {
+                    btnVerMas.style.display = 'none';
+                }
 
-                pantallaLista.classList.remove("activa");
-                pantallaProgreso.classList.add("activa");
-                window.scrollTo({ top: 0 });
+                if (!pantallaProgreso.classList.contains('activa')) {
+                    pantallaLista.classList.remove("activa");
+                    pantallaProgreso.classList.add("activa");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             } catch (err) {
                 console.error("Error cargando progreso:", err);
                 alert("No se pudo cargar el progreso. Verificá la consola.");
             }
         }
 
-        const btnVolver = document.querySelector(".btn-volver");
-        btnVolver.addEventListener("click", () => {
+        // Evento para el botón principal (volver a la lista de ejercicios)
+        btnVolverPrincipal.addEventListener("click", () => {
             pantallaProgreso.classList.remove("activa");
             pantallaLista.classList.add("activa");
-            document.getElementById("registros-recientes").innerHTML = "";
-            document.getElementById("mejores-prs").innerHTML = "";
         });
 
+        // --- Evento para el NUEVO botón (volver a la vista limitada) ---
+        btnVolverLimitado.addEventListener('click', () => {
+            if(ejercicioIdActual && ejercicioNombreActual) {
+                // Llama a la función pidiendo solo los 5 recientes.
+                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, 5);
+            }
+        });
+
+        // Evento para ver el historial completo
+        btnVerMas.addEventListener('click', () => {
+            btnVerMas.style.display = 'none';
+            if (ejercicioIdActual && ejercicioNombreActual) {
+                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, null);
+            }
+        });
+
+        // Evento para cada tarjeta de ejercicio
         document.querySelectorAll(".tarjeta-ejercicio").forEach(el => {
             el.addEventListener("click", () => {
                 const id = parseInt(el.dataset.ejercicioId, 10);
                 const nombre = el.dataset.ejercicioNombre;
-                verProgresoPorId(id, nombre);
+                verProgresoPorId(id, nombre, 5);
             });
         });
     });
