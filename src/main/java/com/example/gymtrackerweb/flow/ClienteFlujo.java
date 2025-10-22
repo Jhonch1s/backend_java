@@ -3,6 +3,7 @@ import com.example.gymtrackerweb.dao.ClienteDAO;
 import com.example.gymtrackerweb.model.Cliente;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class ClienteFlujo {
         this.dao = new ClienteDAO();
     }
 
-    public void run() {
+    public void run() throws SQLException {
         int op;
         do {
             mostrarMenuPrincipal();
@@ -33,7 +34,7 @@ public class ClienteFlujo {
         System.out.println("0) Salir");
     }
 
-    private void manejarOpcionPrincipal(int op) {
+    private void manejarOpcionPrincipal(int op) throws SQLException {
         switch (op) {
             case 1 -> altaCliente();
             case 2 -> bajaCliente();
@@ -46,7 +47,7 @@ public class ClienteFlujo {
     }
 
     //acciones del flujo
-    private void altaCliente() {
+    private void altaCliente() throws SQLException {
         System.out.println("\n      Alta de Cliente");
         String ci = leerNoVacio("CI: ");
         if (!ci.matches("\\d+")) {System.out.println("Error: La cedula solo debe estar compuesta por numeros"); return; }

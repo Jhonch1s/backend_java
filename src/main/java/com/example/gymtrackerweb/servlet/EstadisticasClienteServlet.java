@@ -13,8 +13,8 @@ public class EstadisticasClienteServlet extends HttpServlet {
 
         var session = req.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            // redirigí a login o devolvé 401 según tu flujo
-            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+            // redirigir al login
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 

@@ -1,0 +1,73 @@
+/* --- Estilos para Notificaciones Toast --- */
+.toast-container {
+    position: fixed; /* Fijo en la pantalla */
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 1050; /* Encima de casi todo */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.toast {
+    background-color: var(--gg-surface-2); /* Fondo oscuro */
+    color: var(--gg-text);
+    padding: 0.9rem 1.25rem;
+    border-radius: 10px;
+    border: 1px solid var(--gg-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 250px;
+    max-width: 350px;
+    opacity: 0;
+    transform: translateX(100%);
+    animation: toastSlideIn 0.3s ease-out forwards;
+}
+
+/* Iconos (opcional, puedes usar emojis o SVGs) */
+.toast::before {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Estilos por tipo */
+.toast--success {
+    border-left: 4px solid var(--accent-success); /* Borde verde */
+}
+.toast--success::before {
+    content: '✅'; /* Icono de éxito */
+}
+
+.toast--error {
+    border-left: 4px solid var(--accent-danger); /* Borde rojo */
+    color: var(--accent-danger); /* Texto rojo para error */
+}
+.toast--error::before {
+    content: '❌'; /* Icono de error */
+}
+
+/* Animación de entrada */
+@keyframes toastSlideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animación de salida (la añadiremos con JS) */
+.toast.fade-out {
+    animation: toastFadeOut 0.4s ease-in forwards;
+}
+@keyframes toastFadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+}

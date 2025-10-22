@@ -1,40 +1,89 @@
 package com.example.gymtrackerweb.dao;
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.MembresiaPlanView;
 import com.example.gymtrackerweb.model.Cliente;
-
+import org.mindrot.jbcrypt.BCrypt;
 import java.sql.Date;
-
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ClienteDAO {
-    public void agregarCliente(Cliente c) {
-        String sql = "INSERT INTO cliente (ci, email, nombre, apellido, ciudad, direccion, tel, pais, fecha_ingreso) " +
+    public void agregarCliente(Cliente c) throws SQLException {
+        // SQL para insertar en la tabla cliente
+        final String sqlCliente = "INSERT INTO cliente (ci, email, nombre, apellido, ciudad, direccion, tel, pais, fecha_ingreso) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection conexion = databaseConection.getInstancia().getConnection();
-        try{
-            PreparedStatement sentencia = conexion.prepareStatement(sql);
-            //Preparamo lo dato
+        // SQL para insertar en la tabla usuario_login
+        final String sqlLogin = "INSERT INTO usuario_login (id_login_cliente, password) VALUES (?, ?)";
 
-            sentencia.setString(1, c.getCi());
-            sentencia.setString(2, c.getEmail());
-            sentencia.setString(3, c.getNombre());
-            sentencia.setString(4, c.getApellido());
-            sentencia.setString(5, c.getCiudad());
-            sentencia.setString(6, c.getDireccion());
-            sentencia.setString(7, c.getTel());
-            sentencia.setString(8, c.getPais());
-            sentencia.setDate(9, c.getFechaIngreso());
+        Connection conexion = null; // Necesaria fuera del try para el rollback/finally
+        boolean originalAutoCommitState = true; // Para restaurar el estado original
+        conexion = databaseConection.getInstancia().getConnection();
+        try {
+            originalAutoCommitState = conexion.getAutoCommit(); // Guarda el estado actual
+            // --- INICIO DE LA TRANSACCIÓN ---
+            conexion.setAutoCommit(false);
 
-            sentencia.execute();
-            System.out.println("Cliente cargado correctamente  .");
-        }catch(Exception e){
-            System.out.println("Error: "+e.getMessage());
+            // --- 1. Insertar en la tabla 'cliente' ---
+            try (PreparedStatement psCliente = conexion.prepareStatement(sqlCliente)) {
+                psCliente.setString(1, c.getCi());
+                psCliente.setString(2, c.getEmail());
+                psCliente.setString(3, c.getNombre());
+                psCliente.setString(4, c.getApellido());
+                psCliente.setString(5, c.getCiudad());
+                psCliente.setString(6, c.getDireccion());
+                psCliente.setString(7, c.getTel());
+                psCliente.setString(8, c.getPais());
+                psCliente.setDate(9, c.getFechaIngreso());
+                psCliente.executeUpdate();
+                System.out.println("-> Registro 'cliente' insertado."); // Log simple
+            } // psCliente se cierra automáticamente
+
+            // --- 2. Hashear la contraseña (usando la CI como valor por defecto) ---
+            // gensalt(12) genera una "sal" aleatoria con un costo de 12 (recomendado)
+            String hashedPassword = BCrypt.hashpw(c.getCi(), BCrypt.gensalt(12));
+            System.out.println("-> Contraseña hasheada (basada en CI)."); // Log simple
+
+            // --- 3. Insertar en la tabla 'usuario_login' ---
+            try (PreparedStatement psLogin = conexion.prepareStatement(sqlLogin)) {
+                psLogin.setString(1, c.getCi());      // id_login_cliente es la CI
+                psLogin.setString(2, hashedPassword); // La contraseña ya hasheada
+                psLogin.executeUpdate();
+                System.out.println("-> Registro 'usuario_login' insertado."); // Log simple
+            } // psLogin se cierra automáticamente
+            conexion.commit();
+            System.out.println("Cliente y login agregados exitosamente (Commit realizado).");
+
+        } catch (SQLException e) {
+            System.err.println("¡ERROR en transacción! Haciendo rollback... Causa: " + e.getMessage());
+            // --- ROLLBACK: Si algo falló, deshace todos los cambios ---
+            if (conexion != null) {
+                try {
+                    conexion.rollback();
+                    System.err.println("Rollback completado.");
+                } catch (SQLException ex) {
+                    System.err.println("¡ERROR al intentar hacer rollback! " + ex.getMessage());
+                }
+            }
+            // Relanza la excepción original para que el Servlet la maneje
+            throw e;
+        } finally {
+            // --- RESTAURAR AUTOCOMMIT ---
+            // Es buena práctica restaurar el estado original de la conexión
+            if (conexion != null) {
+                try {
+                    if (conexion.getAutoCommit() != originalAutoCommitState) {
+                        conexion.setAutoCommit(originalAutoCommitState);
+                        System.out.println("-> AutoCommit restaurado a: " + originalAutoCommitState);
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error al restaurar AutoCommit: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -153,6 +202,49 @@ public class ClienteDAO {
         return lista;
     }
 
+    public Optional<MembresiaPlanView> buscarMembresiaActivaPorCi(String ci) throws Exception {
+        final String sql = """
+        SELECT  m.id,
+                m.id_plan,
+                m.id_cliente,
+                m.fecha_inicio,
+                m.fecha_fin,
+                m.estado_id,
+                p.nombre      AS plan_nombre,
+                p.urlImagen  AS url_imagen
+        FROM membresia m
+        JOIN plan p ON p.id = m.id_plan
+        WHERE m.id_cliente = ?
+          AND m.estado_id = 1
+          /* opcional fecha: AND m.fecha_fin >= CURRENT_DATE */
+        ORDER BY m.fecha_fin DESC
+        LIMIT 1
+    """;
+
+        Connection con = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, ci);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return Optional.empty();
+
+                MembresiaPlanView v = new MembresiaPlanView();
+                v.setId(rs.getInt("id"));
+                v.setIdPlan(rs.getInt("id_plan"));
+                v.setIdCliente(rs.getString("id_cliente"));
+                v.setFechaInicio(rs.getDate("fecha_inicio"));
+                v.setFechaFin(rs.getDate("fecha_fin"));
+                v.setEstadoId(rs.getInt("estado_id"));
+                v.setPlanNombre(rs.getString("plan_nombre"));
+                v.setUrlImagen(rs.getString("url_imagen"));
+
+                return Optional.of(v);
+            }
+        }
+    }
+
     //transformamos resulta de consulta a objeto
     private Cliente mapCliente(ResultSet rs) throws SQLException {
         Cliente c = new Cliente();
@@ -168,4 +260,21 @@ public class ClienteDAO {
         return c;
     }
 
+    public String findDisplayNameByCi(String ownerCi) {
+        final String sql = """
+        SELECT nombre FROM cliente WHERE ci=?
+    """;
+        Connection con = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, ownerCi);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("nombre");
+                }
+            }
+        }catch(SQLException e){
+            System.out.println("Error al buscar cliente por CI: " + e.getMessage());
+        }
+        return "";
+    }
 }

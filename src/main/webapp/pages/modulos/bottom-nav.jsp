@@ -19,7 +19,7 @@
     </li>
 
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp"
+      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/pages/UploadImage.jsp"
          data-tab="/rutinas" aria-current="false">
         <svg class="bottom-nav__icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
@@ -43,7 +43,7 @@
     </li>
 
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/pages/modulos/cliente/perfil.jsp"
+      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/cliente/perfil"
          data-tab="/perfil" aria-current="false">
         <svg class="bottom-nav__icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>

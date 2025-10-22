@@ -30,6 +30,55 @@ public class PlanDAO {
         }
     }
 
+    public void agregarPlanCompleto(Plan p) throws SQLException {
+        final String sql = "INSERT INTO plan (nombre, valor, duracion_total, duracion_unidad_id, urlImagen, estado) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+        Connection conexion = null; // Declarar fuera para asegurar que se pueda intentar cerrar
+
+        try {
+            conexion = databaseConection.getInstancia().getConnection(); // Obtener conexión
+
+            // Usar try-with-resources para PreparedStatement
+            try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+                sentencia.setString(1, p.getNombre());
+                sentencia.setBigDecimal(2, p.getValor());
+                sentencia.setShort(3, p.getDuracionTotal());
+                sentencia.setByte(4, p.getDuracionUnidadId());
+
+                // Siempre insertamos NULL para la imagen por ahora
+                sentencia.setNull(5, Types.VARCHAR);
+
+                sentencia.setBoolean(6, p.isEstado());
+
+                sentencia.executeUpdate(); // Usar executeUpdate para INSERT
+                System.out.println("Plan agregado exitosamente (DAO)."); // Log simple
+
+            } // PreparedStatement se cierra automáticamente aquí
+
+        } catch (SQLException e) {
+            System.err.println("Error SQL al insertar plan: " + e.getMessage()); // Log simple
+            throw e; // Relanzar la excepción para que el Servlet la maneje
+        }
+        // Nota: La conexión la maneja tu clase databaseConection o un pool,
+        // no la cerramos explícitamente aquí si es singleton.
+    }
+
+    public boolean existeUnidadDuracion(byte id) throws SQLException {
+        String sql = "SELECT 1 FROM duracion_unidad WHERE id = ?";
+        Connection cn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setByte(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Retorna true si encuentra una fila, false si no
+            }
+        } catch (SQLException e) {
+            System.err.println("Error validando unidad de duración: " + e.getMessage());
+            throw e; // Relanzar
+        }
+    }
+
+
     public Plan buscarPorId(int id) {
         final String sql = "SELECT id, nombre, valor, duracion_total, duracion_unidad_id, urlImagen, estado " +
                 "FROM plan WHERE id = ?";
@@ -237,19 +286,6 @@ public class PlanDAO {
             throw new RuntimeException("Error listando unidades de duración", e);
         }
         return res;
-    }
-    public boolean existeUnidadDuracion(byte id) {
-        String sql = "SELECT 1 FROM duracion_unidad WHERE id = ?";
-        Connection cn = databaseConection.getInstancia().getConnection();
-        try (
-             PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setByte(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error validando unidad de duración", e);
-        }
     }
 
     public String obtenerNombreUnidadDuracion(byte id) {
