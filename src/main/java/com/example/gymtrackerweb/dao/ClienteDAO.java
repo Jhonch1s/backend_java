@@ -158,8 +158,7 @@ public class ClienteDAO {
                 System.out.println("-------------------------------");
             }
 
-            resultado.close();
-            sentencia.close();
+
         }catch(Exception e){
             System.out.println("Error: "+e.getMessage());
         }

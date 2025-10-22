@@ -74,8 +74,7 @@ public class EstadoMembresiaDAO {
                 System.out.println("-------------------------------");
             }
 
-            resultado.close();
-            sentencia.close();
+
         }catch(Exception e){
             System.out.println("Error: "+e.getMessage());
         }

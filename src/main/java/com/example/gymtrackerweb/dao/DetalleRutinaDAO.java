@@ -86,5 +86,30 @@ public class DetalleRutinaDAO {
         return lista;
     }
 
+    public List<DetalleRutina> listarDetallesPorRutina(int id) {
+        List<DetalleRutina> lista = new ArrayList<>();
+        String sql = "SELECT * FROM detalle_rutina WHERE id_rutina = ?";
+        try (Connection conexion = databaseConection.getInstancia().getConnection()) {
+            PreparedStatement sentencia = conexion.prepareStatement(sql);
+            sentencia.setInt(1, id);
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                while (resultado.next()) {
+                    DetalleRutina d = new DetalleRutina();
+                    d.setId(resultado.getInt("id"));
+                    d.setId_ejercicio(resultado.getInt("id_ejercicio"));
+                    d.setId_rutina(resultado.getInt("id_rutina"));
+                    d.setSeries(resultado.getInt("series"));
+                    d.setRepeticiones(resultado.getInt("repeticiones"));
+
+                    lista.add(d);
+                }
+            } catch (Exception e) {
+                System.out.println("Error al listar detalles de rutina: " + e.getMessage());
+            }
+            return lista;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
