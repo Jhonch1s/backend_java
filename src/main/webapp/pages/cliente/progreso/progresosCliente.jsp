@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/progresosCliente.css" />
 </head>
 
@@ -130,6 +131,7 @@
 
     </main>
 </div>
+<%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const contextPath = '<%= request.getContextPath() %>';

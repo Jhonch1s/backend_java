@@ -143,7 +143,7 @@
         </button>
 
         <h3 class="texto-dorado">Nuevo Progreso</h3>
-        <form method="post" action="${pageContext.request.contextPath}/progreso" class="u-mt-16">
+        <form method="post" action="${pageContext.request.contextPath}/cliente/progreso" class="u-mt-16">
             <input type="hidden" name="accion" value="add">
 
             <label>Ejercicio</label>
@@ -179,7 +179,7 @@
             </svg>
         </button>
         <h3 class="texto-dorado">Editar Progreso</h3>
-        <form id="formEditar" method="post" action="${pageContext.request.contextPath}/progreso" class="u-mt-16">
+        <form id="formEditar" method="post" action="${pageContext.request.contextPath}/cliente/progreso" class="u-mt-16">
             <input type="hidden" name="accion" value="edit">
             <input type="hidden" name="id" id="editId">
 
@@ -218,7 +218,7 @@
         </button>
         <h3 class="texto-dorado">¿Eliminar este progreso?</h3>
         <p>Esta accion no se puede deshacer.</p>
-        <form method="post" action="${pageContext.request.contextPath}/progreso">
+        <form method="post" action="${pageContext.request.contextPath}/cliente/progreso">
             <input type="hidden" name="accion" value="delete">
             <input type="hidden" name="id" id="deleteId">
             <div class="alinear-centro-between u-mt-24">

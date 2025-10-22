@@ -114,7 +114,7 @@
                     <p class="pr-title"><%= i.getRutinaNombre() %></p>
                     <p class="pr-sub"><%= i.getEstado() %> · Asignada el <%= i.getFechaAsignacion() %></p>
                 </div>
-                <span class="pr-meta"><a href="detallerutina?id=<%= i.getIdRutina() %>">Más detalles</a></span>
+                <span class="pr-meta"><a href="${pageContext.request.contextPath}/progreso-ejercicios?id=<%= i.getIdRutina() %>">Más detalles</a></span>
             </div>
             <%
                 }

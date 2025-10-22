@@ -24,14 +24,14 @@ public class ProgresoEjercicioServlet extends HttpServlet {
         // Verificar sesión activa
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
         // Obtener el cliente desde la sesión
         Cliente cliente = (Cliente) session.getAttribute("usuario");
         if (cliente == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
