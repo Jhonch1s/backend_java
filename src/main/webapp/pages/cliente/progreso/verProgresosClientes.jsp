@@ -44,14 +44,38 @@
     <!-- Encabezado -->
     <section class="alinear-centro-between u-mb-24">
         <h2 class="titillium-negra texto-dorado">Progreso de Ejercicios</h2>
+
         <button id="btnAddProgreso" class="boton-primario" type="button">+ Añadir Progreso</button>
+    </section>
+
+    <!-- Filtro -->
+    <section class="alinear-centro-between u-mb-24">
+        <div class="filtros-izquierda">
+
+        </div>
+        <div class="filtros-derecha">
+            <button id="btnFiltroFecha"
+                    class="btn-accion"
+                    data-order="${ordenActual == 'asc' ? 'asc' : 'desc'}"
+                    title="Ordenar por fecha">
+                <svg class="icono" height="20px" width="20px" id="svg-filtro" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 512 512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <polygon
+                                points="247.5,0 34.2,213.3 34.2,341.3 204.8,170.7 204.8,512 290.2,512 290.2,170.7 460.8,341.3 460.8,213.3 "></polygon>
+                    </g></svg>
+            </button>
+        </div>
     </section>
 
     <!-- Lista de progresos -->
     <section class="lista-progresos">
         <c:forEach var="p" items="${listaProgresos}">
-            <article class="progreso-item tarjeta borde-redondeado sombra-suave p-3 u-mb-24 alinear-centro-between" data-ejercicio="${p.idEjercicio}">
-                <div class="progreso-item__info">
+            <article class="progreso-item tarjeta borde-redondeado sombra-suave p-3 u-mb-24 alinear-centro-between"
+                     data-ejercicio="${p.idEjercicio}"
+                     data-fecha="<fmt:formatDate value='${p.fecha}' pattern='yyyy-MM-dd'/>">
+            <div class="progreso-item__info">
                     <!-- Mostrar nombre del ejercicio -->
                     <c:forEach var="e" items="${listaEjercicios}">
                         <c:if test="${e.id == p.idEjercicio}">
@@ -102,7 +126,7 @@
 
         <c:if test="${empty listaProgresos}">
             <div class="tarjeta borde-redondeado sombra-suave p-3 alinear-centro-center">
-                <p>No hay registros de progreso todavía. ¡Agrega tu primer medición!</p>
+                <p>No hay registros de progreso todavía. Agrega tu primer medicion</p>
             </div>
         </c:if>
     </section>
@@ -193,7 +217,7 @@
             </svg>
         </button>
         <h3 class="texto-dorado">¿Eliminar este progreso?</h3>
-        <p>Esta acción no se puede deshacer.</p>
+        <p>Esta accion no se puede deshacer.</p>
         <form method="post" action="${pageContext.request.contextPath}/progreso">
             <input type="hidden" name="accion" value="delete">
             <input type="hidden" name="id" id="deleteId">
@@ -206,7 +230,6 @@
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script src="${pageContext.request.contextPath}/assets/js/progresoCliente.js" defer></script>
-
 
 </body>
 </html>

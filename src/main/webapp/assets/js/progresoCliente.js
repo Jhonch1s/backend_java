@@ -96,10 +96,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Cerrar modales al hacer clic fuera
+
+    // Cerrar modal al hacer click afuera
     [modalNuevo, modalEditar, modalEliminar].forEach(modal => {
         modal?.addEventListener("click", (e) => {
             if (e.target === modal) cerrarModal(modal);
         });
+    });
+
+    // Filtro
+    const btnFiltroFecha = document.getElementById("btnFiltroFecha");
+    const svg = document.getElementById("svg-filtro");
+    if (btnFiltroFecha && svg) {
+        const initial = btnFiltroFecha.dataset.order;
+        svg.style.transform = initial === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+    }
+
+    btnFiltroFecha.addEventListener("click", () => {
+        const order = btnFiltroFecha.dataset.order === "asc" ? "desc" : "asc";
+        btnFiltroFecha.dataset.order = order;
+        svg.style.transform = order === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("orden", order);
+        window.location.href = url.toString();
     });
 });

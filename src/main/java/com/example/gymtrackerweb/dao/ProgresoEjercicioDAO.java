@@ -208,4 +208,33 @@ public class ProgresoEjercicioDAO {
         }
         return progresoLista;
     }
+
+    public List<ProgresoEjercicio> listarProgresoPorEjercicioYFecha(int idCliente, int idEjercicio, boolean ascendente) {
+        List<ProgresoEjercicio> progresoLista = new ArrayList<>();
+        String orden = ascendente ? "ASC" : "DESC";
+        String sql = "SELECT * FROM progreso_ejercicio WHERE id_cliente = ? AND id_ejercicio = ? ORDER BY fecha " + orden;
+
+        try (Connection conexion = databaseConection.getInstancia().getConnection();
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idCliente);
+            sentencia.setInt(2, idEjercicio);
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                while (resultado.next()) {
+                    ProgresoEjercicio progreso = new ProgresoEjercicio();
+                    progreso.setId(resultado.getInt("id_progreso"));
+                    progreso.setIdCliente(resultado.getInt("id_cliente"));
+                    progreso.setIdEjercicio(resultado.getInt("id_ejercicio"));
+                    progreso.setFecha(resultado.getDate("fecha"));
+                    progreso.setPesoUsado(resultado.getInt("peso_usado"));
+                    progreso.setRepeticiones(resultado.getInt("repeticiones"));
+                    progresoLista.add(progreso);
+                }
+            }
+        } catch (Exception err) {
+            System.out.println("Error: " + err.getMessage());
+        }
+        return progresoLista;
+    }
 }

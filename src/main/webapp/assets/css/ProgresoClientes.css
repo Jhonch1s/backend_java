@@ -95,3 +95,8 @@ label {
     font-weight: 600;
     margin-bottom: .25rem;
 }
+
+#svg-filtro{
+    fill: var(--color-principal);
+    transition: transform 0.0001s;
+}

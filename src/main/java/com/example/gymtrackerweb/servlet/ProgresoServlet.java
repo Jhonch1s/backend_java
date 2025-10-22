@@ -16,7 +16,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.List;
 
-@WebServlet(name = "ProgresoServlet", value = "/progreso")
+@WebServlet(name = "ProgresoServlet", value = "/cliente/progreso")
 public class ProgresoServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -28,20 +28,22 @@ public class ProgresoServlet extends HttpServlet {
         }
 
         try {
-            //Consigo el dao y la clase de progreso ejercicio(?) para obtener la lista de ejercicios de un cliente
             ProgresoEjercicioDAO dao = new ProgresoEjercicioDAO();
-            ProgresoEjercicio progresoEjercicio= new ProgresoEjercicio();
-            //??? Porque tengo que crear un ProgresoEjercicio para poder utilizar "listarProgresoEjercicioDeUsuario" en vez de simplemente pasarle la id del cliente
+            ProgresoEjercicio progresoEjercicio = new ProgresoEjercicio();
             progresoEjercicio.setIdCliente(Integer.parseInt(usuario.getCi()));
 
-            //Consigo la lista y la guardo en el request
-            List<ProgresoEjercicio> lista = dao.listarProgresoEjercicioDeUsuarioOrdenadoFecha(progresoEjercicio,false);
+            String orden = request.getParameter("orden");
+            boolean ascendente = "asc".equals(orden);
+
+            List<ProgresoEjercicio> lista = dao.listarProgresoEjercicioDeUsuarioOrdenadoFecha(progresoEjercicio, ascendente);
             request.setAttribute("listaProgresos", lista);
+            request.setAttribute("ordenActual", ascendente ? "asc" : "desc");
 
             EjercicioDAO ejercicioDAO = new EjercicioDAO();
             request.setAttribute("listaEjercicios", ejercicioDAO.listarEjercicios());
 
             request.getRequestDispatcher("/pages/cliente/progreso/verProgresosClientes.jsp").forward(request, response);
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -89,7 +91,7 @@ public class ProgresoServlet extends HttpServlet {
             }
 
             // Vuelve a cargar la lista progreso
-            response.sendRedirect(request.getContextPath() + "/progreso");
+            response.sendRedirect(request.getContextPath() + "/cliente/progreso");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
