@@ -33,7 +33,7 @@
           integrity="sha512-NhSC1X0f3zp3p2JtYh8C2W4TyTX0b6x1n00x4bZ4Zk3E2b9GmZy1wKkPe4v5YyX1Y9i6w5W2rszj0o9uGZ7xwA=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- Estilos existentes (no modificados) -->
+    <!-- Estilos existentes -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
@@ -65,7 +65,7 @@
             <div class="hero__member">
                 <p class="m-0 hero__member-label">Miembro desde</p>
                 <%
-                    Cliente usuario = (Cliente) session.getAttribute("usuario");
+                Cliente usuario = (Cliente) session.getAttribute("usuario");
                 %>
                 <p class="m-0 hero__member-date">${FechaUtils.formatearMesAnio(usuario.getFechaIngreso())}</p>
             </div>
@@ -132,8 +132,8 @@
         <div class="lista-tiles u-mt-8">
             <c:forEach var="r" items="${rutinasTop}">
                 <a class="tile"
-                   href="${pageContext.request.contextPath}/progreso-ejercicios?id=${r.idRutina}">
-                <div class="tile__text">
+                   href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp?id=${r.idRutina}">
+                    <div class="tile__text">
                         <p class="tile__title">${r.nombre}</p>
                         <p class="tile__desc">${r.gruposTop3}</p>
                     </div>
@@ -218,3 +218,4 @@
 <script src="${pageContext.request.contextPath}/assets/js/cliente-dashboard.js" defer></script>
 </body>
 </html>
+

@@ -4,12 +4,14 @@ package com.example.gymtrackerweb.dao;
 import com.example.gymtrackerweb.db.databaseConection;
 import com.example.gymtrackerweb.dto.EjercicioConProgresoView;
 import com.example.gymtrackerweb.dto.RutinaClienteView;
+import com.example.gymtrackerweb.dto.RutinaCard;
 import com.example.gymtrackerweb.model.RutinaCliente;
 import com.example.gymtrackerweb.model.enums.Objetivo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 

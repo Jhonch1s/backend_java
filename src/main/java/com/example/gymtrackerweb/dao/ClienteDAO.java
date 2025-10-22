@@ -1,5 +1,6 @@
 package com.example.gymtrackerweb.dao;
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.MembresiaPlanView;
 import com.example.gymtrackerweb.model.Cliente;
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.Date;
@@ -9,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ClienteDAO {
     public void agregarCliente(Cliente c) throws SQLException {
@@ -200,6 +202,49 @@ public class ClienteDAO {
         return lista;
     }
 
+    public Optional<MembresiaPlanView> buscarMembresiaActivaPorCi(String ci) throws Exception {
+        final String sql = """
+        SELECT  m.id,
+                m.id_plan,
+                m.id_cliente,
+                m.fecha_inicio,
+                m.fecha_fin,
+                m.estado_id,
+                p.nombre      AS plan_nombre,
+                p.urlImagen  AS url_imagen
+        FROM membresia m
+        JOIN plan p ON p.id = m.id_plan
+        WHERE m.id_cliente = ?
+          AND m.estado_id = 1
+          /* opcional fecha: AND m.fecha_fin >= CURRENT_DATE */
+        ORDER BY m.fecha_fin DESC
+        LIMIT 1
+    """;
+
+        Connection con = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, ci);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return Optional.empty();
+
+                MembresiaPlanView v = new MembresiaPlanView();
+                v.setId(rs.getInt("id"));
+                v.setIdPlan(rs.getInt("id_plan"));
+                v.setIdCliente(rs.getString("id_cliente"));
+                v.setFechaInicio(rs.getDate("fecha_inicio"));
+                v.setFechaFin(rs.getDate("fecha_fin"));
+                v.setEstadoId(rs.getInt("estado_id"));
+                v.setPlanNombre(rs.getString("plan_nombre"));
+                v.setUrlImagen(rs.getString("url_imagen"));
+
+                return Optional.of(v);
+            }
+        }
+    }
+
     //transformamos resulta de consulta a objeto
     private Cliente mapCliente(ResultSet rs) throws SQLException {
         Cliente c = new Cliente();
@@ -215,4 +260,21 @@ public class ClienteDAO {
         return c;
     }
 
+    public String findDisplayNameByCi(String ownerCi) {
+        final String sql = """
+        SELECT nombre FROM cliente WHERE ci=?
+    """;
+        Connection con = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, ownerCi);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("nombre");
+                }
+            }
+        }catch(SQLException e){
+            System.out.println("Error al buscar cliente por CI: " + e.getMessage());
+        }
+        return "";
+    }
 }
