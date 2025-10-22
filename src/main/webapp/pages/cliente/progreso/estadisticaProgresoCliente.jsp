@@ -4,15 +4,22 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Estadísticas & Progreso · Golden Gym</title>
+    <title>Estadísticas y Progreso | Golden Gym</title>
 
-    <!-- Fuentes y CSS base del proyecto (ya los tenés) -->
+    <!-- FavIcons-->
+    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
+
+    <!-- Fuentes y CSS base del proyecto -->
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css"> <!--por estilos del nav.. etc-->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/estadisticaProgresoCliente.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css"> <!--por estilos del nav.. etc-->
 
 </head>
 
@@ -95,11 +102,11 @@
         <div class="u-mt-8">
             <label for="sel-ej" class="u-visually-hidden">Elegir ejercicio</label>
             <select id="sel-ej" class="select">
-                <!-- opciones inyectadas por JS: value = id_ejercicio -->
+                <!-- opciones inyectadas por js-->
             </select>
         </div>
 
-        <!-- Mini-KPIs del ejercicio elegido -->
+        <!-- mini kpis del ejercicio elegido -->
         <div class="mini-kpis u-mt-12" id="mini-kpis">
             <div class="mini">
                 <p class="mini__num" id="mk-e1rm">–</p>
@@ -158,42 +165,21 @@
             </article>
         </div>
     </section>
-
-    <!-- 4) PRs y mejores del período -->
-    <section class="panel" id="blk-prs">
-        <div class="panel__head">
-            <h2 class="panel__title">PRs y mejores del período</h2>
-            <span class="texto-dorado" id="label-periodo">–</span>
-        </div>
-
-        <div class="prs u-mt-8" id="list-prs">
-            <!-- Items inyectados por JS:
-                 .pr-item > .pr-title | .pr-sub (fecha, reps×kg, e1RM) | .pr-meta (badge PR) -->
-        </div>
+    <section class="panel u-mt-12" id="blk-share">
+        <button id="btn-share" class="btn btn--lg btn--primary-yellow">
+            <!-- svg hecho con copilot -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share">
+                <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+                <polyline points="16 6 12 2 8 6" />
+                <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+             Compartir Progreso</button>
+        <input id="share-url" class="input u-mt-6" type="text" readonly style="width:100%;display:none">
+        <small id="share-help" class="u-mt-4 u-block texto-dorado" style="display:none">
+            Enlace copiado al portapapeles.
+        </small>
     </section>
 
-    <!-- 5) Empty states (ocultos por default) -->
-    <section class="panel u-hide" id="empty-exercise">
-        <p>No hay registros para este ejercicio en el rango seleccionado.</p>
-        <a class="btn btn--ghost-yellow btn--sm"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/abm-progreso.jsp">
-            Gestionar registros de progreso →
-        </a>
-    </section>
-
-    <!-- 6) Acciones (historial completo / ABM progreso) -->
-    <section class="panel" id="blk-actions">
-        <div class="grid-2">
-            <a class="btn btn--ghost-yellow btn--lg"
-               href="${pageContext.request.contextPath}/pages/modulos/cliente/historial.jsp">
-                Ver historial completo →
-            </a>
-            <a class="btn btn--ghost-yellow btn--lg"
-               href="${pageContext.request.contextPath}/pages/modulos/cliente/abm-progreso.jsp">
-                Gestionar registros de progreso →
-            </a>
-        </div>
-    </section>
 </main>
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -14,6 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgresoEjercicioDAO {
+    public static class ProgresoDato {
+        private final Date fecha;          // java.sql.Date (día)
+        private final BigDecimal peso;     // DECIMAL(6,2)
+        private final int repeticiones;    // SMALLINT
+
+        public ProgresoDato(Date fecha, BigDecimal peso, int repeticiones) {
+            this.fecha = fecha;
+            this.peso = peso;
+            this.repeticiones = repeticiones;
+        }
+
+        public Date getFecha() { return fecha; }
+        public BigDecimal getPeso() { return peso; }
+        public int getRepeticiones() { return repeticiones; }
+    }
     public void agregarProgresoEjercicio(ProgresoEjercicio p){
         String sql = "INSERT INTO progreso_ejercicio(id_cliente, id_ejercicio, fecha, peso_usado, repeticiones) VALUES (?, ?, ?, ?, ?)";
         try {
@@ -294,6 +309,70 @@ public class ProgresoEjercicioDAO {
         return (bd == null) ? 0.0 : bd.doubleValue();
     }
 
+    public List<ProgresoDato> seriesForEjercicio(String ownerCi, int ejId, LocalDate from, LocalDate to) throws SQLException {
+        final String sql =
+                "SELECT fecha, peso_usado, repeticiones " +
+                        "FROM progreso_ejercicio " +
+                        "WHERE id_cliente = ? " +
+                        "  AND id_ejercicio = ? " +
+                        "  AND fecha BETWEEN ? AND ? " +
+                        "ORDER BY fecha ASC, id_progreso ASC";
+
+        List<ProgresoDato> out = new ArrayList<>();
+
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, ownerCi);                               // VARCHAR(20)
+            ps.setInt(2, ejId);                                     // INT
+            ps.setDate(3, Date.valueOf(from));                      // DATE
+            ps.setDate(4, Date.valueOf(to));                        // DATE
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Date fecha = rs.getDate("fecha");
+                    BigDecimal peso = rs.getBigDecimal("peso_usado");     // puede ser null
+                    int reps = rs.getObject("repeticiones") == null
+                            ? 0
+                            : rs.getInt("repeticiones");
+
+                    out.add(new ProgresoDato(fecha, peso, reps));
+                }
+            }
+        }
+
+        return out;
+    }
+    public List<ProgresoDato> seriesForEjercicio(Connection cn, String ownerCi, int ejId, LocalDate from, LocalDate to) throws SQLException {
+        final String sql =
+                "SELECT fecha, peso_usado, repeticiones " +
+                        "FROM progreso_ejercicio " +
+                        "WHERE id_cliente = ? " +
+                        "  AND id_ejercicio = ? " +
+                        "  AND fecha BETWEEN ? AND ? " +
+                        "ORDER BY fecha ASC, id_progreso ASC";
+
+        List<ProgresoDato> out = new ArrayList<>();
+
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, ownerCi);
+            ps.setInt(2, ejId);
+            ps.setDate(3, Date.valueOf(from));
+            ps.setDate(4, Date.valueOf(to));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Date fecha = rs.getDate("fecha");
+                    BigDecimal peso = rs.getBigDecimal("peso_usado");
+                    int reps = rs.getObject("repeticiones") == null ? 0 : rs.getInt("repeticiones");
+                    out.add(new ProgresoDato(fecha, peso, reps));
+                }
+            }
+        }
+
+        return out;
+    }
 
 
 }

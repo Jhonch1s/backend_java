@@ -368,3 +368,19 @@
 @keyframes popIn  { from {scale:.9; opacity:0;} to {scale:1; opacity:1;} }
 
 .chart-inset canvas { width: 100% !important; height: 220px !important; }
+
+.btn--lg{
+    padding: 10px 14px;
+    font-size: .95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid transparent;
+    transition: transform .1s ease, filter .2s ease, border-color .2s ease;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
