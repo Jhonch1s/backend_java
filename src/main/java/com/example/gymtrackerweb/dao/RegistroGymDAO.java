@@ -13,6 +13,8 @@ import java.util.Optional;
 public class RegistroGymDAO {
 
     private static final ZoneId MONTEVIDEO = ZoneId.of("America/Montevideo");
+    public static record WeekActivity(LocalDate monday, boolean active) {} //lundes que representa la semana, active si entreno o no esa semana
+    //Por lo investigado, usar un record es como un dto pero con menos codigo, genera constructor, getters, toString, etc.
 
     public RegistroGymDAO() {
 
@@ -298,5 +300,69 @@ public class RegistroGymDAO {
             }
         }
     }
+
+    // En RegistroGymDAO
+
+
+    public List<WeekActivity> actividadSemanal(String ciCliente, int weeks, LocalDate hoyMvd) throws SQLException {
+        // lunes de la semana actual
+        int dow = hoyMvd.getDayOfWeek().getValue(); // 1..7 (1=lunes)
+        LocalDate mondayThisWeek = hoyMvd.minusDays(dow - 1L);
+        LocalDate mondayMin = mondayThisWeek.minusWeeks(weeks - 1L);
+
+        final String sql = """
+        WITH RECURSIVE weeks AS (
+          SELECT ? AS monday
+          UNION ALL
+          SELECT DATE_ADD(monday, INTERVAL 7 DAY)
+          FROM weeks
+          WHERE monday < ?
+        )
+        SELECT
+          w.monday AS monday,
+          EXISTS (
+            SELECT 1
+            FROM registro_gym rg
+            WHERE rg.ci_cliente = ?
+              AND rg.salida IS NOT NULL
+              AND rg.fecha BETWEEN w.monday AND DATE_ADD(w.monday, INTERVAL 6 DAY)
+          ) AS active
+        FROM weeks w
+        ORDER BY w.monday
+        """;
+        //contamos solo sesiones cerradas, rg.salida IS NOT NULL
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(mondayMin));
+            ps.setDate(2, Date.valueOf(mondayThisWeek));
+            ps.setString(3, ciCliente);
+
+            List<WeekActivity> out = new ArrayList<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    LocalDate monday = rs.getDate("monday").toLocalDate();
+                    boolean active = rs.getBoolean("active");
+                    out.add(new WeekActivity(monday, active));
+                }
+            }
+            return out;
+        }
+    }
+
+    //calcula rachas consecutivas desde semana actual para atras
+    public static int calcularStreakSemanal(List<WeekActivity> weeksAsc, boolean ignoreCurrentIfInactive) {
+        if (weeksAsc == null || weeksAsc.isEmpty()) return 0;
+        int last = weeksAsc.size() - 1;
+        if (ignoreCurrentIfInactive && !weeksAsc.get(last).active()) {
+            last--;
+        }
+        int streak = 0;
+        for (int i = last; i >= 0; i--) {
+            if (weeksAsc.get(i).active()) streak++;
+            else break;
+        }
+        return Math.max(streak, 0);
+    }
+
 
 }

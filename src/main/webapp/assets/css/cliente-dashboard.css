@@ -1,11 +1,10 @@
-/* ===== Paleta y tokens locales (apoyado en tus vars) ===== */
 :root{
-    --gg-yellow: #fff112;           /* acento amarillo */
-    --gg-bg: #101010;               /* fondo principal dark */
-    --gg-card: #1a1a1a;             /* tarjetas / nav */
-    --gg-chip: #2a2a2a;             /* tiles internos */
-    --gg-border: #2a2a2a;           /* bordes suaves */
-    --gg-muted: #bdbdbd;            /* textos secundarios */
+    --gg-yellow: #fff112;
+    --gg-bg: #101010;
+    --gg-card: #1a1a1a;
+    --gg-chip: #2a2a2a;
+    --gg-border: #2a2a2a;
+    --gg-muted: #bdbdbd;
     --gg-white: #f3f3f3;
 
     --gg-nav-h: 64px;
@@ -13,7 +12,6 @@
     --gg-radius: 18px;
 }
 
-/* ===== Layout fijo (sin scroll) ===== */
 html, body { height: 100%; }
 body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 
@@ -105,14 +103,11 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 .tile__desc{ margin: 0; color: rgba(255,255,255,.8); font-size: .9rem; }
 .tile__meta{ color: var(--gg-yellow); font-weight: 800; }
 
-/* ===== Integración con tu bottom-nav (ya existente) ===== */
-/* Si querés resaltar el activo en amarillo: */
 .bottom-nav__btn[aria-current="page"]{
     border-color: rgba(255,241,18,.45);
     box-shadow: 0 0 0 1px rgba(255,241,18,.25) inset;
 }
 
-/* ================== Progresos ================== */
 .prog-list{ display: grid; gap: 10px; }
 .prog-item{
     display: grid; grid-template-columns: 1fr auto; align-items: center;
@@ -153,7 +148,6 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 .prog-item--pos-blue::before{ background: #3B82F6; }
 .prog-item--pos-blue .prog-item__delta{ color: #3B82F6; } /* azul + */
 
-/* ================== Bottom Nav ================== */
 .bottom-nav{
     position: fixed; left: 0; right: 0; bottom: 0;
     height: calc(var(--gg-nav-h) + env(safe-area-inset-bottom));

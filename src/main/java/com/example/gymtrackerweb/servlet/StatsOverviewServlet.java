@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.*;
 
+//al estar en /stats/overview no se choca con /cleinte/estadisticas
 @WebServlet("/cliente/stats/overview")
 public class StatsOverviewServlet extends HttpServlet {
 
@@ -17,9 +18,8 @@ public class StatsOverviewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         var session = req.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.setContentType("application/json;charset=UTF-8");
-            resp.getWriter().write("{\"ok\":false,\"error\":\"no-auth\"}");
+            // redirigir al login
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
