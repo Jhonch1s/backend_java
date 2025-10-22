@@ -132,7 +132,7 @@
         <div class="lista-tiles u-mt-8">
             <c:forEach var="r" items="${rutinasTop}">
                 <a class="tile"
-                   href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp?id=${r.idRutina}">
+                   href="${pageContext.request.contextPath}/cliente/detallerutina?id=${r.idRutina}">
                     <div class="tile__text">
                         <p class="tile__title">${r.nombre}</p>
                         <p class="tile__desc">${r.gruposTop3}</p>
@@ -155,7 +155,7 @@
         </div>
 
         <a class="btn btn--ghost-yellow btn--lg u-w-full u-mt-16"
-           href="${pageContext.request.contextPath}/pages/modulos/cliente/rutinas.jsp">
+           href="${pageContext.request.contextPath}/detalle-progreso">
             Ver todas las rutinas →
         </a>
     </section>

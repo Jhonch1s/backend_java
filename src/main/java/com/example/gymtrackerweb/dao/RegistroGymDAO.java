@@ -13,8 +13,8 @@ import java.util.Optional;
 public class RegistroGymDAO {
 
     private static final ZoneId MONTEVIDEO = ZoneId.of("America/Montevideo");
-    public static record WeekActivity(LocalDate monday, boolean active) {} //lundes que representa la semana, active si entreno o no esa semana
-    //Por lo investigado, usar un record es como un dto pero con menos codigo, genera constructor, getters, toString, etc.
+    public static record WeekActivity(LocalDate monday, boolean active) {} //lunes que representa la semana, active si entreno o no esa semana
+    //Por lo investigado, usar un record es como un dto pero con menos código, genera constructor, getters, toString, etc.
 
     public RegistroGymDAO() {
 
@@ -300,8 +300,6 @@ public class RegistroGymDAO {
             }
         }
     }
-
-}
     // En RegistroGymDAO
 
 
