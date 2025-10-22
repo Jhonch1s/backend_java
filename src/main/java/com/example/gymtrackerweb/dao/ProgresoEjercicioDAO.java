@@ -2,6 +2,7 @@ package com.example.gymtrackerweb.dao;
 
 
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.EjercicioConProgresoView;
 import com.example.gymtrackerweb.dto.EjercicioMin;
 import com.example.gymtrackerweb.dto.EjercicioMiniKpis;
 import com.example.gymtrackerweb.dto.ProgresoCard;
@@ -15,9 +16,9 @@ import java.util.List;
 
 public class ProgresoEjercicioDAO {
     public static class ProgresoDato {
-        private final Date fecha;          // java.sql.Date (día)
-        private final BigDecimal peso;     // DECIMAL(6,2)
-        private final int repeticiones;    // SMALLINT
+        private final Date fecha;
+        private final BigDecimal peso;
+        private final int repeticiones;
 
         public ProgresoDato(Date fecha, BigDecimal peso, int repeticiones) {
             this.fecha = fecha;
@@ -101,6 +102,122 @@ public class ProgresoEjercicioDAO {
             System.out.println("Error: "+err.getMessage());
         }
         return progresoLista;
+    }
+
+    public List<EjercicioConProgresoView> listarEjerciciosConProgreso(String clienteId, int rutinaID){
+        List<EjercicioConProgresoView> progresoLista = new ArrayList<>();
+        String sql = """
+            SELECT\s
+                r.id AS id_rutina,
+                r.nombre AS nombre_rutina,
+                e.id AS id_ejercicio,
+                e.nombre AS nombre_ejercicio,
+                pe.peso_usado,
+                pe.repeticiones,
+                pe.fecha AS fecha_ultimo_registro
+            FROM rutina_cliente rc
+            INNER JOIN rutina r ON rc.id_rutina = r.id
+            INNER JOIN detalle_rutina dr ON r.id = dr.id_rutina
+            INNER JOIN ejercicio e ON dr.id_ejercicio = e.id
+            LEFT JOIN progreso_ejercicio pe ON pe.id_progreso = (
+                SELECT pe2.id_progreso
+                FROM progreso_ejercicio pe2
+                WHERE pe2.id_ejercicio = e.id
+                  AND pe2.id_cliente = rc.id_cliente
+                ORDER BY pe2.fecha DESC
+                LIMIT 1
+            )
+            WHERE rc.id_cliente = ?
+              AND r.id = ?
+        """;
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, clienteId);
+            sentencia.setInt(2, rutinaID);
+            ResultSet resultado = sentencia.executeQuery();
+            while(resultado.next()){
+                EjercicioConProgresoView view = new EjercicioConProgresoView();
+                view.setIdRutina(resultado.getInt("id_rutina"));
+                view.setNombreRutina(resultado.getString("nombre_rutina"));
+                view.setIdEjercicio(resultado.getInt("id_ejercicio"));
+                view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
+                view.setPesoUsado(resultado.getBigDecimal("peso_usado"));
+                view.setRepeticiones(resultado.getInt("repeticiones"));
+                view.setFechaUltimoRegistro(resultado.getDate("fecha_ultimo_registro"));
+
+                progresoLista.add(view);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return progresoLista;
+    }
+
+    public List<ProgresoEjercicio> obtenerRegistrosDetallados(int idEjercicio, String idCliente) {
+        List<ProgresoEjercicio> lista = new ArrayList<>();
+        String sql = "SELECT fecha, peso_usado, repeticiones " +
+                "FROM progreso_ejercicio " +
+                "WHERE id_ejercicio = ? AND id_cliente = ? " +
+                "ORDER BY fecha DESC";
+        Connection con = databaseConection.getInstancia().getConnection();
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setInt(1, idEjercicio);
+            ps.setString(2, idCliente);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProgresoEjercicio r = new ProgresoEjercicio();
+                r.setFecha(rs.getDate("fecha"));
+                r.setPesoUsado(rs.getInt("peso_usado"));
+                r.setRepeticiones(rs.getInt("repeticiones"));
+                lista.add(r);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return lista;
+    }
+
+    public List<ProgresoEjercicio> obtenerPRs(int idEjercicio, String idCliente) {
+        List<ProgresoEjercicio> lista = new ArrayList<>();
+        String sql = "SELECT fecha, peso_usado, repeticiones " +
+                "FROM progreso_ejercicio " +
+                "WHERE id_ejercicio = ? AND id_cliente = ? " +
+                "ORDER BY peso_usado DESC " +
+                "LIMIT 3";
+        Connection con = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idEjercicio);
+            ps.setString(2, idCliente);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProgresoEjercicio r = new ProgresoEjercicio();
+                r.setFecha(rs.getDate("fecha"));
+                r.setPesoUsado(rs.getInt("peso_usado"));
+                r.setRepeticiones(rs.getInt("repeticiones"));
+                lista.add(r);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public int obtenerIdPorNombre(String nombre) {
+        String sql = "SELECT id FROM ejercicio WHERE nombre = ?";
+        try (Connection con = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombre);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public BigDecimal obtenerKgLevantadosTotal(String idCliente) throws Exception {
@@ -324,10 +441,10 @@ public class ProgresoEjercicioDAO {
         try (
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, ownerCi);                               // VARCHAR(20)
-            ps.setInt(2, ejId);                                     // INT
-            ps.setDate(3, Date.valueOf(from));                      // DATE
-            ps.setDate(4, Date.valueOf(to));                        // DATE
+            ps.setString(1, ownerCi);   
+            ps.setInt(2, ejId);  
+            ps.setDate(3, Date.valueOf(from));
+            ps.setDate(4, Date.valueOf(to));      
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

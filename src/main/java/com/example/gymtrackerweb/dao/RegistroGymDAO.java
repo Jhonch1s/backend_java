@@ -301,6 +301,7 @@ public class RegistroGymDAO {
         }
     }
 
+}
     // En RegistroGymDAO
 
 
@@ -363,6 +364,4 @@ public class RegistroGymDAO {
         }
         return Math.max(streak, 0);
     }
-
-
 }

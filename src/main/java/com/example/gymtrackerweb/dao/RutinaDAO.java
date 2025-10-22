@@ -135,6 +135,7 @@ public class RutinaDAO {
         }
         return null;
     }
+
     // Últimas 3 rutinas asignadas al cliente
     public List<RutinaCard> ultimas3PorCliente(String idCliente) throws SQLException {
         final String sql = """
@@ -188,5 +189,7 @@ public class RutinaDAO {
             }
         }
     }
+
+
 
 }

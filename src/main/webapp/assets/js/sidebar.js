@@ -1,32 +1,38 @@
-// sidebar.js
-// Maneja el botón ☰ para colapsar/expandir el sidebar en pantallas chicas
-
-document.addEventListener('DOMContentLoaded', () => {
+// Exports the function to initialize sidebar toggle logic
+export function initSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const toggle = document.querySelector('.sidebar__toggle');
+    const overlay = document.querySelector('.sidebar-overlay');
 
-    if (!sidebar || !toggle) return;
+    // Basic check if elements exist
+    if (!sidebar || !toggle || !overlay) {
+        console.warn("Sidebar elements not found, skipping initialization.");
+        return;
+    }
 
-    const applyState = (open) => {
-        sidebar.classList.toggle('is-open', open);
-        toggle.setAttribute('aria-expanded', String(open));
-    };
+    function toggleSidebar(forceClose = false) {
+        if (forceClose) {
+            sidebar.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+        } else {
+            const isOpen = sidebar.classList.toggle('is-open');
+            overlay.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+        }
+    }
 
-    // Estado inicial: cerrado en mobile, abierto en desktop
-    const startOpen = window.matchMedia('(min-width: 901px)').matches;
-    applyState(startOpen);
+    // Event listeners
+    toggle.addEventListener('click', () => toggleSidebar());
+    overlay.addEventListener('click', () => toggleSidebar());
 
-    toggle.addEventListener('click', () => {
-        const open = !sidebar.classList.contains('is-open');
-        applyState(open);
-    });
-
-    // Cerrar sidebar al navegar (solo en mobile)
-    document.querySelectorAll('.sidebar__nav a[data-link]').forEach(a => {
-        a.addEventListener('click', () => {
-            if (window.matchMedia('(max-width: 900px)').matches) {
-                applyState(false);
+    // Close sidebar on navigation link click (especially useful on mobile)
+    sidebar.querySelectorAll('a[data-link]').forEach(link => {
+        link.addEventListener('click', () => {
+            // Check if the sidebar is likely in mobile/overlay mode
+            if (window.innerWidth < 768) { // Adjust breakpoint if needed
+                toggleSidebar(true); // Force close
             }
         });
     });
-});
+}

@@ -6,6 +6,7 @@ import com.example.gymtrackerweb.flow.UtilidadesFlujo;
 import com.example.gymtrackerweb.model.UnidadDuracion;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +22,7 @@ public class PlanFlujo {
         in = new Scanner(System.in);
     }
 
-    public void run(){
+    public void run() throws SQLException {
         int op;
                 do{
                     mostrarMenuPrincipal();
@@ -43,7 +44,7 @@ public class PlanFlujo {
         System.out.println("0) Salir");
     }
 
-    private void manejarOpcionPrincipal(int opcion){
+    private void manejarOpcionPrincipal(int opcion) throws SQLException {
         switch (opcion){
             case 1->altaPlan();
             case 2->bajaPlan();
@@ -56,7 +57,7 @@ public class PlanFlujo {
     }
 
     //acciones del flujo
-    private void altaPlan(){
+    private void altaPlan() throws SQLException {
         System.out.println("       Alta de plan");
         //como se repite mucho mucho lo de leer texto/dato teniendo que imprimir y escanear
         //busqué como ahorrar líneas a partir de funciones que de paso verifiquen que sean
@@ -97,7 +98,7 @@ public class PlanFlujo {
         }
     }
 
-    private void modificarPlan(){
+    private void modificarPlan() throws SQLException {
         System.out.println("       Modificar plan");
         listarOrdenado(planDAO.listarTodos());
         int id = UtilidadesFlujo.leerEntero("ID del plan a modificar: ");
@@ -280,7 +281,7 @@ public class PlanFlujo {
     }
 
 
-    private byte leerUnidadDuracionId(byte valorActual) {
+    private byte leerUnidadDuracionId(byte valorActual) throws SQLException {
         List<UnidadDuracion> unidades = planDAO.listarUnidadesDuracion();
         System.out.println("\nUnidades de duración disponibles:");
         imprimirUnidadesDuracion(unidades);

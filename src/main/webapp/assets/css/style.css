@@ -159,6 +159,30 @@ body {
     CREAR PLAN DE MEMBRESÍA (scope: .plan-create)
    ========================================================== */
 
+/* ==========================================================
+   ESTILOS DE VALIDACIÓN DE FORMULARIO
+   ========================================================== */
+
+/* 1. Contenedor del mensaje de error */
+.form__error-message {
+    color: var(--color-rojo); /* */
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.35rem;
+    min-height: 1.1em; /* Evita que el layout "salte" */
+}
+
+/* 2. Estilo del input cuando es inválido */
+/* Usamos una clase .is-invalid que pondremos con JS */
+.plan-create__control.is-invalid {
+    border-color: var(--color-rojo);
+    background: rgba(255, 77, 79, 0.05);
+}
+
+.plan-create__control.is-invalid:focus {
+    border-color: var(--color-rojo);
+    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.2);
+}
 
 
 /* Página oscura general (si tu body no lo hace ya) */
@@ -242,6 +266,7 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     border: none;
+    padding: 0;
 }
 
 @media (max-width: 900px) {
@@ -282,6 +307,7 @@ body {
     padding: .9rem 1rem;
     line-height: 1.2;
     transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    min-height: 48px; /* <-- ¡AÑADÍ ESTA LÍNEA! */
 }
 
 .plan-create .input::placeholder {
@@ -565,4 +591,54 @@ body {
 
 .entity-edit__form.is-dirty .entity-edit__unsaved {
     display: inline-block;
+}
+
+/* ==========================================================
+   MEJORAS RESPONSIVAS (Móvil < 768px)
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    /* 1. Ajustar padding del panel principal */
+    .main-panel.u-p-32 {
+        padding: 1rem; /* Menos padding en móvil */
+    }
+
+    /* 2. Forzar formularios a 1 columna */
+    .plan-create__grid {
+        grid-template-columns: 1fr;
+        gap: 1rem; /* Menos espacio entre campos */
+    }
+
+    /* 3. Títulos más pequeños */
+    .view__title {
+        font-size: 1.6rem;
+    }
+    .view__sub {
+        font-size: 0.9rem;
+    }
+
+    /* 4. Botones de acción en formularios */
+    .entity-edit__actions-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .entity-edit__actions-row .btn,
+    .plan-create__actions .btn {
+        width: 100%; /* Botones de ancho completo */
+    }
+
+    /* 5. Ajustar vista previa de imagen en "Editar" */
+    .entity-edit__media-row {
+        grid-template-columns: 1fr; /* Apilado vertical */
+        justify-items: center;
+        text-align: center;
+    }
+
+    .entity-edit__media {
+        width: 150px; /* Imagen un poco más grande */
+        height: 150px;
+        margin-bottom: 1rem;
+    }
 }

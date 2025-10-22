@@ -20,6 +20,13 @@
     /* Tipografía */
     --fuente-base: "Titillium Web", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
+    /* Acentos adicionales */
+    --accent-success: #4ADE80; /* verde mint */
+    --accent-info: #60A5FA; /* azul claro */
+    --accent-danger: #FF6B6B; /* coral rojo */
+    --accent-gold: #FFD700; /* dorado */
+    --card-gradient: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+
     /* Dimensiones */
     --radio-md: 12px;
     --sombra-suave: 0 8px 28px rgba(0, 0, 0, 0.35);

@@ -1,0 +1,318 @@
+/* ==========================================================================
+   ESTRUCTURA GENERAL Y PANTALLAS
+   ========================================================================== */
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+}
+
+.pantalla {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px; /* Ancho base para móvil/tablet pequeña */
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 1rem;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.pantalla.activa {
+    display: flex;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+#pantalla-progreso {
+    align-items: stretch;
+    padding-top: 2rem;
+}
+
+/* ==========================================================================
+   COMPONENTE: LISTA DE EJERCICIOS (Pantalla Inicial)
+   ========================================================================== */
+
+.lista-ejercicios {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0.5rem auto;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 241, 18, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tarjeta-ejercicio {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.875rem;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.tarjeta-ejercicio:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tarjeta-ejercicio__icono {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    margin-right: 1rem;
+}
+
+.tarjeta-ejercicio_contenido {
+    flex: 1;
+}
+
+.tarjeta-ejercicio_contenido h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.tarjeta-ejercicio_contenido p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.98rem;
+    color: var(--color-gris-200);
+}
+
+
+/* ==========================================================================
+   COMPONENTES: PANTALLA DE PROGRESO
+   ========================================================================== */
+
+.contenedor-botones-volver {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.btn-volver, #btn-volver-limitado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+#nombre-ejercicio {
+    text-align: center;
+    font-weight: 800;
+    color: var(--color-blanco);
+    margin: 0 auto 1rem auto;
+    font-size: 1.25rem; /* Base para móvil */
+}
+
+.bloque {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bloque h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-principal);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bloque h3 svg, .bloque h3 svg * {
+    stroke: var(--color-blanco) !important;
+    fill: none !important;
+}
+
+.contenedor-tarjetas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* ==========================================================================
+   COMPONENTE: TARJETA DE REGISTRO (El principal)
+   ========================================================================== */
+
+.tarjeta-registro {
+    display: grid;
+    grid-template-columns: 1fr 70px; /* Columna flexible a la izq, fija a la der */
+    gap: 0.25rem 0.5rem;
+    padding: 0.875rem 1rem 0.875rem 20px; /* Espacio para la barra de color */
+    border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    font-family: var(--fuente-base); /* <-- FUENTE UNIFICADA */
+}
+
+.tarjeta-registro:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+/* Barra de color a la izquierda */
+.tarjeta-registro::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    border-radius: 14px 0 0 14px;
+    background: transparent;
+}
+
+/* Elementos de la tarjeta */
+.registro-fecha {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-blanco);
+}
+
+.registro-detalle {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    margin-top: 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-blanco);
+    line-height: 1.2;
+}
+
+.registro-diferencia {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3; /* Ocupa ambas filas */
+    justify-self: end;
+    align-self: center;
+    font-size: 1.15rem; /* <--- AHORA COINCIDE CON LA FECHA */
+    font-weight: 750; /* <--- AHORA COINCIDE CON LA FECHA */
+    white-space: nowrap;
+    color: inherit; /* Hereda el color del estado */
+}
+
+
+/* --- Modificadores de Estado (Colores) --- */
+
+.tarjeta-registro.mejora {
+    background: linear-gradient(180deg, rgba(34,197,94,0.18), rgba(20,120,60,0.22));
+    border: 1.5px solid #22C55E;
+    box-shadow: 0 0 0 2px #22C55E33;
+    color: #22C55E; /* Color para .registro-diferencia */
+}
+.tarjeta-registro.mejora::before { background: #22C55E; }
+
+.tarjeta-registro.retroceso {
+    background: linear-gradient(180deg, rgba(220,38,38,0.18), rgba(120,20,20,0.22));
+    border: 1.5px solid #DC2626;
+    box-shadow: 0 0 0 2px #DC262633;
+    color: #DC2626;
+}
+.tarjeta-registro.retroceso::before { background: #DC2626; }
+
+.tarjeta-registro.sin-cambio {
+    background: linear-gradient(180deg, rgba(37,99,235,0.18), rgba(30,64,175,0.22));
+    border: 1.5px solid #2563EB;
+    box-shadow: 0 0 0 2px #2563EB33;
+}
+
+/* --- Variante para Mejores PRs --- */
+
+#mejores-prs .tarjeta-registro {
+    background: linear-gradient(180deg, rgba(255,215,0,.08), rgba(80,60,10,.12));
+    border: 1.5px solid #8B5A00;
+}
+#mejores-prs .tarjeta-registro::before { background: #FFD700; }
+#mejores-prs .tarjeta-registro:hover { box-shadow: 0 18px 40px rgba(255,215,0,0.12); }
+#mejores-prs .registro-fecha { color: var(--color-principal); }
+
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#pantalla-progreso .tarjeta-registro {
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (Diseño Responsivo)
+   ========================================================================== */
+
+/* --- Tablet (768px y más) --- */
+@media (min-width: 768px) {
+    #nombre-ejercicio { font-size: 1.6rem; }
+
+    .tarjeta-registro {
+        grid-template-columns: 1fr 100px;
+        padding: 1rem 1.25rem 1rem 20px;
+    }
+    .registro-fecha { font-size: 1.25rem; }
+    .registro-detalle { font-size: 1.15rem; }
+    .registro-diferencia { font-size: 1.2rem; }
+}
+
+/* --- Escritorio (1024px y más) --- */
+@media (min-width: 1024px) {
+    .pantalla { max-width: 800px; }
+    #nombre-ejercicio { font-size: 1.95rem; }
+
+    .tarjeta-registro {
+        grid-template-columns: 1fr 120px;
+        padding: 1.25rem 1.5rem 1.25rem 20px;
+    }
+    .registro-fecha { font-size: 1.35rem; }
+    .registro-detalle { font-size: 1.2rem; }
+    .registro-diferencia { font-size: 1.3rem; }
+}
+
+/* Centrar y estilizar el título principal de la rutina */
+#pantalla-lista > h1 {
+    display: flex;
+    align-items: center;
+    align-self: center; /* La línea clave para centrar */
+    gap: 0.5rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Centrar y estilizar el subtítulo "Listado de Ejercicios" */
+#pantalla-lista > h2 {
+    display: flex;
+    align-items: center;
+    align-self: center; /* La línea clave para centrar */
+    gap: 0.75rem;
+}
