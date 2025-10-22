@@ -32,8 +32,18 @@
             </ul>
             <h3 class="sidebar__section"><span>Clientes</span></h3>
             <ul>
-                <li><a href="#/clientes/lista" data-link>👥 <span>Listado de Clientes</span></a></li>
-                <li><a href="#/clientes/nuevo" data-link>👤 <span>Crear Cliente</span></a></li>
+                <li>
+                    <a href="#/clientes/lista" data-link>
+                        <img src="${pageContext.request.contextPath}/assets/img/group.png" alt="grupo_usuario" width="18" height="18" style="vertical-align: middle;">
+                        <span>Listado de Clientes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/clientes/nuevo" data-link>
+                        <img src="${pageContext.request.contextPath}/assets/img/user-plus-29-48.png" alt="usuario_crear" width="18" height="18" style="vertical-align: middle;">
+                        <span>Crear Cliente</span>
+                    </a>
+                </li>
             </ul>
             <h3 class="sidebar__section"><span>Cuenta</span></h3>
             <ul>
@@ -77,7 +87,12 @@
             </fieldset>
             <div class="plan-create__field u-mt-16"> <label for="plan-imagen" class="plan-create__label">Imagen (Opcional)</label> <div class="file file--drop"><input id="plan-imagen" name="imagen" type="file" accept="image/png, image/jpeg" class="file__input" /><div class="file__body"><span class="file__icon">🖼️</span> <span class="file__label">Seleccionar imagen</span> <span class="file__hint">PNG, JPG · máx. 5MB</span></div></div> </div>
             <div class="plan-create__status u-mt-16"> <label class="checkbox"><input type="checkbox" id="plan-activo" name="activo" checked /><span>Plan activo</span></label> </div>
-            <div class="plan-create__actions u-mt-24"> <button type="submit" class="btn btn--primary btn--xl u-w-full">💪 Crear Plan</button> </div>
+            <div class="plan-create__actions u-mt-24">
+                <button type="submit" class="btn btn--primary btn--xl u-w-full">
+                    <img src="${pageContext.request.contextPath}/assets/img/muscle.png" alt="" width="24" height="24" style="margin-right: 0.5rem; vertical-align: middle;">
+                    Crear Plan
+                </button>
+            </div>
         </form>
     </section>
 </template>
@@ -167,7 +182,10 @@
                 <div class="form__error-message" id="error-cliente-fecha-ingreso"></div>
             </div>
             <div class="plan-create__actions u-mt-24">
-                <button type="submit" class="btn btn--primary btn--xl u-w-full">👤 Crear Cliente</button>
+                <button type="submit" class="btn btn--primary btn--xl u-w-full">
+                    <img src="${pageContext.request.contextPath}/assets/img/user.png" alt="" width="20" height="20" style="margin-right: 0.5rem; vertical-align: middle;">
+                    Crear Cliente
+                </button>
             </div>
         </form>
     </section>

@@ -66,10 +66,6 @@
             return;
         }
 
-        // DEMO de login: como no hay backend aún, simulamos una respuesta
-        // Si quisieras “aceptar” cualquier entrada válida y redirigir:
-        // window.location.href = '/dashboard'; // ejemplo
-        // Por ahora, mostramos estado:
         errorGlobal.textContent = '';
         form.querySelector('.login__boton').disabled = true;
         form.querySelector('.login__boton').textContent = 'Ingresando…';

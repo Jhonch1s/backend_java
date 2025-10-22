@@ -18,20 +18,16 @@ export function inicializarValidacion(formId) {
     }
     const originalButtonText = submitButton.innerHTML;
 
-    // Controlar el envío del formulario
     form.addEventListener("submit", (e) => {
-        e.preventDefault(); // Previene el envío HTML tradicional
+        e.preventDefault();
 
-        // Limpia errores previos antes de validar de nuevo
         limpiarTodosLosErrores(form);
 
-        // Valida campos requeridos en el frontend
         if (form.checkValidity() === false) {
-            mostrarErroresFormulario(form); // Muestra errores de campos vacíos
-            return; // No envía si falta algo básico
+            mostrarErroresFormulario(form);
+            return;
         }
 
-        // --- Si la validación básica del navegador pasa, envía al servlet ---
         submitButton.disabled = true;
         submitButton.innerHTML = 'Enviando...';
 
@@ -46,34 +42,21 @@ export function inicializarValidacion(formId) {
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                     const data = await response.json(); // Intenta leer el JSON siempre
                     if (!response.ok) {
-                        // Si la respuesta no es OK (ej: 400, 409, 500), lanza un error con los datos
                         const error = new Error(data.message || 'Error desconocido del servidor');
                         error.errors = data.errors; // Adjunta el mapa de errores
                         throw error;
                     }
-                    return data; // Si la respuesta es OK, devuelve los datos de éxito
+                    return data;
                 } else {
-                    // Si la respuesta NO es JSON, es un error grave del servidor.
                     const text = await response.text();
                     throw new Error(`Respuesta inesperada del servidor (no es JSON): ${text.substring(0, 200)}...`);
                 }
             })
             .then(data => {
-                // --- ÉXITO ---
-                // 1. Muestra la notificación verde
                 showToast(data.message || "¡Operación exitosa!", 'success');
 
-                // 2. NO redirige (línea comentada/eliminada)
-                // if (formId.includes('plan')) {
-                //     window.location.hash = "#/planes/lista";
-                // } else if (formId.includes('cliente')) {
-                //     window.location.hash = "#/clientes/lista";
-                // }
-
-                // 3. (Opcional) Limpia el formulario para permitir nueva entrada
                 form.reset();
 
-                // 4. (Opcional) Pone el foco en el primer campo
                 const firstInput = form.querySelector('input, select');
                 if (firstInput) firstInput.focus();
 
@@ -132,10 +115,9 @@ function mostrarError(input, mensaje) {
     if (errorContainer) {
         errorContainer.textContent = mensaje;
     }
-    input.classList.add("is-invalid"); // Aplica el estilo de borde rojo, etc.
+    input.classList.add("is-invalid");
 }
 
-/** Limpia el mensaje de error de un input específico */
 function limpiarError(input) {
     const errorContainer = document.getElementById(`error-${input.id}`);
     if (errorContainer) {
@@ -153,7 +135,6 @@ function limpiarTodosLosErrores(form) {
 /** Muestra los errores específicos devueltos por el servlet */
 function mostrarErroresDelServidor(form, errors) {
     Object.keys(errors).forEach(fieldId => {
-        // Busca el input usando el ID que coincide con la clave del error (ej: 'cliente-ci')
         const input = form.querySelector(`#${fieldId}`);
         if (input) {
             mostrarError(input, errors[fieldId]);
@@ -163,8 +144,6 @@ function mostrarErroresDelServidor(form, errors) {
     });
 }
 
-// --- Función para mostrar Notificaciones Toast ---
-// Asegúrate de tener el CSS y el div #toast-container en tu HTML
 function showToast(message, type = 'success', duration = 4000) {
     const container = document.getElementById('toast-container');
     if (!container) {
@@ -183,7 +162,7 @@ function showToast(message, type = 'success', duration = 4000) {
     setTimeout(() => {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => {
-            if (toast.parentNode === container) { // Doble chequeo por si acaso
+            if (toast.parentNode === container) {
                 container.removeChild(toast);
             }
         });
