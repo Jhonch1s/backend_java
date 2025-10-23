@@ -18,6 +18,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Rutina · Golden Gym</title>
 
+    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
+
     <!-- Tipografía + Normalize -->
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet"
@@ -43,15 +49,7 @@
             background: var(--gg-bg, #101010); color: var(--gg-white, #f3f3f3);
             box-sizing: border-box;
         }
-        .kpi-row{
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-        }
-        .kpi{
-            background: var(--gg-card, #1a1a1a); border: 1px solid var(--gg-border, #2a2a2a);
-            border-radius: 16px; padding: 12px; text-align: center;
-        }
-        .kpi__num{ margin: 0; font-size: 1.6rem; font-weight: 800; }
-        .kpi__label{ margin: 2px 0 0; color: rgba(255,255,255,.8); font-size: .8rem; }
+
 
         .panel{ background: var(--gg-card,#1a1a1a); border: 1px solid var(--gg-border,#2a2a2a);
             border-radius: 18px; padding: 14px; }

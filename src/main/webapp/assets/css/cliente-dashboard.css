@@ -17,16 +17,16 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 
 
 .cliente-home--fixed{
-    +  min-height: 100svh;          /* deja crecer y scrollear */
+    +  min-height: 100svh;
     padding: var(--gg-gap);
     padding-bottom: calc(var(--gg-nav-h) + env(safe-area-inset-bottom));
     display: grid;
-    grid-template-rows: auto 1fr;  /* hero + resto */
+    grid-template-rows: auto 1fr;
     gap: var(--gg-gap);
     box-sizing: border-box;
 }
 
-/* ===== Tarjeta base ===== */
+/* Tarjeta base */
 .tarjeta{
     background: var(--gg-card);
     border: 1px solid var(--gg-border);
@@ -34,7 +34,7 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
     padding: 16px;
 }
 
-/* ===== Hero (perfil) ===== */
+/* Hero */
 .hero{
     background: linear-gradient(135deg, #101010 0%, #2a2a2a 100%);
     padding: 16px;
@@ -61,11 +61,16 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 .hero__stat-number{ font-size: 1.6rem; font-weight: 800; margin: 0; }
 .hero__stat-label{ font-size: .78rem; color: rgba(255,255,255,.75); margin: 0; }
 
-/* ===== Botones (locales al home) ===== */
+/* Botones */
 .cliente-home .btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    border-radius: 14px; text-decoration: none; font-weight: 700;
-    border: 1px solid transparent; transition: transform .1s ease, filter .2s ease, border-color .2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid transparent;
+    transition: transform .1s ease, filter .2s ease, border-color .2s ease;
 }
 .btn--xl{ padding: 14px 16px; font-size: 1rem; }
 .btn--lg{ padding: 10px 14px; font-size: .95rem; }
@@ -83,14 +88,14 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 }
 .btn--ghost-yellow:hover{ filter: brightness(1.05); transform: translateY(-1px); }
 
-/* ===== Bloque (cards secciones) ===== */
+/* Bloque */
 .bloque__head{ margin-bottom: 8px; }
 .bloque__title{
     font-size: 1.15rem; font-weight: 800; margin: 0;
 }
 .bloque__ok{ color: var(--gg-yellow); font-weight: 800; }
 
-/* ===== Tiles de rutinas ===== */
+/* Tiles de rutinas */
 .lista-tiles{ display: grid; gap: 10px; }
 .tile{
     display: grid; grid-template-columns: 1fr auto; align-items: center;
@@ -128,11 +133,11 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 
 /* Variantes de color */
 .prog-item--neg{
-    background: linear-gradient(180deg, rgba(255,165,0,.15), rgba(139,90,0,.18));
-    border-color: #8B5A00;
+    background: linear-gradient(180deg, rgba(255, 35, 35, 0.15), rgba(198, 0, 0, 0.18));
+    border-color: #ff003b;
 }
-.prog-item--neg::before{ background: #FFA500; }
-.prog-item--neg .prog-item__delta{ color: #ff9a3c; } /* naranja - */
+.prog-item--neg::before{ background: #ff003b; }
+.prog-item--neg .prog-item__delta{ color: #ff003b; } /* ahora rojo */
 
 .prog-item--pos-green{
     background: linear-gradient(180deg, rgba(34,197,94,.15), rgba(20,120,60,.18));

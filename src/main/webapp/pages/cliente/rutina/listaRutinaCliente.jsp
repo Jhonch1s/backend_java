@@ -15,6 +15,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Rutina · Golden Gym</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
 
     <!-- Tipografía + Normalize -->
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -29,10 +34,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 
     <!-- CSS del dashboard cliente -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
 
     <style>
-        /* ------- extras mínimos para esta vista ------- */
         .stats-page{
             min-height: 100svh;
             padding: 16px;
@@ -41,51 +44,46 @@
             background: var(--gg-bg, #101010); color: var(--gg-white, #f3f3f3);
             box-sizing: border-box;
         }
-        .kpi-row{
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-        }
-        .kpi{
-            background: var(--gg-card, #1a1a1a); border: 1px solid var(--gg-border, #2a2a2a);
-            border-radius: 16px; padding: 12px; text-align: center;
-        }
-        .kpi__num{ margin: 0; font-size: 1.6rem; font-weight: 800; }
-        .kpi__label{ margin: 2px 0 0; color: rgba(255,255,255,.8); font-size: .8rem; }
 
         .panel{ background: var(--gg-card,#1a1a1a); border: 1px solid var(--gg-border,#2a2a2a);
             border-radius: 18px; padding: 14px; }
         .panel__head{ display:flex; align-items:center; justify-content:space-between; }
         .panel__title{ margin:0; font-size:1.1rem; font-weight:800; }
 
-        .exercise-picker{ display:grid; gap:10px; }
-        .select{
-            width: 100%; background: #121212; color: var(--gg-white); border:1px solid #2a2a2a;
-            border-radius: 12px; padding: 10px 12px;
-        }
-
-        .charts{ display:grid; gap: 12px; }
-        .chart-card{
-            background: #121212; border:1px solid #2a2a2a; border-radius:16px; padding: 10px;
-        }
-        .chart-card__title{ margin:0 0 8px 0; font-weight:700; font-size:.95rem; color: rgba(255,255,255,.9); }
-        .chart-inset{
-            border-radius:12px; background:#0f0f0f; border:1px dashed rgba(255,255,255,.08);
-            display:grid; place-items:center; min-height: 160px;
-        }
         .chart-inset small{ color: rgba(255,255,255,.6); }
 
         .prs{ display:grid; gap:10px; }
         .pr-item{
-            display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px;
-            background: var(--gg-chip,#2a2a2a); border:1px solid var(--gg-border,#2a2a2a); border-radius:14px;
-            padding: 12px;
+            display:grid;
+            grid-template-columns: 1fr auto;
+            align-items:center;
+            gap:10px;
+            background: var(--gg-chip,#2a2a2a);
+            border:1px solid var(--gg-border,#2a2a2a);
+            border-radius:14px;
+            padding: 10px;
         }
         .pr-title{ margin:0; font-weight:800; }
         .pr-sub{ margin:2px 0 0; color: rgba(255,255,255,.8); font-size:.9rem; }
         .pr-meta{ font-weight:800; color: var(--gg-yellow,#fff112); }
 
-        .actions{ display:grid; gap:10px; }
         .actions .btn{ width:100%; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid transparent;
+            transition: transform .1s ease, filter .2s ease, border-color .2s ease;
+        }
+        .btn--primary-yellow{
+            background: var(--gg-yellow);
+            color: #101010;
+        }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
 </head>
 
 <body class="fondo-oscuro texto-claro">
@@ -112,9 +110,9 @@
             <div class="pr-item">
                 <div>
                     <p class="pr-title"><%= i.getRutinaNombre() %></p>
-                    <p class="pr-sub"><%= i.getEstado() %> · Asignada el <%= i.getFechaAsignacion() %></p>
+                    <p class="pr-sub"> <%= i.getEstado() %> · Asignada el <%= i.getFechaAsignacion() %> </p>
                 </div>
-                <span class="pr-meta"><a href="${pageContext.request.contextPath}/progreso-ejercicios?id=<%= i.getIdRutina() %>">Más detalles</a></span>
+                <span class="pr-meta"><a class="btn btn--lg btn--primary-yellow" href="${pageContext.request.contextPath}/progreso-ejercicios?id=<%= i.getIdRutina() %>">Más detalles</a></span>
             </div>
             <%
                 }
@@ -127,14 +125,4 @@
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 
-<!-- Hook opcional para gráficos (más adelante) -->
-<!--
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Ejemplo mínimo:
-  // const ctx = document.getElementById('chart-peso');
-  // new Chart(ctx, { type: 'line', data: {...}, options: {...} });
-</script>
--->
-</body>
 </html>

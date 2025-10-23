@@ -7,14 +7,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Rutina - Cliente</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/progresosCliente.css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/progresosCliente.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
 </head>
 
 <body class="fondo-oscuro texto-claro">
@@ -28,25 +38,33 @@
                 }
             %>
 
-            <h1 class="titillium-negra texto-dorado">
-                <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 24 24" fill="none"
-                     stroke="var(--color-principal)" stroke-width="1.75" stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <path d="M2 12h1" />
+            <h1 class="titillium-negra texto-dorado" style="display: flex; align-items: center; gap: 0.3em;">
+                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--color-principal)"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="display: inline; vertical-align: text-bottom; margin-right: 0.25em;"
+                >
+
+                <path d="M2 12h1" />
                     <path d="M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2" />
                     <path d="M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z" />
                     <path d="M9 12h6" />
                     <path d="M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1z" />
                     <path d="M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2" />
                     <path d="M22 12h-1" />
-                </svg>
-                <%= nombreRutina %>
+                </svg><span> <%= nombreRutina %> </span>
             </h1>
 
-
-            <h2 class="plan-create__label">
+            <h2 class="plan-create__label noMargin">
                 Listado de Ejercicios
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
                      stroke="var(--color-principal)" stroke-width="1.5" stroke-linecap="round"
                      stroke-linejoin="round">
                     <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
@@ -64,7 +82,7 @@
                             (List<EjercicioConProgresoView>) request.getAttribute("ejercicios");
                     if (ejercicios != null && !ejercicios.isEmpty()) {
                         int contador = 1;
-                        int maxSVG = 9; // Número máximo de SVGs que tienes
+                        int maxSVG = 9;
                         for (EjercicioConProgresoView e : ejercicios) {
                             int numeroSVG = Math.min(contador, maxSVG);
                 %>
