@@ -32,6 +32,7 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
     border: 1px solid var(--gg-border);
     border-radius: var(--gg-radius);
     padding: 16px;
+    margin-bottom: 5px;
 }
 
 /* Hero */

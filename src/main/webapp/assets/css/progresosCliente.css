@@ -144,7 +144,7 @@ main {
 
 .bloque h3 svg, .bloque h3 svg * {
     stroke: var(--color-blanco) !important;
-    fill: none !important;
+
 }
 
 .contenedor-tarjetas {
