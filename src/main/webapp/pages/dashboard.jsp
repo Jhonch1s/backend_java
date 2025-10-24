@@ -191,7 +191,6 @@
     </section>
 </template>
 
-
 <div id="toast-container" class="toast-container"></div>
 
 <script> window.APP_CONTEXT_PATH = "${pageContext.request.contextPath}"; </script>
