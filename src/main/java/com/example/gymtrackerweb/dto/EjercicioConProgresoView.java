@@ -11,6 +11,7 @@ public class EjercicioConProgresoView {
     private BigDecimal pesoUsado;
     private int repeticiones;
     private Date fechaUltimoRegistro;
+    private String grupoMuscular;
 
     public EjercicioConProgresoView(){
 
@@ -79,6 +80,14 @@ public class EjercicioConProgresoView {
 
     public void setFechaUltimoRegistro(Date fechaUltimoRegistro) {
         this.fechaUltimoRegistro = fechaUltimoRegistro;
+    }
+
+    public String getGrupoMuscular() {
+        return grupoMuscular;
+    }
+
+    public void setGrupoMuscular(String grupoMuscular) {
+        this.grupoMuscular = grupoMuscular;
     }
 }
 

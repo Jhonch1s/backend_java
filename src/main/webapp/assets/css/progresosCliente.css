@@ -73,8 +73,8 @@ main {
     justify-content: center;
     background-color: rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     margin-right: 1rem;
 }
 
@@ -93,6 +93,21 @@ main {
     margin: 0.25rem 0 0 0;
     font-size: 0.98rem;
     color: var(--color-gris-400);
+}
+
+.tarjeta-ejercicio_contenido .grupo-muscular-label {
+    font-size: 0.8rem; /* Más pequeño */
+    color: var(--gg-brand); /* Color sutil */
+    font-weight: 600; /* Semi-negrita */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ajustar el margen del párrafo "Último:" si es necesario */
+.tarjeta-ejercicio_contenido .ultimo-registro-label {
+    margin-top: 0; /* Quita espacio superior si el grupo muscular está presente */
+    font-size: 0.95rem; /* Podrías ajustar este tamaño también */
+    color: var(--color-gris-200); /* Asegura el color */
 }
 
 
@@ -135,17 +150,13 @@ main {
 
 .bloque h3 {
     margin: 0 0 1rem 0;
-    color: var(--color-principal);
+    color: var(--color-blanco);
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.bloque h3 svg, .bloque h3 svg * {
-    stroke: var(--color-blanco) !important;
-
-}
 
 .contenedor-tarjetas {
     display: flex;
@@ -244,15 +255,34 @@ main {
     box-shadow: 0 0 0 2px #2563EB33;
 }
 
-/* --- Variante para Mejores PRs --- */
-
+/* --- Mejores PRs en Plata --- */
 #mejores-prs .tarjeta-registro {
-    background: linear-gradient(180deg, rgba(255,215,0,.08), rgba(80,60,10,.12));
-    border: 1.5px solid #8B5A00;
+    background: linear-gradient(180deg, rgba(192,192,192,.08), rgba(120,120,120,.12));
+    border: 1.5px solid #C0C0C0; /* borde plata */
 }
-#mejores-prs .tarjeta-registro::before { background: #FFD700; }
-#mejores-prs .tarjeta-registro:hover { box-shadow: 0 18px 40px rgba(255,215,0,0.12); }
-#mejores-prs .registro-fecha { color: var(--color-principal); }
+#mejores-prs .tarjeta-registro::before {
+    background: #C0C0C0; /* indicador plateado */
+}
+#mejores-prs .tarjeta-registro:hover {
+    box-shadow: 0 18px 40px rgba(192,192,192,0.12);
+}
+#mejores-prs .registro-fecha {
+    color: #888888; /* un gris neutro que combine */
+}
+
+#mejores-rms .tarjeta-registro {
+    background: linear-gradient(180deg, rgba(255,215,0,.08), rgba(80,60,10,.12));
+    border: 1.5px solid #8B5A00; /* borde dorado */
+}
+#mejores-rms .tarjeta-registro::before {
+    background: #FFD700; /* indicador dorado */
+}
+#mejores-rms .tarjeta-registro:hover {
+    box-shadow: 0 18px 40px rgba(255,215,0,0.12);
+}
+#mejores-rms .registro-fecha {
+    color: var(--color-principal);
+}
 
 
 /* ==========================================================================
@@ -318,4 +348,106 @@ main {
     align-items: center;
     align-self: center; /* La línea clave para centrar */
     gap: 0.75rem;
+}
+
+.paginacion-numeros {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex: 1;          /* 1. Hace que ocupe el espacio del medio */
+    min-width: 0;     /* 2. Permite que el contenedor se encoja */
+    overflow: hidden; /* 3. OCULTA los botones que no quepan */
+}
+
+#paginacion-controles .boton-primario {
+    width: auto;      /* <-- Esta es la línea mágica */
+    flex-shrink: 0; /* Evita que los botones se encojan */
+}
+
+.boton-pagina {
+    background-color: var(--gg-chip, #2a2a2a);
+    color: var(--color-gris-200);
+    border: 1.5px solid var(--gg-border, #3a3a3a);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.boton-pagina:hover {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: var(--color-principal-oscuro);
+}
+
+.boton-pagina.activo {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: var(--color-principal-oscuro);
+    font-weight: 900;
+}
+
+.paginacion-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gris-400);
+    width: 36px; /* Mismo ancho que los botones */
+    height: 36px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* --- ESTILOS RESPONSIVE PARA PAGINACIÓN --- */
+
+/* Por defecto (pantallas grandes):
+   Mostramos el texto largo y ocultamos el corto. */
+#paginacion-controles .boton-primario .texto-largo {
+    display: inline;
+}
+#paginacion-controles .boton-primario .texto-corto {
+    display: none;
+}
+
+
+/* En pantallas pequeñas (ej: 480px o menos) */
+@media (max-width: 480px) {
+
+    /* Ocultamos el texto largo */
+    #paginacion-controles .boton-primario .texto-largo {
+        display: none;
+    }
+
+    /* Mostramos el texto corto (solo flecha) */
+    #paginacion-controles .boton-primario .texto-corto {
+        display: inline;
+        font-size: 1rem; /* Ajustamos el tamaño de la flecha */
+    }
+
+    /* === ARREGLO 1: "Botones Lindos" === */
+    /* Hacemos que los botones de flecha sean IGUALES a los numéricos */
+    #paginacion-controles .boton-primario {
+        padding-left: 0;  /* Quitamos padding */
+        padding-right: 0; /* Quitamos padding */
+        width: 30px;      /* Mismo ancho que .boton-pagina */
+        height: 30px;     /* Mismo alto que .boton-pagina */
+        border-radius: 8px; /* Mismo radio que .boton-pagina */
+    }
+
+    /* Mantenemos el tamaño de los números */
+    .boton-pagina {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+
+    /* === ARREGLO 2: "Más Gap" === */
+    .paginacion-numeros {
+        gap: 0.4rem; /* Aumentamos el espacio (antes 0.25rem) */
+    }
 }

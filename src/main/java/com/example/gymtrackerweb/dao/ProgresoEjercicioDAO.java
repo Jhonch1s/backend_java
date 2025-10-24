@@ -112,6 +112,7 @@ public class ProgresoEjercicioDAO {
                 r.id AS id_rutina,
                 r.nombre AS nombre_rutina,
                 e.id AS id_ejercicio,
+                gm.nombre AS nombre_grupo_muscular,
                 e.nombre AS nombre_ejercicio,
                 pe.peso_usado,
                 pe.repeticiones,
@@ -120,6 +121,7 @@ public class ProgresoEjercicioDAO {
             INNER JOIN rutina r ON rc.id_rutina = r.id
             INNER JOIN detalle_rutina dr ON r.id = dr.id_rutina
             INNER JOIN ejercicio e ON dr.id_ejercicio = e.id
+            INNER JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id
             LEFT JOIN progreso_ejercicio pe ON pe.id_progreso = (
                 SELECT pe2.id_progreso
                 FROM progreso_ejercicio pe2
@@ -142,6 +144,7 @@ public class ProgresoEjercicioDAO {
                 view.setNombreRutina(resultado.getString("nombre_rutina"));
                 view.setIdEjercicio(resultado.getInt("id_ejercicio"));
                 view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
+                view.setGrupoMuscular(resultado.getString("nombre_grupo_muscular"));
                 view.setPesoUsado(resultado.getBigDecimal("peso_usado"));
                 view.setRepeticiones(resultado.getInt("repeticiones"));
                 view.setFechaUltimoRegistro(resultado.getDate("fecha_ultimo_registro"));

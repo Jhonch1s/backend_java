@@ -82,7 +82,7 @@
                             (List<EjercicioConProgresoView>) request.getAttribute("ejercicios");
                     if (ejercicios != null && !ejercicios.isEmpty()) {
                         int contador = 1;
-                        int maxSVG = 9;
+                        int maxSVG = 30;
                         for (EjercicioConProgresoView e : ejercicios) {
                             int numeroSVG = Math.min(contador, maxSVG);
                 %>
@@ -93,6 +93,7 @@
                     </div>
                     <div class="tarjeta-ejercicio_contenido">
                         <h3 class="texto-dorado"><%= e.getNombreEjercicio() %></h3>
+                        <p class="grupo-muscular-label"><%= e.getGrupoMuscular() %></p>
                         <p class="plan-create__label">
                             <% if (e.getPesoUsado() != null) { %>
                             Último: <%= e.getPesoUsado() %> kg × <%= e.getRepeticiones() %> Reps
@@ -116,39 +117,81 @@
         <section id="pantalla-progreso" class="pantalla">
             <div class="contenedor-botones-volver">
                 <button class="btn-volver boton-primario">← Volver a la lista</button>
-                <button id="btn-volver-limitado" class="boton-primario" style="display: none;">← Ver solo recientes</button>
             </div>
             <h2 id="nombre-ejercicio"></h2>
 
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="${pageContext.request.contextPath}/assets/img/growth.png"
+                    <svg xmlns="http://www.w3.org/2000/svg"
                          width="32"
                          height="32"
-                         alt="Icono de gráfico">
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="var(--color-principal)"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         style="background: none; display: block;">
+                        <path d="M4 15l4 -4l3 3l5 -5l4 4"/>
+                    </svg>
                     Registros recientes
                 </h3>
                 <div id="registros-recientes" class="contenedor-tarjetas"></div>
-                <button id="btn-ver-mas" class="boton-primario btn-historial" style="display: none; margin-top: 1rem; width: 100%;">
-                    Ver historial completo
-                </button>
-            </div>
+                <div id="paginacion-controles" style="display: none; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button id="btn-anterior" class="boton-primario">
+                        <span class="texto-largo">← Anterior</span>
+                        <span class="texto-corto">←</span>
+                    </button>
 
+                    <div id="numeros-pagina" class="paginacion-numeros"></div>
+
+                    <button id="btn-siguiente" class="boton-primario">
+                        <span class="texto-largo">Siguiente →</span>
+                        <span class="texto-corto">→</span>
+                    </button>
+                </div>
+            </div>
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="${pageContext.request.contextPath}/assets/img/svgs/cup-svg.svg"
+                    <svg xmlns="http://www.w3.org/2000/svg"
                          width="32"
                          height="32"
-                         alt="Icono de copa">
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="var(--color-principal)"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         style="background: none; display: block;">
+                        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM5 4h14M5 4a3 3 0 0 0 0 6M19 4a3 3 0 0 1 0 6"/>
+                    </svg>
                     Mejores PRs
                 </h3>
                 <div id="mejores-prs" class="contenedor-tarjetas"></div>
             </div>
+            <div class="bloque">
+                <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="32"
+                         height="32"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="var(--color-principal)"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         style="background: none; display: block;">
+                        <path d="M4 20h16M6 20l1-6h10l1 6M9 10a3 3 0 0 1 6 0v2H9v-2z"/>
+                    </svg>
+                    Mejores RMs
+                </h3>
+                <div id="mejores-rms" class="contenedor-tarjetas"></div>
+            </div>
+
         </section>
-
-
     </main>
 </div>
+
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -157,14 +200,19 @@
         const pantallaProgreso = document.getElementById("pantalla-progreso");
         const nombreEjercicio = document.getElementById("nombre-ejercicio");
 
-        // --- Referencias a todos los botones ---
-        const btnVerMas = document.getElementById("btn-ver-mas");
         const btnVolverPrincipal = document.querySelector(".btn-volver");
-        const btnVolverLimitado = document.getElementById("btn-volver-limitado"); // Nuevo botón
+
+        const paginacionControles = document.getElementById("paginacion-controles");
+        const btnAnterior = document.getElementById("btn-anterior");
+        const btnSiguiente = document.getElementById("btn-siguiente");
+        const numerosPagina = document.getElementById("numeros-pagina");
+
         let ejercicioIdActual = null;
         let ejercicioNombreActual = null;
+        let paginaActual = 1; // NUEVO: rastreador de página
 
-        async function verProgresoPorId(id, nombre, limite = null) {
+        // Ahora acepta 'pagina' en lugar de 'limite'
+        async function verProgresoPorId(id, nombre, pagina = 1) {
             if (!id) {
                 console.error("ID de ejercicio no definido");
                 return;
@@ -172,10 +220,10 @@
 
             ejercicioIdActual = id;
             ejercicioNombreActual = nombre;
-            let url = contextPath + "/detalle-progreso?id=" + encodeURIComponent(id);
-            if (limite) {
-                url += "&limite=" + limite;
-            }
+            paginaActual = pagina; // Actualizamos el estado global
+
+            // La URL ahora pide una página específica
+            let url = contextPath + "/detalle-progreso?id=" + encodeURIComponent(id) + "&pagina=" + pagina;
 
             try {
                 const resp = await fetch(url);
@@ -187,27 +235,15 @@
                 }
                 nombreEjercicio.textContent = nombre;
 
-                // --- Lógica para mostrar el botón "Volver" correcto ---
-                if (limite) {
-                    // Si estamos en vista limitada (ej: 5), mostramos el volver principal.
-                    btnVolverPrincipal.style.display = 'inline-flex';
-                    btnVolverLimitado.style.display = 'none';
-                } else {
-                    // Si estamos en vista completa, ocultamos el principal y mostramos el nuevo.
-                    btnVolverPrincipal.style.display = 'none';
-                    btnVolverLimitado.style.display = 'inline-flex';
-                }
+                // Lógica de "volver" simplificada
+                btnVolverPrincipal.style.display = 'inline-flex';
 
                 const registrosList = document.getElementById("registros-recientes");
                 registrosList.innerHTML = "";
                 if (Array.isArray(data.registros) && data.registros.length > 0) {
-                    // Añadimos 'index' para la animación en cascada
                     data.registros.forEach((r, index) => {
                         const tarjeta = document.createElement("div");
                         tarjeta.classList.add("tarjeta-registro");
-
-                        // --- LÓGICA DE ANIMACIÓN ---
-                        // Aplicamos un retraso creciente a cada tarjeta.
                         tarjeta.style.animationDelay = `${index * 0.07}s`;
 
                         if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
@@ -235,15 +271,10 @@
                         tarjeta.appendChild(detalle);
                         if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
                             const diferencia = document.createElement("p");
-                            diferencia.className = "registro-diferencia"; // Ya no necesitas "titillium-base"
-
-                            // --- LÍNEAS MODIFICADAS ---
+                            diferencia.className = "registro-diferencia";
                             const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
-                            const icono = r.diferenciaPeso > 0 ? "↑ " : "↓ "; // <-- AÑADIMOS EL ICONO
-
+                            const icono = r.diferenciaPeso > 0 ? "↑ " : "↓ ";
                             diferencia.textContent = (icono + simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
-                            // --- FIN DE MODIFICACIÓN ---
-
                             tarjeta.appendChild(diferencia);
                         }
                         registrosList.appendChild(tarjeta);
@@ -255,12 +286,10 @@
                 const prsList = document.getElementById("mejores-prs");
                 prsList.innerHTML = "";
                 if (Array.isArray(data.prs) && data.prs.length > 0) {
-                    // Añadimos 'index' también aquí para consistencia
                     data.prs.forEach((r, index) => {
                         const tarjeta = document.createElement("div");
                         tarjeta.className = "tarjeta-registro";
-                        tarjeta.style.animationDelay = `${index * 0.07}s`; // Animación
-
+                        tarjeta.style.animationDelay = `${index * 0.07}s`;
                         const fecha = document.createElement("strong");
                         fecha.className = "registro-fecha titillium-negra";
                         fecha.textContent = (r.fecha || "sin fecha").trim();
@@ -285,11 +314,92 @@
                     prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
                 }
 
-                if (data.hayMasRegistros) {
-                    btnVerMas.style.display = 'block';
+                const rmsList = document.getElementById("mejores-rms");
+                rmsList.innerHTML = "";
+                if (Array.isArray(data.rms) && data.rms.length > 0) {
+                    data.rms.forEach((r, index) => {
+                        const tarjeta = document.createElement("div");
+                        tarjeta.className = "tarjeta-registro";
+                        tarjeta.style.animationDelay = `${index * 0.07}s`;
+                        const fecha = document.createElement("strong");
+                        fecha.className = "registro-fecha titillium-negra";
+                        fecha.textContent = (r.fecha || "sin fecha").trim();
+                        const detalle = document.createElement("p");
+                        detalle.className = "registro-detalle titillium-base";
+                        let texto = "";
+                        if (r.pesoUsado != null && r.repeticiones != null) {
+                            texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
+                        } else if (r.pesoUsado != null) {
+                            texto = r.pesoUsado + " kg";
+                        } else if (r.repeticiones != null) {
+                            texto = r.repeticiones + " Repeticiones";
+                        } else {
+                            texto = "-";
+                        }
+                        detalle.textContent = texto.trim();
+                        tarjeta.appendChild(fecha);
+                        tarjeta.appendChild(detalle);
+                        rmsList.appendChild(tarjeta);
+                    });
                 } else {
-                    btnVerMas.style.display = 'none';
+                    rmsList.innerHTML = "<div class='tarjeta-registro'>No hay RMs registrados</div>";
                 }
+
+                console.log("RMs recibidos:", data.rms);
+                console.log("Datos completos del progreso:", data);
+
+
+                numerosPagina.innerHTML = "";
+                if (data.totalPaginas > 1) {
+
+                    btnAnterior.disabled = (data.paginaActual <= 1);
+                    btnSiguiente.disabled = (data.paginaActual >= data.totalPaginas);
+
+                    const tamanoVentana = 5;
+                    const offset = Math.floor(tamanoVentana / 2); // 2
+                    let startPage = data.paginaActual - offset;
+                    let endPage = data.paginaActual + offset;
+
+                    // Ajustar si estamos cerca del inicio (página 1)
+                    if (startPage < 1) {
+                        startPage = 1;
+                        endPage = Math.min(tamanoVentana, data.totalPaginas);
+                    }
+
+                    // Ajustar si estamos cerca del final (última página)
+                    if (endPage > data.totalPaginas) {
+                        endPage = data.totalPaginas;
+                        startPage = Math.max(1, data.totalPaginas - tamanoVentana + 1);
+                    }
+
+
+                    for (let i = startPage; i <= endPage; i++) {
+
+                        const btnPagina = document.createElement("button");
+                        btnPagina.className = "boton-pagina";
+                        btnPagina.textContent = i;
+
+                        if (i === data.paginaActual) {
+                            btnPagina.classList.add("activo");
+                        }
+
+
+                        btnPagina.addEventListener('click', () => {
+                            if (ejercicioIdActual && ejercicioNombreActual) {
+                                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, i);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        });
+
+                        numerosPagina.appendChild(btnPagina);
+                    }
+                    // 3. Mostrar
+                    paginacionControles.style.display = 'flex';
+                } else {
+
+                    paginacionControles.style.display = 'none';
+                }
+
 
                 if (!pantallaProgreso.classList.contains('activa')) {
                     pantallaLista.classList.remove("activa");
@@ -308,28 +418,27 @@
             pantallaLista.classList.add("activa");
         });
 
-        // --- Evento para el NUEVO botón (volver a la vista limitada) ---
-        btnVolverLimitado.addEventListener('click', () => {
-            if(ejercicioIdActual && ejercicioNombreActual) {
-                // Llama a la función pidiendo solo los 5 recientes.
-                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, 5);
-            }
-        });
-
-        // Evento para ver el historial completo
-        btnVerMas.addEventListener('click', () => {
-            btnVerMas.style.display = 'none';
+        // --- EVENTOS DE PAGINACIÓN ---
+        btnSiguiente.addEventListener('click', () => {
             if (ejercicioIdActual && ejercicioNombreActual) {
-                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, null);
+                // Llama a la misma función, pero para la página siguiente
+                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, paginaActual + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Subir al inicio
             }
         });
 
-        // Evento para cada tarjeta de ejercicio
+        btnAnterior.addEventListener('click', () => {
+            if (ejercicioIdActual && ejercicioNombreActual) {
+                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, paginaActual - 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Subir al inicio
+            }
+        });
+
         document.querySelectorAll(".tarjeta-ejercicio").forEach(el => {
             el.addEventListener("click", () => {
                 const id = parseInt(el.dataset.ejercicioId, 10);
                 const nombre = el.dataset.ejercicioNombre;
-                verProgresoPorId(id, nombre, 5);
+                verProgresoPorId(id, nombre, 1);
             });
         });
     });
