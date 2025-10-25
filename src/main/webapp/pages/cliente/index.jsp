@@ -173,10 +173,10 @@
         <div class="prog-list u-mt-8">
             <c:forEach var="p" items="${progresosTop}">
                 <c:set var="claseEstado"
-                       value="${p.difKg > 0 ? 'prog-item--pos-green' : (p.difKg < 0 ? 'prog-item--neg' : 'prog-item--neu')}" />
+                       value="${p.difKg > 0 ? 'prog-item--pos-green' : (p.difKg < 0 ? 'prog-item--neg' : 'prog-item--pos-blue')}" />
 
                 <a class="prog-item ${claseEstado}"
-                   href="${pageContext.request.contextPath}/pages/cliente/progreso/detalleProgresoEjercicio.jsp?ejId=${p.idEjercicio}&ejNombre=${fn:escapeXml(p.ejercicio)}">
+                   href="${pageContext.request.contextPath}/progreso-ejercicios?ejId=${p.idEjercicio}&ejNombre=${fn:escapeXml(p.ejercicio)}">
                     <div class="prog-item__text">
                         <p class="prog-item__title">${p.ejercicio}</p>
                         <p class="prog-item__sub">

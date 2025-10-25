@@ -1,213 +1,124 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // --- CONSTANTES ---
+    const TAMANO_PAGINA_FE = 5; // 5 items por página para PRs y RMs (Frontend)
+
+    // --- Referencias a elementos (Principales) ---
     const pantallaLista = document.getElementById("pantalla-lista");
     const pantallaProgreso = document.getElementById("pantalla-progreso");
     const nombreEjercicio = document.getElementById("nombre-ejercicio");
-
     const btnVolverPrincipal = document.querySelector(".btn-volver");
 
+    // --- Referencias (Registros Recientes - CON NÚMEROS) ---
     const paginacionControles = document.getElementById("paginacion-controles");
     const btnAnterior = document.getElementById("btn-anterior");
     const btnSiguiente = document.getElementById("btn-siguiente");
     const numerosPagina = document.getElementById("numeros-pagina");
+    const registrosList = document.getElementById("registros-recientes");
 
+    // --- Referencias (Mejores PRs - CON NÚMEROS) ---
+    const paginacionControlesPRs = document.getElementById("paginacion-controles-prs");
+    const btnAnteriorPRs = document.getElementById("btn-anterior-prs");
+    const btnSiguientePRs = document.getElementById("btn-siguiente-prs");
+    const numerosPaginaPRs = document.getElementById("numeros-pagina-prs"); // ¡Importante!
+    const prsList = document.getElementById("mejores-prs");
+
+    // --- Referencias (Mejores RMs - CON NÚMEROS) ---
+    const paginacionControlesRMs = document.getElementById("paginacion-controles-rms");
+    const btnAnteriorRMs = document.getElementById("btn-anterior-rms");
+    const btnSiguienteRMs = document.getElementById("btn-siguiente-rms");
+    const numerosPaginaRMs = document.getElementById("numeros-pagina-rms"); // ¡Importante!
+    const rmsList = document.getElementById("mejores-rms");
+
+    // --- Variables de estado ---
     let ejercicioIdActual = null;
     let ejercicioNombreActual = null;
-    let paginaActual = 1;
+    let paginaActual = 1; // Página de Registros Recientes (API)
+    let vinoDeDashboard = false;
+
+    // Estado de paginación de Frontend
+    let prsCompletos = [];
+    let rmsCompletos = [];
+    let paginaActualPRs = 1;
+    let paginaActualRMs = 1;
+
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const ejIdFromUrl = urlParams.get('ejId');
+    const ejNombreFromUrl = urlParams.get('ejNombre');
+
+    if (ejIdFromUrl && ejNombreFromUrl) {
+        vinoDeDashboard = true;
+        const nombreDecodificado = decodeURIComponent(ejNombreFromUrl);
+        pantallaProgreso.classList.add("activa");
+        nombreEjercicio.textContent = nombreDecodificado;
+        btnVolverPrincipal.innerHTML = "← Volver al Dashboard";
+        btnVolverPrincipal.style.display = 'inline-flex';
+        verProgresoPorId(parseInt(ejIdFromUrl, 10), nombreDecodificado, 1);
+    } else {
+        pantallaLista.classList.add("activa");
+    }
+
 
     async function verProgresoPorId(id, nombre, pagina = 1) {
-        if (!id) {
-            console.error("ID de ejercicio no definido");
-            return;
-        }
+        if (!id) return;
 
         ejercicioIdActual = id;
         ejercicioNombreActual = nombre;
-        paginaActual = pagina;
+        paginaActual = pagina; // Página de Registros Recientes (API)
 
-        // La URL ahora pide una página específica
         let url = contextPath + "/detalle-progreso?id=" + encodeURIComponent(id) + "&pagina=" + pagina;
 
         try {
             const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`Error ${resp.status}: ${await resp.text()}`);
             const data = await resp.json();
             console.log("Datos recibidos:", data);
 
-            if (!Array.isArray(data.registros)) {
-                throw new Error("Respuesta inválida del servidor");
-            }
+            if (!Array.isArray(data.registros)) throw new Error("Respuesta inválida");
+
             nombreEjercicio.textContent = nombre;
+            if (!vinoDeDashboard) {
+                btnVolverPrincipal.style.display = 'inline-flex';
+                btnVolverPrincipal.innerHTML = "← Volver a la lista";
+            }
 
-            // Lógica de "volver" simplificada
-            btnVolverPrincipal.style.display = 'inline-flex';
-
-            const registrosList = document.getElementById("registros-recientes");
+            // --- 1. Renderizar Registros Recientes (Paginados por API) ---
             registrosList.innerHTML = "";
             if (Array.isArray(data.registros) && data.registros.length > 0) {
                 data.registros.forEach((r, index) => {
-                    const tarjeta = document.createElement("div");
-                    tarjeta.classList.add("tarjeta-registro");
-                    tarjeta.style.animationDelay = `${index * 0.07}s`;
-
-                    if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
-                        tarjeta.classList.add(r.diferenciaPeso > 0 ? "mejora" : "retroceso");
-                    } else {
-                        tarjeta.classList.add("sin-cambio");
-                    }
-                    const fecha = document.createElement("strong");
-                    fecha.className = "registro-fecha titillium-negra";
-                    fecha.textContent = (r.fecha || "sin fecha").trim();
-                    const detalle = document.createElement("p");
-                    detalle.className = "registro-detalle titillium-base";
-                    let texto = "";
-                    if (r.pesoUsado != null && r.repeticiones != null) {
-                        texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
-                    } else if (r.pesoUsado != null) {
-                        texto = r.pesoUsado + " kg";
-                    } else if (r.repeticiones != null) {
-                        texto = r.repeticiones + " Repeticiones";
-                    } else {
-                        texto = "-";
-                    }
-                    detalle.textContent = texto.trim();
-                    tarjeta.appendChild(fecha);
-                    tarjeta.appendChild(detalle);
-                    const diferencia = document.createElement("p");
-                    diferencia.className = "registro-diferencia";
-                    if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
-                        // Caso Mejora (verde) o Retroceso (rojo)
-                        const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
-                        const icono = r.diferenciaPeso > 0 ?
-                            "↑ " : "↓ ";
-                        diferencia.textContent = (icono + simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
-                    } else {
-                        diferencia.textContent = "±0 kg"; // <-- ¡AQUÍ ESTÁ TU TEXTO!
-                        diferencia.classList.add("sin-cambio"); // Le ponemos la clase para el estilo
-                    }
-                    tarjeta.appendChild(diferencia);
-                    registrosList.appendChild(tarjeta);
+                    registrosList.appendChild(crearTarjetaRegistro(r, index));
                 });
             } else {
                 registrosList.innerHTML = "<div class='tarjeta-registro'>No hay registros recientes</div>";
             }
 
-            const prsList = document.getElementById("mejores-prs");
-            prsList.innerHTML = "";
-            if (Array.isArray(data.prs) && data.prs.length > 0) {
-                data.prs.forEach((r, index) => {
-                    const tarjeta = document.createElement("div");
-                    tarjeta.className = "tarjeta-registro";
-                    tarjeta.style.animationDelay = `${index * 0.07}s`;
-                    const fecha = document.createElement("strong");
-                    fecha.className = "registro-fecha titillium-negra";
-                    fecha.textContent = (r.fecha || "sin fecha").trim();
-                    const detalle = document.createElement("p");
-                    detalle.className = "registro-detalle titillium-base";
-                    let texto = "";
-                    if (r.pesoUsado != null && r.repeticiones != null) {
-                        texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
-                    } else if (r.pesoUsado != null) {
-                        texto = r.pesoUsado + " kg";
-                    } else if (r.repeticiones != null) {
-                        texto = r.repeticiones + " Repeticiones";
-                    } else {
-                        texto = "-";
-                    }
-                    detalle.textContent = texto.trim();
-                    tarjeta.appendChild(fecha);
-                    tarjeta.appendChild(detalle);
-                    prsList.appendChild(tarjeta);
-                });
-            } else {
-                prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
-            }
-
-            const rmsList = document.getElementById("mejores-rms");
-            rmsList.innerHTML = "";
-            if (Array.isArray(data.rms) && data.rms.length > 0) {
-                data.rms.forEach((r, index) => {
-                    const tarjeta = document.createElement("div");
-                    tarjeta.className = "tarjeta-registro";
-                    tarjeta.style.animationDelay = `${index * 0.07}s`;
-                    const fecha = document.createElement("strong");
-                    fecha.className = "registro-fecha titillium-negra";
-                    fecha.textContent = (r.fecha || "sin fecha").trim();
-                    const detalle = document.createElement("p");
-                    detalle.className = "registro-detalle titillium-base";
-                    let texto = "";
-                    if (r.pesoUsado != null && r.repeticiones != null) {
-                        texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
-                    } else if (r.pesoUsado != null) {
-                        texto = r.pesoUsado + " kg";
-                    } else if (r.repeticiones != null) {
-                        texto = r.repeticiones + " Repeticiones";
-                    } else {
-                        texto = "-";
-                    }
-                    detalle.textContent = texto.trim();
-                    tarjeta.appendChild(fecha);
-                    tarjeta.appendChild(detalle);
-                    rmsList.appendChild(tarjeta);
-                });
-            } else {
-                rmsList.innerHTML = "<div class='tarjeta-registro'>No hay RMs registrados</div>";
-            }
-
-            console.log("RMs recibidos:", data.rms);
-            console.log("Datos completos del progreso:", data);
-
-
-            numerosPagina.innerHTML = "";
-            if (data.totalPaginas > 1) {
-
-                btnAnterior.disabled = (data.paginaActual <= 1);
-                btnSiguiente.disabled = (data.paginaActual >= data.totalPaginas);
-
-                const tamanoVentana = 5;
-                const offset = Math.floor(tamanoVentana / 2); // 2
-                let startPage = data.paginaActual - offset;
-                let endPage = data.paginaActual + offset;
-
-                // Ajustar si estamos cerca del inicio (página 1)
-                if (startPage < 1) {
-                    startPage = 1;
-                    endPage = Math.min(tamanoVentana, data.totalPaginas);
+            // --- 2. Renderizar Paginación (Registros Recientes - CON NÚMEROS) ---
+            renderizarBotonesPaginacionConNumeros(
+                data.totalPaginas,
+                data.paginaActual,
+                numerosPagina,
+                (nuevaPagina) => {
+                    verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, nuevaPagina);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-
-                // Ajustar si estamos cerca del final (última página)
-                if (endPage > data.totalPaginas) {
-                    endPage = data.totalPaginas;
-                    startPage = Math.max(1, data.totalPaginas - tamanoVentana + 1);
-                }
+            );
+            btnAnterior.disabled = (data.paginaActual <= 1);
+            btnSiguiente.disabled = (data.paginaActual >= data.totalPaginas);
+            paginacionControles.style.display = data.totalPaginas > 1 ? 'flex' : 'none';
 
 
-                for (let i = startPage; i <= endPage; i++) {
+            // --- 3. Guardar listas completas y Renderizar PRs y RMs (Paginados por JS) ---
+            // (El servlet ahora envía las listas completas)
+            prsCompletos = Array.isArray(data.prs) ? data.prs : [];
+            rmsCompletos = Array.isArray(data.rms) ? data.rms : [];
 
-                    const btnPagina = document.createElement("button");
-                    btnPagina.className = "boton-pagina";
-                    btnPagina.textContent = i;
+            paginaActualPRs = 1; // Resetea la página al cargar
+            paginaActualRMs = 1; // Resetea la página al cargar
 
-                    if (i === data.paginaActual) {
-                        btnPagina.classList.add("activo");
-                    }
+            renderizarPRs();
+            renderizarRMs();
 
-
-                    btnPagina.addEventListener('click', () => {
-                        if (ejercicioIdActual && ejercicioNombreActual) {
-                            verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, i);
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    });
-
-                    numerosPagina.appendChild(btnPagina);
-                }
-
-                paginacionControles.style.display = 'flex';
-            } else {
-
-                paginacionControles.style.display = 'none';
-            }
-
-
+            // --- Lógica de cambio de pantalla (sin cambios) ---
             if (!pantallaProgreso.classList.contains('activa')) {
                 pantallaLista.classList.remove("activa");
                 pantallaProgreso.classList.add("activa");
@@ -219,31 +130,213 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+
+    function renderizarPRs() {
+        const totalPaginas = Math.ceil(prsCompletos.length / TAMANO_PAGINA_FE);
+        const inicio = (paginaActualPRs - 1) * TAMANO_PAGINA_FE;
+        const fin = inicio + TAMANO_PAGINA_FE;
+        const prsPagina = prsCompletos.slice(inicio, fin);
+
+        prsList.innerHTML = "";
+        if (prsPagina.length > 0) {
+            prsPagina.forEach((pr, index) => {
+                prsList.appendChild(crearTarjetaPR(pr, index));
+            });
+        } else {
+            prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
+        }
+
+        // --- PINTAR NÚMEROS ---
+        renderizarBotonesPaginacionConNumeros(
+            totalPaginas,
+            paginaActualPRs,
+            numerosPaginaPRs, // El div de números de PRs
+            (nuevaPagina) => {
+                paginaActualPRs = nuevaPagina;
+                renderizarPRs();
+            }
+        );
+
+        // Lógica de botones
+        btnAnteriorPRs.disabled = (paginaActualPRs <= 1);
+        btnSiguientePRs.disabled = (paginaActualPRs >= totalPaginas);
+        paginacionControlesPRs.style.display = totalPaginas > 1 ? 'flex' : 'none';
+    }
+
+    function renderizarRMs() {
+        const totalPaginas = Math.ceil(rmsCompletos.length / TAMANO_PAGINA_FE);
+        const inicio = (paginaActualRMs - 1) * TAMANO_PAGINA_FE;
+        const fin = inicio + TAMANO_PAGINA_FE;
+        const rmsPagina = rmsCompletos.slice(inicio, fin);
+
+        rmsList.innerHTML = "";
+        if (rmsPagina.length > 0) {
+            rmsPagina.forEach((rm, index) => {
+                rmsList.appendChild(crearTarjetaPR(rm, index)); // Reutilizamos el creador de tarjeta
+            });
+        } else {
+            rmsList.innerHTML = "<div class='tarjeta-registro'>No hay RMs registrados</div>";
+        }
+
+        // --- PINTAR NÚMEROS ---
+        renderizarBotonesPaginacionConNumeros(
+            totalPaginas,
+            paginaActualRMs,
+            numerosPaginaRMs, // El div de números de RMs
+            (nuevaPagina) => {
+                paginaActualRMs = nuevaPagina;
+                renderizarRMs();
+            }
+        );
+
+        // Lógica de botones
+        btnAnteriorRMs.disabled = (paginaActualRMs <= 1);
+        btnSiguienteRMs.disabled = (paginaActualRMs >= totalPaginas);
+        paginacionControlesRMs.style.display = totalPaginas > 1 ? 'flex' : 'none';
+    }
+
+
+    /**
+     * Crea una tarjeta de registro reciente (con diferencia de peso)
+     */
+    function crearTarjetaRegistro(r, index) {
+        const tarjeta = document.createElement("div");
+        tarjeta.classList.add("tarjeta-registro");
+        tarjeta.style.animationDelay = `${index * 0.07}s`;
+
+        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
+            tarjeta.classList.add(r.diferenciaPeso > 0 ? "mejora" : "retroceso");
+        } else {
+            tarjeta.classList.add("sin-cambio");
+        }
+
+        tarjeta.appendChild(crearElemento("strong", "registro-fecha titillium-negra", (r.fecha || "sin fecha").trim()));
+
+        let textoDetalle = "-";
+        if (r.pesoUsado != null && r.repeticiones != null) {
+            textoDetalle = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
+        } else if (r.pesoUsado != null) {
+            textoDetalle = r.pesoUsado + " kg";
+        } else if (r.repeticiones != null) {
+            textoDetalle = r.repeticiones + " Repeticiones";
+        }
+        tarjeta.appendChild(crearElemento("p", "registro-detalle titillium-base", textoDetalle.trim()));
+
+        const diferencia = crearElemento("p", "registro-diferencia", "");
+        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
+            const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
+            const icono = r.diferenciaPeso > 0 ? "↑ " : "↓ ";
+            diferencia.textContent = (icono + simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
+        } else {
+            diferencia.textContent = "±0 kg";
+            diferencia.classList.add("sin-cambio");
+        }
+        tarjeta.appendChild(diferencia);
+        return tarjeta;
+    }
+
+
+    function crearTarjetaPR(r, index) {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta-registro";
+        tarjeta.style.animationDelay = `${index * 0.07}s`;
+
+        tarjeta.appendChild(crearElemento("strong", "registro-fecha titillium-negra", (r.fecha || "sin fecha").trim()));
+        tarjeta.appendChild(crearElemento("p", "registro-detalle titillium-base", `${r.pesoUsado || 0} kg × ${r.repeticiones || 0} Reps`));
+
+        return tarjeta;
+    }
+
+    function crearElemento(tag, className, textContent) {
+        const el = document.createElement(tag);
+        el.className = className;
+        if (textContent) el.textContent = textContent;
+        return el;
+    }
+
+    function renderizarBotonesPaginacionConNumeros(totalPaginas, paginaActual, contenedorBotones, callbackClick) {
+        contenedorBotones.innerHTML = "";
+        if (totalPaginas <= 1) return;
+
+        const tamanoVentana = 5;
+        const offset = Math.floor(tamanoVentana / 2);
+        let startPage = paginaActual - offset;
+        let endPage = paginaActual + offset;
+
+        if (startPage < 1) {
+            startPage = 1;
+            endPage = Math.min(tamanoVentana, totalPaginas);
+        }
+        if (endPage > totalPaginas) {
+            endPage = totalPaginas;
+            startPage = Math.max(1, totalPaginas - tamanoVentana + 1);
+        }
+
+        // Botones de la ventana
+        for (let i = startPage; i <= endPage; i++) {
+            contenedorBotones.appendChild(crearBotonPagina(i, paginaActual, callbackClick));
+        }
+    }
+
+    function crearBotonPagina(numeroPagina, paginaActual, callbackClick) {
+        const btnPagina = document.createElement("button");
+        btnPagina.className = "boton-pagina";
+        btnPagina.textContent = numeroPagina;
+        if (numeroPagina === paginaActual) {
+            btnPagina.classList.add("activo");
+        }
+        btnPagina.addEventListener('click', () => {
+            callbackClick(numeroPagina);
+        });
+        return btnPagina;
+    }
+
+    // --- Botón Volver Principal ---
     btnVolverPrincipal.addEventListener("click", () => {
-        pantallaProgreso.classList.remove("activa");
-        pantallaLista.classList.add("activa");
+        if (vinoDeDashboard) {
+            window.location.href = contextPath + '/cliente'; //
+        } else {
+            pantallaProgreso.classList.remove("activa");
+            pantallaLista.classList.add("activa");
+        }
     });
 
-    // --- EVENTOS DE PAGINACIÓN ---
+    // --- Paginación Registros Recientes (API) ---
     btnSiguiente.addEventListener('click', () => {
-        if (ejercicioIdActual && ejercicioNombreActual) {
-            // Llama a la misma función, pero para la página siguiente
-            verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, paginaActual + 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Subir al inicio
-        }
+        verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, paginaActual + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
     btnAnterior.addEventListener('click', () => {
-        if (ejercicioIdActual && ejercicioNombreActual) {
-            verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, paginaActual - 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Subir al inicio
-        }
+        verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, paginaActual - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    // --- Paginación PRs (Frontend) ---
+    btnSiguientePRs.addEventListener('click', () => {
+        paginaActualPRs++;
+        renderizarPRs();
+    });
+    btnAnteriorPRs.addEventListener('click', () => {
+        paginaActualPRs--;
+        renderizarPRs();
+    });
+
+    // --- Paginación RMs (Frontend) ---
+    btnSiguienteRMs.addEventListener('click', () => {
+        paginaActualRMs++;
+        renderizarRMs();
+    });
+    btnAnteriorRMs.addEventListener('click', () => {
+        paginaActualRMs--;
+        renderizarRMs();
+    });
+
+    // --- Listener de Tarjetas (sin cambios) ---
     document.querySelectorAll(".tarjeta-ejercicio").forEach(el => {
         el.addEventListener("click", () => {
             const id = parseInt(el.dataset.ejercicioId, 10);
             const nombre = el.dataset.ejercicioNombre;
+            vinoDeDashboard = false;
             verProgresoPorId(id, nombre, 1);
         });
     });

@@ -187,7 +187,7 @@ public class ProgresoEjercicioDAO {
                 "FROM progreso_ejercicio " +
                 "WHERE id_ejercicio = ? AND id_cliente = ? " +
                 "ORDER BY peso_usado DESC " +
-                "LIMIT 3";
+                "LIMIT 5";
         Connection con = databaseConection.getInstancia().getConnection();
         try (PreparedStatement ps = con.prepareStatement(sql)) {
 

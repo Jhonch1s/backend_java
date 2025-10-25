@@ -367,7 +367,9 @@ main {
     overflow: hidden;
 }
 
-#paginacion-controles .boton-primario {
+#paginacion-controles .boton-primario,
+#paginacion-controles-prs .boton-primario,
+#paginacion-controles-rms .boton-primario {
     width: auto;
     flex-shrink: 0;
 }
@@ -420,16 +422,22 @@ main {
 
 
 @media (max-width: 480px) {
-    #paginacion-controles .boton-primario .texto-largo {
+    #paginacion-controles .boton-primario .texto-largo,
+    #paginacion-controles-prs .boton-primario .texto-largo,
+    #paginacion-controles-rms .boton-primario .texto-largo {
         display: none;
     }
 
-    #paginacion-controles .boton-primario .texto-corto {
+    #paginacion-controles .boton-primario .texto-corto,
+    #paginacion-controles-prs .boton-primario .texto-corto,
+    #paginacion-controles-rms .boton-primario .texto-corto {
         display: inline;
         font-size: 1rem;
     }
 
-    #paginacion-controles .boton-primario {
+    #paginacion-controles .boton-primario,
+    #paginacion-controles-prs .boton-primario,
+    #paginacion-controles-rms .boton-primario {
         padding-left: 0;
         padding-right: 0;
         width: 30px;

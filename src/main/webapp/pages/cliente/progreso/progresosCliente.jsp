@@ -30,7 +30,7 @@
 <body class="fondo-oscuro texto-claro">
 <div class="app">
     <main>
-        <section id="pantalla-lista" class="pantalla activa">
+        <section id="pantalla-lista" class="pantalla">
             <%
                 String nombreRutina = (String) request.getAttribute("nombreRutina");
                 if (nombreRutina == null || nombreRutina.isBlank()) {
@@ -168,6 +168,18 @@
                     Mejores PRs
                 </h3>
                 <div id="mejores-prs" class="contenedor-tarjetas"></div>
+
+                <div id="paginacion-controles-prs" style="display: none; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button id="btn-anterior-prs" class="boton-primario">
+                        <span class="texto-largo">← Anterior</span>
+                        <span class="texto-corto">←</span>
+                    </button>
+                    <div id="numeros-pagina-prs" class="paginacion-numeros"></div>
+                    <button id="btn-siguiente-prs" class="boton-primario">
+                        <span class="texto-largo">Siguiente →</span>
+                        <span class="texto-corto">→</span>
+                    </button>
+                </div>
             </div>
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
@@ -186,8 +198,19 @@
                     Mejores RMs
                 </h3>
                 <div id="mejores-rms" class="contenedor-tarjetas"></div>
-            </div>
 
+                <div id="paginacion-controles-rms" style="display: none; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button id="btn-anterior-rms" class="boton-primario">
+                        <span class="texto-largo">← Anterior</span>
+                        <span class="texto-corto">←</span>
+                    </button>
+                    <div id="numeros-pagina-rms" class="paginacion-numeros"></div>
+                    <button id="btn-siguiente-rms" class="boton-primario">
+                        <span class="texto-largo">Siguiente →</span>
+                        <span class="texto-corto">→</span>
+                    </button>
+                </div>
+            </div>
         </section>
     </main>
 </div>

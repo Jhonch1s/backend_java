@@ -168,7 +168,7 @@ public class DetalleProgresoServlet extends HttpServlet {
         }
         filtrados.sort((a, b) -> Integer.compare(b.getPesoUsado(), a.getPesoUsado()));
 
-        return filtrados.subList(0, Math.min(3, filtrados.size()));
+        return filtrados;
     }
 
 
@@ -194,7 +194,7 @@ public class DetalleProgresoServlet extends HttpServlet {
 
         filtrados.sort((a, b) -> Integer.compare(b.getPesoUsado(), a.getPesoUsado()));
 
-        return filtrados.subList(0, Math.min(3, filtrados.size()));
+        return filtrados;
     }
 
 
