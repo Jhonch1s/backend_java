@@ -149,13 +149,6 @@ public class DetalleRutinaDAO {
     }
 
 
-    // --- NUEVOS MÉTODOS para detalle_rutina_dia ---
-
-    /**
-     * Asigna un día de la semana a un detalle de rutina específico.
-     * @param idDetalleRutina El ID del detalle_rutina (ejercicio dentro de la rutina).
-     * @param dia El día de la semana (LUNES, MARTES, etc.).
-     */
     public void agregarDiaADetalle(int idDetalleRutina, DiaSemana dia) {
         // Primero, verificamos si ya existe para evitar duplicados (opcional pero buena idea)
         if (existeDiaParaDetalle(idDetalleRutina, dia)) {
@@ -177,11 +170,6 @@ public class DetalleRutinaDAO {
         }
     }
 
-    /**
-     * Elimina TODOS los días asignados a un detalle de rutina específico.
-     * Útil cuando se elimina un ejercicio de una rutina.
-     * @param idDetalleRutina El ID del detalle_rutina.
-     */
     public void eliminarDiasDeDetalle(int idDetalleRutina) {
         String sql = "DELETE FROM detalle_rutina_dia WHERE id_detalle_rutina = ?";
         Connection conexion = databaseConection.getInstancia().getConnection();
@@ -195,12 +183,6 @@ public class DetalleRutinaDAO {
         }
     }
 
-    /**
-     * Elimina UN día específico asignado a un detalle de rutina.
-     * Útil si el usuario desmarca un día en la interfaz.
-     * @param idDetalleRutina El ID del detalle_rutina.
-     * @param dia El día específico a eliminar.
-     */
     public void eliminarDiaEspecificoDeDetalle(int idDetalleRutina, DiaSemana dia) {
         String sql = "DELETE FROM detalle_rutina_dia WHERE id_detalle_rutina = ? AND dia_semana = ?";
         Connection conexion = databaseConection.getInstancia().getConnection();
@@ -220,11 +202,6 @@ public class DetalleRutinaDAO {
     }
 
 
-    /**
-     * Obtiene la lista de días de la semana asignados a un detalle de rutina específico.
-     * @param idDetalleRutina El ID del detalle_rutina.
-     * @return Una lista de Enums DiaSemana.
-     */
     public List<DiaSemana> listarDiasPorDetalle(int idDetalleRutina) {
         List<DiaSemana> dias = new ArrayList<>();
         String sql = "SELECT dia_semana FROM detalle_rutina_dia WHERE id_detalle_rutina = ?";
@@ -247,10 +224,6 @@ public class DetalleRutinaDAO {
         return dias;
     }
 
-    /**
-     * Verifica si una combinación específica de detalle y día ya existe.
-     * Usado internamente por agregarDiaADetalle para evitar duplicados.
-     */
     private boolean existeDiaParaDetalle(int idDetalleRutina, DiaSemana dia) {
         String sql = "SELECT COUNT(*) FROM detalle_rutina_dia WHERE id_detalle_rutina = ? AND dia_semana = ?";
         Connection conexion = databaseConection.getInstancia().getConnection();
