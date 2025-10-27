@@ -1,4 +1,3 @@
-
 main {
     display: flex;
     flex-direction: column;
@@ -46,7 +45,7 @@ main {
     margin-bottom: 60px;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--gg-border,#2a2a2a);
+    border: 1px solid var(--gg-border);
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
@@ -55,7 +54,7 @@ main {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: var(--gg-chip,#2a2a2a);
+    background: var(--color-gris-700);
     border-radius: 8px;
     padding: 0.875rem;
     transition: background-color 0.2s ease;
@@ -73,8 +72,8 @@ main {
     justify-content: center;
     background-color: rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     margin-right: 1rem;
 }
 
@@ -93,6 +92,20 @@ main {
     margin: 0.25rem 0 0 0;
     font-size: 0.98rem;
     color: var(--color-gris-400);
+}
+
+.tarjeta-ejercicio_contenido .grupo-muscular-label {
+    font-size: 0.8rem; /* Más pequeño */
+    color: var(--gg-brand); /* Color sutil */
+    font-weight: 600; /* Semi-negrita */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tarjeta-ejercicio_contenido .ultimo-registro-label {
+    margin-top: 0;
+    font-size: 0.95rem;
+    color: var(--color-gris-200);
 }
 
 
@@ -135,17 +148,13 @@ main {
 
 .bloque h3 {
     margin: 0 0 1rem 0;
-    color: var(--color-principal);
+    color: var(--color-blanco);
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.bloque h3 svg, .bloque h3 svg * {
-    stroke: var(--color-blanco) !important;
-
-}
 
 .contenedor-tarjetas {
     display: flex;
@@ -169,7 +178,7 @@ main {
     position: relative;
     overflow: hidden;
     transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-    font-family: var(--fuente-base); /* <-- FUENTE UNIFICADA */
+    font-family: var(--fuente-base);
 }
 
 .tarjeta-registro:hover {
@@ -213,8 +222,8 @@ main {
     grid-row: 1 / 3; /* Ocupa ambas filas */
     justify-self: end;
     align-self: center;
-    font-size: 1.15rem; /* <--- AHORA COINCIDE CON LA FECHA */
-    font-weight: 750; /* <--- AHORA COINCIDE CON LA FECHA */
+    font-size: 1.15rem;
+    font-weight: 750;
     white-space: nowrap;
     color: inherit; /* Hereda el color del estado */
 }
@@ -223,36 +232,63 @@ main {
 /* --- Modificadores de Estado (Colores) --- */
 
 .tarjeta-registro.mejora {
-    background: linear-gradient(180deg, rgba(34,197,94,0.18), rgba(20,120,60,0.22));
-    border: 1.5px solid #22C55E;
-    box-shadow: 0 0 0 2px #22C55E33;
-    color: #22C55E; /* Color para .registro-diferencia */
+    background: linear-gradient(180deg, var(--color-exito-fondo-1), var(--color-exito-fondo-2));
+    border: 1.5px solid var(--color-exito);
+    box-shadow: 0 0 0 2px var(--color-exito-sombra);
+    color: var(--color-exito); /* Color para .registro-diferencia */
 }
-.tarjeta-registro.mejora::before { background: #22C55E; }
+.tarjeta-registro.mejora::before { background: var(--color-exito); }
 
 .tarjeta-registro.retroceso {
-    background: linear-gradient(180deg, rgba(220,38,38,0.18), rgba(120,20,20,0.22));
-    border: 1.5px solid #DC2626;
-    box-shadow: 0 0 0 2px #DC262633;
-    color: #DC2626;
+    background: linear-gradient(180deg, var(--color-peligro-fondo-1), var(--color-peligro-fondo-2));
+    border: 1.5px solid var(--color-peligro);
+    box-shadow: 0 0 0 2px var(--color-peligro-sombra);
+    color: var(--color-peligro);
 }
-.tarjeta-registro.retroceso::before { background: #DC2626; }
+.tarjeta-registro.retroceso::before { background: var(--color-peligro); }
 
 .tarjeta-registro.sin-cambio {
-    background: linear-gradient(180deg, rgba(37,99,235,0.18), rgba(30,64,175,0.22));
-    border: 1.5px solid #2563EB;
-    box-shadow: 0 0 0 2px #2563EB33;
+    background: linear-gradient(180deg, var(--color-info-fondo-1), var(--color-info-fondo-2));
+    border: 1.5px solid var(--color-info);
+    box-shadow: 0 0 0 2px var(--color-info-sombra);
+    color: var(--color-info);
 }
 
-/* --- Variante para Mejores PRs --- */
+.tarjeta-registro.sin-cambio::before { background: var(--color-info); }
 
+
+/* --- Mejores PRs en Plata --- */
 #mejores-prs .tarjeta-registro {
-    background: linear-gradient(180deg, rgba(255,215,0,.08), rgba(80,60,10,.12));
-    border: 1.5px solid #8B5A00;
+    background: linear-gradient(180deg, var(--color-pr-fondo-1), var(--color-pr-fondo-2));
+    border: 1.5px solid var(--color-pr-plata); /* borde plata */
+    color: var(--color-pr-plata); /* <-- ¡AGREGÁ ESTA LÍNEA! */
 }
-#mejores-prs .tarjeta-registro::before { background: #FFD700; }
-#mejores-prs .tarjeta-registro:hover { box-shadow: 0 18px 40px rgba(255,215,0,0.12); }
-#mejores-prs .registro-fecha { color: var(--color-principal); }
+
+#mejores-prs .tarjeta-registro::before {
+    background: var(--color-pr-plata); /* indicador plateado */
+}
+#mejores-prs .tarjeta-registro:hover {
+    box-shadow: 0 18px 40px var(--color-pr-sombra);
+}
+#mejores-prs .registro-fecha {
+    color: var(--color-gris-400);
+}
+
+/* --- Mejores RMs en Dorado --- */
+#mejores-rms .tarjeta-registro {
+    background: linear-gradient(180deg, var(--color-rm-fondo-1), var(--color-rm-fondo-2));
+    border: 1.5px solid var(--color-rm-borde);
+    color: var(--color-principal);
+}
+#mejores-rms .tarjeta-registro::before {
+    background: var(--color-rm-oro);
+}
+#mejores-rms .tarjeta-registro:hover {
+    box-shadow: 0 18px 40px var(--color-rm-sombra);
+}
+#mejores-rms .registro-fecha {
+    color: var(--color-principal); /* Usando tu color principal de utilidades */
+}
 
 
 /* ==========================================================================
@@ -318,4 +354,129 @@ main {
     align-items: center;
     align-self: center; /* La línea clave para centrar */
     gap: 0.75rem;
+}
+
+/* ==========================================================================
+   PAGINACIÓN (Ahora usando variables)
+   ========================================================================== */
+
+.paginacion-numeros {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+#paginacion-controles .boton-primario,
+#paginacion-controles-prs .boton-primario,
+#paginacion-controles-rms .boton-primario {
+    width: auto;
+    flex-shrink: 0;
+}
+
+.boton-pagina {
+    background-color: var(--gg-surface-2); /* Usando tu variable */
+    color: var(--color-gris-200);
+    border: 1.5px solid var(--gg-border);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.boton-pagina:hover {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: var(--color-principal-oscuro);
+}
+
+.boton-pagina.activo {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: var(--color-principal-oscuro);
+    font-weight: 900;
+}
+
+.paginacion-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gris-400);
+    width: 36px;
+    height: 36px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+#paginacion-controles .boton-primario .texto-largo {
+    display: inline;
+}
+#paginacion-controles .boton-primario .texto-corto {
+    display: none;
+}
+
+
+@media (max-width: 480px) {
+    #paginacion-controles .boton-primario .texto-largo,
+    #paginacion-controles-prs .boton-primario .texto-largo,
+    #paginacion-controles-rms .boton-primario .texto-largo {
+        display: none;
+    }
+
+    #paginacion-controles .boton-primario .texto-corto,
+    #paginacion-controles-prs .boton-primario .texto-corto,
+    #paginacion-controles-rms .boton-primario .texto-corto {
+        display: inline;
+        font-size: 1rem;
+    }
+
+    #paginacion-controles .boton-primario,
+    #paginacion-controles-prs .boton-primario,
+    #paginacion-controles-rms .boton-primario {
+        padding-left: 0;
+        padding-right: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    }
+
+    .boton-pagina {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .paginacion-numeros {
+        gap: 0.4rem;
+    }
+}
+
+/* ==========================================================
+   ESTILOS PARA AGRUPACIÓN POR DÍA
+   ========================================================== */
+
+.titulo-dia {
+    /* Hereda titillium-negra y texto-dorado del JSP */
+    font-size: 1.4rem; /* Un poco más grande que el título del bloque */
+    margin-top: 2rem; /* Espacio ANTES del título del día */
+    margin-bottom: 0.75rem; /* Espacio ENTRE el título y la lista de ejercicios */
+    padding-bottom: 0.5rem; /* Espacio debajo del texto */
+    border-bottom: 2px solid var(--gg-border); /* Una línea sutil debajo */
+    text-transform: capitalize; /* Asegura que se vea "Lunes", no "LUNES" */
+}
+
+/* Ajuste para el primer título del día, para que no tenga tanto margen superior */
+#pantalla-lista .titulo-dia:first-of-type {
+    margin-top: 1rem;
+}
+
+/* Quitamos el margen superior de la lista cuando está agrupada por día */
+#pantalla-lista .lista-ejercicios {
+    margin-top: 0;
 }

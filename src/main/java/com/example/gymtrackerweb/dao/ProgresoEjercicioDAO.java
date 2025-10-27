@@ -2,11 +2,12 @@ package com.example.gymtrackerweb.dao;
 
 
 import com.example.gymtrackerweb.db.databaseConection;
-import com.example.gymtrackerweb.dto.EjercicioConProgresoView;
+import com.example.gymtrackerweb.dto.EjercicioRutinaView;
 import com.example.gymtrackerweb.dto.EjercicioMin;
 import com.example.gymtrackerweb.dto.EjercicioMiniKpis;
 import com.example.gymtrackerweb.dto.ProgresoCard;
 import com.example.gymtrackerweb.model.ProgresoEjercicio;
+import com.example.gymtrackerweb.model.enums.DiaSemana;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -105,53 +106,58 @@ public class ProgresoEjercicioDAO {
         return progresoLista;
     }
 
-    public List<EjercicioConProgresoView> listarEjerciciosConProgreso(String clienteId, int rutinaID){
-        List<EjercicioConProgresoView> progresoLista = new ArrayList<>();
+    public List<EjercicioRutinaView> listarEjerciciosPorRutinaYDia(String clienteId, int rutinaID) {
+        List<EjercicioRutinaView> ejerciciosRutina = new ArrayList<>();
+
+        // --- INICIO DE SQL MODIFICADO ---
+        // Quitamos el LEFT JOIN a progreso_ejercicio y seleccionamos dr.series y dr.repeticiones
         String sql = """
-            SELECT\s
+            SELECT
                 r.id AS id_rutina,
                 r.nombre AS nombre_rutina,
                 e.id AS id_ejercicio,
                 e.nombre AS nombre_ejercicio,
-                pe.peso_usado,
-                pe.repeticiones,
-                pe.fecha AS fecha_ultimo_registro
+                gm.nombre AS nombre_grupo_muscular,
+                dr.series,
+                dr.repeticiones,
+                drd.dia_semana  -- Traemos el día desde la nueva tabla
             FROM rutina_cliente rc
             INNER JOIN rutina r ON rc.id_rutina = r.id
             INNER JOIN detalle_rutina dr ON r.id = dr.id_rutina
+            INNER JOIN detalle_rutina_dia drd ON dr.id = drd.id_detalle_rutina -- JOIN a la nueva tabla
             INNER JOIN ejercicio e ON dr.id_ejercicio = e.id
-            LEFT JOIN progreso_ejercicio pe ON pe.id_progreso = (
-                SELECT pe2.id_progreso
-                FROM progreso_ejercicio pe2
-                WHERE pe2.id_ejercicio = e.id
-                  AND pe2.id_cliente = rc.id_cliente
-                ORDER BY pe2.fecha DESC
-                LIMIT 1
-            )
+            INNER JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id
             WHERE rc.id_cliente = ?
               AND r.id = ?
+            ORDER BY
+                -- Ordenamos por día de la semana (Lunes primero, etc.)
+                FIELD(drd.dia_semana, 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'),
+                dr.id -- Y luego por el orden en que se agregaron (o el ID del ejercicio)
         """;
         Connection conexion = databaseConection.getInstancia().getConnection();
         try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
             sentencia.setString(1, clienteId);
             sentencia.setInt(2, rutinaID);
             ResultSet resultado = sentencia.executeQuery();
+
             while(resultado.next()){
-                EjercicioConProgresoView view = new EjercicioConProgresoView();
+                EjercicioRutinaView view = new EjercicioRutinaView();
                 view.setIdRutina(resultado.getInt("id_rutina"));
                 view.setNombreRutina(resultado.getString("nombre_rutina"));
                 view.setIdEjercicio(resultado.getInt("id_ejercicio"));
                 view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
-                view.setPesoUsado(resultado.getBigDecimal("peso_usado"));
-                view.setRepeticiones(resultado.getInt("repeticiones"));
-                view.setFechaUltimoRegistro(resultado.getDate("fecha_ultimo_registro"));
+                view.setGrupoMuscular(resultado.getString("nombre_grupo_muscular"));
+                view.setSeries(resultado.getInt("series"));
+                view.setRepeticionesRutina(resultado.getInt("repeticiones"));
+                String diaStr = resultado.getString("dia_semana");
+                view.setDiaSemana(DiaSemana.fromString(diaStr));
 
-                progresoLista.add(view);
+                ejerciciosRutina.add(view);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return progresoLista;
+        return ejerciciosRutina;
     }
 
     public List<ProgresoEjercicio> obtenerRegistrosDetallados(int idEjercicio, String idCliente) {
@@ -184,7 +190,7 @@ public class ProgresoEjercicioDAO {
                 "FROM progreso_ejercicio " +
                 "WHERE id_ejercicio = ? AND id_cliente = ? " +
                 "ORDER BY peso_usado DESC " +
-                "LIMIT 3";
+                "LIMIT 5";
         Connection con = databaseConection.getInstancia().getConnection();
         try (PreparedStatement ps = con.prepareStatement(sql)) {
 

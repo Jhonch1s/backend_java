@@ -27,26 +27,23 @@
     animation: toastSlideIn 0.3s ease-out forwards;
 }
 
-/* Iconos (opcional, puedes usar emojis o SVGs) */
-.toast::before {
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
+
 
 /* Estilos por tipo */
 .toast--success {
     border-left: 4px solid var(--accent-success); /* Borde verde */
-}
-.toast--success::before {
-    content: '✅'; /* Icono de éxito */
 }
 
 .toast--error {
     border-left: 4px solid var(--accent-danger); /* Borde rojo */
     color: var(--accent-danger); /* Texto rojo para error */
 }
-.toast--error::before {
-    content: '❌'; /* Icono de error */
+
+.toast__icon {
+    width: 1.3em; /* Ajusta el tamaño como prefieras */
+    height: 1.3em;
+    flex-shrink: 0; /* Evita que se encoja si el texto es largo */
+    /* El color lo tomará del 'color' del .toast (currentColor) */
 }
 
 /* Animación de entrada */

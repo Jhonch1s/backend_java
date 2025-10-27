@@ -50,15 +50,20 @@ public class DetalleProgresoServlet extends HttpServlet {
             return;
         }
 
-        String limiteStr = request.getParameter("limite");
-        Integer limite = null;
-        if (limiteStr != null) {
+        // --- LÓGICA DE PAGINACIÓN ---
+        String paginaStr = request.getParameter("pagina");
+        int pagina = 1; // Página por defecto
+        int tamanoPagina = 5; // Registros por página
+        if (paginaStr != null) {
             try {
-                limite = Integer.parseInt(limiteStr);
+                pagina = Integer.parseInt(paginaStr);
+                if (pagina < 1) pagina = 1;
             } catch (NumberFormatException e) {
-                // Ignorar si el formato es inválido, se devolverán todos
+                pagina = 1; // Volver a la página 1 si el formato es inválido
             }
         }
+        // --- FIN LÓGICA DE PAGINACIÓN ---
+
 
         ProgresoEjercicioDAO dao = new ProgresoEjercicioDAO();
         List<ProgresoEjercicio> registrosCompletos = dao.obtenerRegistrosDetallados(idEjercicio, idCliente);
@@ -67,28 +72,35 @@ public class DetalleProgresoServlet extends HttpServlet {
         // Ordenar por fecha descendente (más reciente primero)
         registrosCompletos.sort((a, b) -> b.getFecha().compareTo(a.getFecha()));
 
-        // 2. Aplicar el límite si existe
-        List<ProgresoEjercicio> registrosParaEnviar;
-        boolean hayMasRegistros = false;
+        // 2. Aplicar la paginación a la lista completa
+        int totalRegistros = registrosCompletos.size();
+        int totalPaginas = (int) Math.ceil((double) totalRegistros / tamanoPagina);
 
-        if (limite != null && limite > 0 && registrosCompletos.size() > limite) {
-            registrosParaEnviar = registrosCompletos.subList(0, limite);
-            hayMasRegistros = true; // Informamos que hay más registros que no se enviaron
-        } else {
-            registrosParaEnviar = registrosCompletos; // Enviar la lista completa
+        // Asegurarse de que la página solicitada no esté fuera de rango
+        if (pagina > totalPaginas && totalPaginas > 0) {
+            pagina = totalPaginas;
         }
 
-        // El cálculo de PRs se hace sobre la lista completa siempre
+        int inicio = (pagina - 1) * tamanoPagina;
+        int fin = Math.min(inicio + tamanoPagina, totalRegistros);
+
+        List<ProgresoEjercicio> registrosParaEnviar;
+        if (inicio > fin) {
+            registrosParaEnviar = new ArrayList<>(); // Si no hay registros o la página está mal, lista vacía
+        } else {
+            registrosParaEnviar = registrosCompletos.subList(inicio, fin); // Obtenemos la página
+        }
+
         List<ProgresoEjercicio> prs = calcularPRs(registrosCompletos);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // 3. Procesar la lista a enviar (que puede estar limitada o no)
         List<ProgresoDetalleView> registrosDTO = new ArrayList<>();
         for (int i = 0; i < registrosParaEnviar.size(); i++) {
             ProgresoEjercicio actual = registrosParaEnviar.get(i);
             int diferencia = 0;
-            // La lógica de diferencia debe mirar la lista completa para ser precisa
+
+            // La lógica de diferencia sigue funcionando porque mira la lista completa
             int indiceOriginal = registrosCompletos.indexOf(actual);
             if (indiceOriginal + 1 < registrosCompletos.size()) {
                 ProgresoEjercicio anterior = registrosCompletos.get(indiceOriginal + 1);
@@ -103,14 +115,42 @@ public class DetalleProgresoServlet extends HttpServlet {
             ));
         }
 
-        // PRs
         List<ProgresoDetalleView> prsDTO = new ArrayList<>();
-        for (ProgresoEjercicio pr : prs) {
+        for (int i = 0; i < prs.size(); i++) {
+            ProgresoEjercicio actual = prs.get(i);
+            Integer diferencia = null; // Usamos Integer para permitir null
+
+            // Comparamos con el siguiente en la lista de PRs
+            if (i + 1 < prs.size()) {
+                ProgresoEjercicio siguiente = prs.get(i + 1);
+                diferencia = actual.getPesoUsado() - siguiente.getPesoUsado();
+            }
+
             prsDTO.add(new ProgresoDetalleView(
-                    pr.getFecha().toLocalDate().format(formatter),
-                    pr.getPesoUsado(),
-                    pr.getRepeticiones(),
-                    null // No calculamos diferencia en PRs
+                    actual.getFecha().toLocalDate().format(formatter),
+                    actual.getPesoUsado(),
+                    actual.getRepeticiones(),
+                    diferencia
+            ));
+        }
+
+        List<ProgresoEjercicio> rms = calcularRMs(registrosCompletos);
+
+        List<ProgresoDetalleView> rmsDTO = new ArrayList<>();
+        for (int i = 0; i < rms.size(); i++) {
+            ProgresoEjercicio actual = rms.get(i);
+            Integer diferencia = null;
+
+            if (i + 1 < rms.size()) {
+                ProgresoEjercicio siguiente = rms.get(i + 1);
+                diferencia = actual.getPesoUsado() - siguiente.getPesoUsado();
+            }
+
+            rmsDTO.add(new ProgresoDetalleView(
+                    actual.getFecha().toLocalDate().format(formatter),
+                    actual.getPesoUsado(),
+                    actual.getRepeticiones(),
+                    diferencia
             ));
         }
 
@@ -118,7 +158,10 @@ public class DetalleProgresoServlet extends HttpServlet {
         Map<String, Object> data = new HashMap<>();
         data.put("registros", registrosDTO);
         data.put("prs", prsDTO);
-        data.put("hayMasRegistros", hayMasRegistros);
+        data.put("rms", rmsDTO);
+        // Enviamos la información de paginación
+        data.put("paginaActual", pagina);
+        data.put("totalPaginas", totalPaginas);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
@@ -133,13 +176,43 @@ public class DetalleProgresoServlet extends HttpServlet {
     private List<ProgresoEjercicio> calcularPRs(List<ProgresoEjercicio> registros) {
         if (registros == null || registros.isEmpty()) return Collections.emptyList();
 
-        List<ProgresoEjercicio> listaConRm = new ArrayList<>(registros);
-        listaConRm.sort((a, b) -> {
-            double rmA = a.getPesoUsado() * (1 + a.getRepeticiones() / 30.0);
-            double rmB = b.getPesoUsado() * (1 + b.getRepeticiones() / 30.0);
-            return Double.compare(rmB, rmA);
-        });
+        List<ProgresoEjercicio> filtrados = new ArrayList<>();
+        for (ProgresoEjercicio r : registros) {
+            if (r.getRepeticiones() >= 4) {
+                filtrados.add(r);
+            }
+        }
+        filtrados.sort((a, b) -> Integer.compare(b.getPesoUsado(), a.getPesoUsado()));
 
-        return listaConRm.subList(0, Math.min(3, listaConRm.size()));
+        return filtrados;
     }
+
+
+    private List<ProgresoEjercicio> calcularRMs(List<ProgresoEjercicio> registros) {
+        if (registros == null || registros.isEmpty()) return Collections.emptyList();
+
+        // 1. Encontrar el peso máximo histórico
+        int maxPeso = registros.stream()
+                .mapToInt(ProgresoEjercicio::getPesoUsado)
+                .max()
+                .orElse(0);
+
+        // 2. Filtrar solo series válidas para RM: 1-3 repeticiones y peso >= 50% del máximo
+        List<ProgresoEjercicio> filtrados = new ArrayList<>();
+        for (ProgresoEjercicio r : registros) {
+            if (r.getRepeticiones() >= 1 && r.getRepeticiones() <= 3) {
+                double rmEstimado = r.getPesoUsado() * (1 + r.getRepeticiones() / 30.0); // fórmula Epley
+                if (rmEstimado >= maxPeso * 0.5) { // al menos 50% del máximo histórico
+                    filtrados.add(r);
+                }
+            }
+        }
+
+        filtrados.sort((a, b) -> Integer.compare(b.getPesoUsado(), a.getPesoUsado()));
+
+        return filtrados;
+    }
+
+
+
 }
