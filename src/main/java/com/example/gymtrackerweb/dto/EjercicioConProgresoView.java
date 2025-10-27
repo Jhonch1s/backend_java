@@ -8,24 +8,24 @@ public class EjercicioConProgresoView {
     private String nombreRutina;
     private int idEjercicio;
     private String nombreEjercicio;
-    private BigDecimal pesoUsado;
-    private int repeticiones;
-    private Date fechaUltimoRegistro;
     private String grupoMuscular;
+    private int series;
+    private int repeticionesRutina;
 
     public EjercicioConProgresoView(){
 
     }
 
-    public EjercicioConProgresoView(int idRutina,String nombreRutina, int idEjercicio, String nombreEjercicio, BigDecimal pesoUsado, int repeticiones, Date fechaUltimoRegistro){
+    public EjercicioConProgresoView(int idRutina, String nombreRutina, int idEjercicio, String nombreEjercicio, String grupoMuscular, int series, int repeticionesRutina) {
         this.idRutina = idRutina;
         this.nombreRutina = nombreRutina;
         this.idEjercicio = idEjercicio;
         this.nombreEjercicio = nombreEjercicio;
-        this.pesoUsado = pesoUsado;
-        this.repeticiones = repeticiones;
-        this.fechaUltimoRegistro = fechaUltimoRegistro;
+        this.grupoMuscular = grupoMuscular;
+        this.series = series;
+        this.repeticionesRutina = repeticionesRutina;
     }
+
     public void setIdRutina(int idRutina) {
         this.idRutina = idRutina;
     }
@@ -58,36 +58,28 @@ public class EjercicioConProgresoView {
         this.nombreEjercicio = nombreEjercicio;
     }
 
-    public BigDecimal getPesoUsado() {
-        return pesoUsado;
-    }
-
-    public void setPesoUsado(BigDecimal pesoUsado) {
-        this.pesoUsado = pesoUsado;
-    }
-
-    public int getRepeticiones() {
-        return repeticiones;
-    }
-
-    public void setRepeticiones(int repeticiones) {
-        this.repeticiones = repeticiones;
-    }
-
-    public Date getFechaUltimoRegistro() {
-        return fechaUltimoRegistro;
-    }
-
-    public void setFechaUltimoRegistro(Date fechaUltimoRegistro) {
-        this.fechaUltimoRegistro = fechaUltimoRegistro;
-    }
-
     public String getGrupoMuscular() {
         return grupoMuscular;
     }
 
     public void setGrupoMuscular(String grupoMuscular) {
         this.grupoMuscular = grupoMuscular;
+    }
+
+    public int getSeries() {
+        return series;
+    }
+
+    public void setSeries(int series) {
+        this.series = series;
+    }
+
+    public int getRepeticionesRutina() {
+        return repeticionesRutina;
+    }
+
+    public void setRepeticionesRutina(int repeticionesRutina) {
+        this.repeticionesRutina = repeticionesRutina;
     }
 }
 

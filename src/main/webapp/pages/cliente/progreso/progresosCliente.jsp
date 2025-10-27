@@ -95,12 +95,7 @@
                         <h3 class="texto-dorado"><%= e.getNombreEjercicio() %></h3>
                         <p class="grupo-muscular-label"><%= e.getGrupoMuscular() %></p>
                         <p class="plan-create__label">
-                            <% if (e.getPesoUsado() != null) { %>
-                            Último: <%= e.getPesoUsado() %> kg × <%= e.getRepeticiones() %> Reps
-                            (<%= new java.text.SimpleDateFormat("dd/MM").format(e.getFechaUltimoRegistro()) %>)
-                            <% } else { %>
-                            Sin registros aún
-                            <% } %>
+                            <%= e.getSeries() %> series × <%= e.getRepeticionesRutina() %> Reps
                         </p>
                     </div>
 
@@ -193,7 +188,7 @@
                          stroke-linecap="round"
                          stroke-linejoin="round"
                          style="background: none; display: block;">
-                        <path d="M4 20h16M6 20l1-6h10l1 6M9 10a3 3 0 0 1 6 0v2H9v-2z"/>
+                        <path d="M12 6L9 9L5 7L6 13L3 17H21L18 13L19 7L15 9L12 6Z" />
                     </svg>
                     Mejores RMs
                 </h3>

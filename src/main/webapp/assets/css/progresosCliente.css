@@ -261,7 +261,9 @@ main {
 #mejores-prs .tarjeta-registro {
     background: linear-gradient(180deg, var(--color-pr-fondo-1), var(--color-pr-fondo-2));
     border: 1.5px solid var(--color-pr-plata); /* borde plata */
+    color: var(--color-pr-plata); /* <-- ¡AGREGÁ ESTA LÍNEA! */
 }
+
 #mejores-prs .tarjeta-registro::before {
     background: var(--color-pr-plata); /* indicador plateado */
 }
@@ -269,16 +271,17 @@ main {
     box-shadow: 0 18px 40px var(--color-pr-sombra);
 }
 #mejores-prs .registro-fecha {
-    color: var(--color-gris-400); /* Usando tu gris de utilidades */
+    color: var(--color-gris-400);
 }
 
 /* --- Mejores RMs en Dorado --- */
 #mejores-rms .tarjeta-registro {
     background: linear-gradient(180deg, var(--color-rm-fondo-1), var(--color-rm-fondo-2));
-    border: 1.5px solid var(--color-rm-borde); /* borde dorado */
+    border: 1.5px solid var(--color-rm-borde);
+    color: var(--color-principal);
 }
 #mejores-rms .tarjeta-registro::before {
-    background: var(--color-rm-oro); /* indicador dorado */
+    background: var(--color-rm-oro);
 }
 #mejores-rms .tarjeta-registro:hover {
     box-shadow: 0 18px 40px var(--color-rm-sombra);
@@ -410,8 +413,6 @@ main {
     font-weight: 700;
     font-size: 0.9rem;
 }
-
-/* --- ESTILOS RESPONSIVE PARA PAGINACIÓN --- */
 
 #paginacion-controles .boton-primario .texto-largo {
     display: inline;

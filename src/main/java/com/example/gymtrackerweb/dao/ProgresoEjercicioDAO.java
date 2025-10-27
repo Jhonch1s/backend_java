@@ -107,29 +107,23 @@ public class ProgresoEjercicioDAO {
 
     public List<EjercicioConProgresoView> listarEjerciciosConProgreso(String clienteId, int rutinaID){
         List<EjercicioConProgresoView> progresoLista = new ArrayList<>();
+
+        // --- INICIO DE SQL MODIFICADO ---
+        // Quitamos el LEFT JOIN a progreso_ejercicio y seleccionamos dr.series y dr.repeticiones
         String sql = """
-            SELECT\s
+            SELECT 
                 r.id AS id_rutina,
                 r.nombre AS nombre_rutina,
                 e.id AS id_ejercicio,
                 gm.nombre AS nombre_grupo_muscular,
                 e.nombre AS nombre_ejercicio,
-                pe.peso_usado,
-                pe.repeticiones,
-                pe.fecha AS fecha_ultimo_registro
+                dr.series,
+                dr.repeticiones
             FROM rutina_cliente rc
             INNER JOIN rutina r ON rc.id_rutina = r.id
             INNER JOIN detalle_rutina dr ON r.id = dr.id_rutina
             INNER JOIN ejercicio e ON dr.id_ejercicio = e.id
             INNER JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id
-            LEFT JOIN progreso_ejercicio pe ON pe.id_progreso = (
-                SELECT pe2.id_progreso
-                FROM progreso_ejercicio pe2
-                WHERE pe2.id_ejercicio = e.id
-                  AND pe2.id_cliente = rc.id_cliente
-                ORDER BY pe2.fecha DESC
-                LIMIT 1
-            )
             WHERE rc.id_cliente = ?
               AND r.id = ?
         """;
@@ -138,6 +132,7 @@ public class ProgresoEjercicioDAO {
             sentencia.setString(1, clienteId);
             sentencia.setInt(2, rutinaID);
             ResultSet resultado = sentencia.executeQuery();
+
             while(resultado.next()){
                 EjercicioConProgresoView view = new EjercicioConProgresoView();
                 view.setIdRutina(resultado.getInt("id_rutina"));
@@ -145,9 +140,8 @@ public class ProgresoEjercicioDAO {
                 view.setIdEjercicio(resultado.getInt("id_ejercicio"));
                 view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
                 view.setGrupoMuscular(resultado.getString("nombre_grupo_muscular"));
-                view.setPesoUsado(resultado.getBigDecimal("peso_usado"));
-                view.setRepeticiones(resultado.getInt("repeticiones"));
-                view.setFechaUltimoRegistro(resultado.getDate("fecha_ultimo_registro"));
+                view.setSeries(resultado.getInt("series"));
+                view.setRepeticionesRutina(resultado.getInt("repeticiones"));
 
                 progresoLista.add(view);
             }

@@ -115,26 +115,42 @@ public class DetalleProgresoServlet extends HttpServlet {
             ));
         }
 
-        // PRs (sin cambios)
         List<ProgresoDetalleView> prsDTO = new ArrayList<>();
-        for (ProgresoEjercicio pr : prs) {
+        for (int i = 0; i < prs.size(); i++) {
+            ProgresoEjercicio actual = prs.get(i);
+            Integer diferencia = null; // Usamos Integer para permitir null
+
+            // Comparamos con el siguiente en la lista de PRs
+            if (i + 1 < prs.size()) {
+                ProgresoEjercicio siguiente = prs.get(i + 1);
+                diferencia = actual.getPesoUsado() - siguiente.getPesoUsado();
+            }
+
             prsDTO.add(new ProgresoDetalleView(
-                    pr.getFecha().toLocalDate().format(formatter),
-                    pr.getPesoUsado(),
-                    pr.getRepeticiones(),
-                    null // No calculamos diferencia en PRs
+                    actual.getFecha().toLocalDate().format(formatter),
+                    actual.getPesoUsado(),
+                    actual.getRepeticiones(),
+                    diferencia
             ));
         }
 
         List<ProgresoEjercicio> rms = calcularRMs(registrosCompletos);
 
         List<ProgresoDetalleView> rmsDTO = new ArrayList<>();
-        for (ProgresoEjercicio rm : rms) {
+        for (int i = 0; i < rms.size(); i++) {
+            ProgresoEjercicio actual = rms.get(i);
+            Integer diferencia = null;
+
+            if (i + 1 < rms.size()) {
+                ProgresoEjercicio siguiente = rms.get(i + 1);
+                diferencia = actual.getPesoUsado() - siguiente.getPesoUsado();
+            }
+
             rmsDTO.add(new ProgresoDetalleView(
-                    rm.getFecha().toLocalDate().format(formatter),
-                    rm.getPesoUsado(),
-                    rm.getRepeticiones(),
-                    null
+                    actual.getFecha().toLocalDate().format(formatter),
+                    actual.getPesoUsado(),
+                    actual.getRepeticiones(),
+                    diferencia
             ));
         }
 
