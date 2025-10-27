@@ -1,6 +1,7 @@
 package com.example.gymtrackerweb.servlet;
 
 import com.example.gymtrackerweb.dao.ClienteDAO;
+import com.example.gymtrackerweb.dao.ClienteFotoDAO;
 import com.example.gymtrackerweb.dao.ProgresoEjercicioDAO;
 import com.example.gymtrackerweb.dao.RegistroGymDAO;
 import com.example.gymtrackerweb.dto.MembresiaPlanView;
@@ -42,6 +43,10 @@ public class ClientePerfilServlet extends HttpServlet {
         try {
             LocalDate hoyUy = LocalDate.now(ZONE_UY);
             YearMonth ymUy = YearMonth.from(hoyUy);
+            var fotoDao = new ClienteFotoDAO();
+            var urlOpt  = fotoDao.obtenerUrlPorCliente(usuario.getCi());
+            req.setAttribute("clienteFotoUrl", urlOpt.orElse(null));
+
 
             //reciclado de dashboard
             RegistroGymDAO registroDAO = new RegistroGymDAO();

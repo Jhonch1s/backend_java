@@ -5,7 +5,6 @@ body {
     color: var(--color-blanco);
 }
 
-/* ===== Bloque: login ===== */
 .login {
     width: 100%;
     padding: 1rem;
@@ -155,15 +154,7 @@ body {
     text-align: center;
 }
 
-/* ==========================================================
-    CREAR PLAN DE MEMBRESÍA (scope: .plan-create)
-   ========================================================== */
 
-/* ==========================================================
-   ESTILOS DE VALIDACIÓN DE FORMULARIO
-   ========================================================== */
-
-/* 1. Contenedor del mensaje de error */
 .form__error-message {
     color: var(--color-rojo); /* */
     font-size: 0.85rem;
@@ -172,8 +163,6 @@ body {
     min-height: 1.1em; /* Evita que el layout "salte" */
 }
 
-/* 2. Estilo del input cuando es inválido */
-/* Usamos una clase .is-invalid que pondremos con JS */
 .plan-create__control.is-invalid {
     border-color: var(--color-rojo);
     background: rgba(255, 77, 79, 0.05);
@@ -185,13 +174,11 @@ body {
 }
 
 
-/* Página oscura general (si tu body no lo hace ya) */
 .page--dark {
     background: var(--gg-bg);
     color: var(--gg-text);
 }
 
-/* ---------- Layout del módulo ---------- */
 .plan-create {
     padding-block: clamp(16px, 2vw, 32px);
 }
@@ -241,7 +228,6 @@ body {
     text-decoration: underline;
 }
 
-/* ---------- Encabezado ---------- */
 .plan-create__title {
     margin: 0;
     text-align: center;
@@ -260,7 +246,6 @@ body {
     margin-top: .5rem;
 }
 
-/* ---------- Grid responsivo de campos ---------- */
 .plan-create__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -275,7 +260,6 @@ body {
     }
 }
 
-/* ---------- Campo + etiqueta + ayuda ---------- */
 .plan-create__field {
     display: flex;
     flex-direction: column;
@@ -293,9 +277,6 @@ body {
     margin-top: .35rem;
 }
 
-/* ---------- Controles (inputs/select/file) ----------
-   NOTA: si ya tienes .input/.select globales, este scope solo
-   los mejora dentro de .plan-create sin romper el resto.      */
 .plan-create .input,
 .plan-create .select,
 .plan-create__control {
@@ -593,9 +574,6 @@ body {
     display: inline-block;
 }
 
-/* ==========================================================
-   MEJORAS RESPONSIVAS (Móvil < 768px)
-   ========================================================== */
 
 @media (max-width: 768px) {
 

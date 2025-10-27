@@ -12,7 +12,7 @@
 
   <nav class="sidebar__nav">
 
-    <!-- SECCIÓN RUTINA -->
+    <!-- RUTINA -->
     <h3 class="sidebar__section"><span>Rutina</span></h3>
     <ul>
       <li>
@@ -60,7 +60,7 @@
     <h3 class="sidebar__section"><span>Cliente</span></h3>
     <ul>
       <li>
-        <a href="#/clientes/nuevo" data-link>
+        <a href="${pageContext.request.contextPath}/pages/staff/cliente/crearCliente.jsp" data-link>
           <!-- ícono usuario plus -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="7" r="4"/>
@@ -70,7 +70,7 @@
         </a>
       </li>
       <li>
-        <a href="#/clientes/modificar" data-link>
+        <a href="${pageContext.request.contextPath}/pages/staff/cliente/modificarCliente.jsp" data-link>
           <!-- ícono lápiz -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 20h9"/>
@@ -185,8 +185,8 @@
         </form>
       </li>
     </ul>
-
   </nav>
 </aside>
+
 
 

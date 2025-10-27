@@ -237,6 +237,5 @@
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script src="${pageContext.request.contextPath}/assets/js/progresoCliente.js" defer></script>
-
 </body>
 </html>

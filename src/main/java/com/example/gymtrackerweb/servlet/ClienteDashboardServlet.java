@@ -1,5 +1,6 @@
 package com.example.gymtrackerweb.servlet;
 
+import com.example.gymtrackerweb.dao.ClienteFotoDAO;
 import com.example.gymtrackerweb.dao.ProgresoEjercicioDAO;
 import com.example.gymtrackerweb.dao.RegistroGymDAO;
 import com.example.gymtrackerweb.dao.RutinaDAO;
@@ -37,6 +38,7 @@ public class ClienteDashboardServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
+
         //depurando
         //System.out.println("CI en sesión = [" + usuario.getCi() + "]");
 
@@ -48,7 +50,9 @@ public class ClienteDashboardServlet extends HttpServlet {
             //obtenemos los datos
             BigDecimal kgLevantadosMes =  progresoEjercicioDAO.obtenerKgLevantadosEnMes(usuario.getCi(), ym.getYear(), ym.getMonthValue());
             BigDecimal kgLevantadosTotal =  progresoEjercicioDAO.obtenerKgLevantadosTotal(usuario.getCi());
-
+            var fotoDao = new ClienteFotoDAO();
+            var urlOpt  = fotoDao.obtenerUrlPorCliente(usuario.getCi());
+            req.setAttribute("clienteFotoUrl", urlOpt.orElse(null));
             //depurando...
             //System.out.println("Kg levantados (mes): " + kgLevantadosMes);
             //System.out.println("Kg levantados (total): " + kgLevantadosTotal);

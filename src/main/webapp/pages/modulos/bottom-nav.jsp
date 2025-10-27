@@ -1,16 +1,32 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: jhonc
-  Date: 09/10/2025
-  Time: 12:26
-  To change this template use File | Settings | File Templates.
---%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<%-- Tomamos la URI ORIGINARIA si hay FORWARD; si no, la actual --%>
+<c:set var="__fwd" value="${requestScope['jakarta.servlet.forward.request_uri']}" />
+<c:if test="${empty __fwd}">
+  <c:set var="__fwd" value="${requestScope['javax.servlet.forward.request_uri']}" />
+</c:if>
+<c:set var="__uri_eff" value="${empty __fwd ? pageContext.request.requestURI : __fwd}" />
+<c:set var="__ctx" value="${pageContext.request.contextPath}" />
+<c:set var="__path_eff" value="${fn:substring(__uri_eff, fn:length(__ctx), fn:length(__uri_eff))}" />
+
+<%-- Inicio activo si la ruta efectiva es /cliente (con o sin /) o si forwardea al JSP de inicio --%>
+<c:set var="isInicio"
+       value="${__path_eff == '/cliente'
+               or __path_eff == '/cliente/'
+               or __path_eff == '/pages/cliente/index.jsp'}" />
+<!-- DEBUG opcional:
+__uri_eff=/GymTrackerWeb/cliente  __path_eff=/cliente  isInicio=true -->
+<!-- DEBUG: __uri_eff=<c:out value="${__uri_eff}"/> __path_eff=<c:out value="${__path_eff}"/> isInicio=<c:out value="${isInicio}"/> -->
+
 <nav class="bottom-nav" role="navigation" aria-label="Navegación principal">
   <ul class="bottom-nav__list">
-    <!-- Inicio (activo) -->
+
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/cliente"
-         data-tab="/inicio" aria-current="page">
+      <a class="bottom-nav__btn ${isInicio ? 'is-active' : ''}"
+         href="${pageContext.request.contextPath}/cliente"
+         data-tab="/inicio"
+         <c:if test="${isInicio}">aria-current="page"</c:if>>
         <svg class="bottom-nav__icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
         </svg>
@@ -18,18 +34,27 @@
       </a>
     </li>
 
+    <!-- RUTINAS -->
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/cliente/listarutinas"
-         data-tab="/rutinas" aria-current="false">
+      <a class="bottom-nav__btn ${requestScope.navActive == 'rutinas' ? 'is-active' : ''}"
+         href="${pageContext.request.contextPath}/cliente/listarutinas"
+         data-tab="/rutinas"
+         <c:if test="${requestScope.navActive == 'rutinas'}">aria-current="page"</c:if>>
+        <!-- SVG INTACTO -->
         <svg class="bottom-nav__icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
         </svg>
         <span class="bottom-nav__label">Rutinas</span>
       </a>
     </li>
+
+    <!-- PROGRESOS -->
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/cliente/progreso"
-         data-tab="/estadisticas" aria-current="false">
+      <a class="bottom-nav__btn ${requestScope.navActive == 'progresos' ? 'is-active' : ''}"
+         href="${pageContext.request.contextPath}/cliente/progreso"
+         data-tab="/progresos"
+         <c:if test="${requestScope.navActive == 'progresos'}">aria-current="page"</c:if>>
+        <!-- SVG INTACTO -->
         <?xml version="1.0" ?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
         <!--<svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
           <line x1="2" y1="20" x2="22" y2="20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -49,9 +74,14 @@
         <span class="bottom-nav__label">Progresos</span>
       </a>
     </li>
+
+    <!-- ESTADÍSTICAS -->
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/cliente/estadisticas"
-         data-tab="/estadisticas" aria-current="false">
+      <a class="bottom-nav__btn ${requestScope.navActive == 'estadisticas' ? 'is-active' : ''}"
+         href="${pageContext.request.contextPath}/cliente/estadisticas"
+         data-tab="/estadisticas"
+         <c:if test="${requestScope.navActive == 'estadisticas'}">aria-current="page"</c:if>>
+        <!-- SVG INTACTO -->
         <?xml version="1.0" ?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
         <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
           <line x1="2" y1="20" x2="22" y2="20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -63,17 +93,19 @@
       </a>
     </li>
 
-
+    <!-- PERFIL -->
     <li>
-      <a class="bottom-nav__btn" href="${pageContext.request.contextPath}/cliente/perfil"
-         data-tab="/perfil" aria-current="false">
+      <a class="bottom-nav__btn ${requestScope.navActive == 'perfil' ? 'is-active' : ''}"
+         href="${pageContext.request.contextPath}/cliente/perfil"
+         data-tab="/perfil"
+         <c:if test="${requestScope.navActive == 'perfil'}">aria-current="page"</c:if>>
+        <!-- SVG INTACTO -->
         <svg class="bottom-nav__icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
         </svg>
         <span class="bottom-nav__label">Perfil</span>
       </a>
     </li>
+
   </ul>
 </nav>
-
-

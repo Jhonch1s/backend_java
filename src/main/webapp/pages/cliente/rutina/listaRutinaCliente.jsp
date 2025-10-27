@@ -124,5 +124,6 @@
 </main>
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
-
+<script src="${pageContext.request.contextPath}/assets/js/nav-active.js"></script>
+</body>
 </html>
