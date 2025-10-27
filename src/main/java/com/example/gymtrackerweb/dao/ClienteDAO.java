@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -276,4 +277,69 @@ public class ClienteDAO {
         }
         return "";
     }
+    public List<Cliente> buscarPorPrefijoCiNormalizado(String prefijoCi, int limit) throws SQLException {
+        String norm = (prefijoCi == null) ? "" : prefijoCi.replace(".", "").replace("-", "").replace(" ", "");
+        if (norm.isEmpty()) return Collections.emptyList();
+        if (limit <= 0) limit = 8;
+        if (limit > 50) limit = 50;
+
+        String sql =
+                "SELECT ci, email, nombre, apellido " +
+                        "FROM cliente " +
+                        "WHERE REPLACE(REPLACE(REPLACE(ci,'.',''),'-',''),' ','') LIKE CONCAT(?, '%') " +
+                        "ORDER BY ci " +
+                        "LIMIT ?";
+
+        List<Cliente> resultados = new ArrayList<>();
+        Connection cn = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, norm);
+            ps.setInt(2, limit); // Si tu driver no acepta LIMIT parametrizado, ver alternativa abajo.
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Cliente c = new Cliente();
+                    c.setCi(rs.getString("ci"));
+                    c.setEmail(rs.getString("email"));
+                    c.setNombre(rs.getString("nombre"));
+                    c.setApellido(rs.getString("apellido"));
+                    // No cargamos todo para mantenerlo ligero en el sugest
+                    resultados.add(c);
+                }
+            }
+        }
+        return resultados;
+    }
+    public Cliente obtenerPorCi(String ci) throws Exception {
+        if (ci == null || ci.isBlank()) return null;
+
+        final String sql =
+                "SELECT ci, email, nombre, apellido, ciudad, direccion, tel, pais, fecha_ingreso " +
+                        "FROM cliente WHERE ci = ? LIMIT 1";
+        Connection con = databaseConection.getInstancia().getConnection();
+        try (
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, ci.trim());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null; // ← DEVOLVÉ NULL, NO EXCEPCIÓN
+
+                Cliente c = new Cliente();
+                c.setCi(rs.getString("ci"));
+                c.setEmail(rs.getString("email"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellido"));
+                c.setCiudad(rs.getString("ciudad"));
+                c.setDireccion(rs.getString("direccion"));
+                c.setTel(rs.getString("tel"));
+                c.setPais(rs.getString("pais"));
+                c.setFechaIngreso(rs.getDate("fecha_ingreso")); // puede ser null
+                return c;
+            }
+        }
+    }
+
 }

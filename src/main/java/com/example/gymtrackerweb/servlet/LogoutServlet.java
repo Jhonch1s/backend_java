@@ -16,7 +16,7 @@ public class LogoutServlet extends HttpServlet{
         if (session != null) {
             session.invalidate(); // destruir sesión
         }
-        response.sendRedirect(request.getContextPath() + "/pages/login.jsp"); // redirigir al login
+        response.sendRedirect(request.getContextPath() + "/login"); // redirigir al login
     }
 
     @Override

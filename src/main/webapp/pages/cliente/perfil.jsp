@@ -51,7 +51,19 @@
       <!-- Columna izquierda: avatar + nombre + meta -->
       <div class="hero__left">
         <div class="hero__top alinear-centro">
-          <div class="hero__avatar">JG</div>
+          <c:choose>
+            <c:when test="${not empty clienteFotoUrl}">
+              <c:set var="heroAvatar"
+                     value="${fn:replace(clienteFotoUrl, '/upload/', '/upload/w_128,h_128,c_fill,g_face,q_auto,f_auto/')}"/>
+              <img src="${heroAvatar}"
+                   alt="Foto de ${cliente.nombre} ${cliente.apellido}"
+                   class="hero__avatar-img"
+                   style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--gg-border);" />
+            </c:when>
+            <c:otherwise>
+              <div class="hero__avatar">JG</div>
+            </c:otherwise>
+          </c:choose>
           <div>
             <h1 class="m-0 titillium-negra" id="hero-nombre">${cliente.nombre} ${cliente.apellido}</h1>
             <p class="m-0 hero__meta" id="hero-meta">${metaLinea}</p>
@@ -188,19 +200,20 @@
       </c:choose>
           </div>
     </article>
+    <article class="tarjeta">
+      <form action="${pageContext.request.contextPath}/logout" method="get" style="margin-top: 0rem;">
+        <button type="submit" class="btn btn-logout">Cerrar sesión</button>
+      </form>
+    </article>
 
   </section>
-  <!-- sticky del nav abajo -->
-  <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <div class="modal" id="modal-editar" aria-hidden="true">
   <div class="modal__overlay" data-close="true"></div>
-
   <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-editar-titulo" tabindex="-1">
     <div class="modal__header">
       <h3 id="modal-editar-titulo" class="m-0 titillium-negra">Editar perfil</h3>
       <button class="modal__close js-close" aria-label="Cerrar">×</button>
     </div>
-
     <form class="modal__body" method="post" action="${pageContext.request.contextPath}/cliente/editar">
       <div class="form-grid">
         <label class="login__label">Nombre
@@ -239,18 +252,58 @@
         <button type="submit" class="btn btn--lg btn--primary-yellow">Guardar cambios</button>
       </div>
     </form>
+    <!-- FORM 2: Foto de perfil (independiente) -->
+    <form class="modal__body mt-16"
+          method="post"
+          action="${pageContext.request.contextPath}/cliente/foto/subir"
+          enctype="multipart/form-data">
+      <input type="hidden" name="ci" value="${cliente.ci}">
+      <div class="form-grid">
+        <div>
+          <label class="login__label">Foto de perfil
+            <input class="login__input" type="file" name="imagen" accept="image/*" id="file-foto" required>
+          </label>
+          <small class="help">Formatos: JPG/PNG. Máx ~5MB.</small>
+        </div>
+        <div class="avatar-preview">
+          <c:choose>
+            <c:when test="${empty clienteFotoUrl}">
+              <!-- arma la URL al asset con el contextPath -->
+              <c:url var="previewSrc" value="/assets/img/avatar-default.svg"/>
+            </c:when>
+            <c:otherwise>
+              <!-- aplica la transformación de Cloudinary -->
+              <c:set var="previewSrc"
+                     value="${fn:replace(clienteFotoUrl, '/upload/', '/upload/w_96,h_96,c_fill,g_face,q_auto,f_auto/')}"/>
+            </c:otherwise>
+          </c:choose>
+
+          <img id="preview-foto"
+               src="${previewSrc}"
+               alt="Vista previa"
+               style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:1px solid var(--gg-border);" />
+
+        </div>
+      </div>
+
+      <div class="modal__actions">
+        <button type="submit" class="btn btn--lg btn--primary-yellow">Actualizar foto</button>
+      </div>
+    </form>
   </div>
 </div>
   <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
-</main>
 
+  <!-- sticky del nav abajo -->
+  <%@ include file="/pages/modulos/bottom-nav.jsp" %>
+</main>
 
 <script>
   // por ahora dejamos aqui el js del modal para edit perfil
   (function(){
     const modal = document.getElementById('modal-editar');
     const dialog  = modal.querySelector('.modal__dialog');
-    const form = modal.querySelector('form');
+    const form = modal.querySelector('form[action$="/cliente/editar"]');
     const btnSave = form.querySelector('button[type="submit"]');
     const toastEl = document.getElementById('toast');
     const openBtn = document.getElementById('btn-editar-perfil');
@@ -369,6 +422,29 @@
     });
   })();
 </script>
+<script>
+  (function(){
+    const input = document.getElementById('file-foto');
+    const img   = document.getElementById('preview-foto');
+    if (!input || !img) return;
 
+    input.addEventListener('change', () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      if (!f.type || !f.type.startsWith('image/')) {
+        alert('Seleccioná una imagen válida.');
+        input.value = '';
+        return;
+      }
+      if (f.size > 5 * 1024 * 1024) { // 5MB
+        alert('La imagen supera los 5MB.');
+        input.value = '';
+        return;
+      }
+      const url = URL.createObjectURL(f);
+      img.src = url;
+    });
+  })();
+</script>
 </body>
 </html>

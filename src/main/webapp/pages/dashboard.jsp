@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <title>Panel Administracion · Golden Gym</title>
+    <!-- Favicons para dar iconos a la web si se usa desde móbil y se quiere anclar al inicio, etc. -->
+    <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
+
 
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">

@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "ClientesServlet", value = "/api/clientes/crear")
-@MultipartConfig // <-- ¡AÑADIR ESTA ANOTACIÓN!
+// @MultipartConfig  // <-- QUITAR ESTA ANOTACIÓN
 public class ClientesServlet extends HttpServlet {
 
     private final ClienteDAO clienteDAO = new ClienteDAO();
@@ -41,132 +41,106 @@ public class ClientesServlet extends HttpServlet {
             return;
         }
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        // Importante para UTF-8 con x-www-form-urlencoded:
+        request.setCharacterEncoding("UTF-8");
+
+        response.setContentType("application/json;charset=UTF-8");
+
         Map<String, Object> jsonResponse = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
 
-        String ci = null;
-        String email = null;
-        String nombre = null;
-        String apellido = null;
-        String ciudad = null;
-        String pais = null;
-        String direccion = null;
-        String telefono = null;
-        String fechaStr = null;
-        Date fechaIngreso = null;
+        String ci        = request.getParameter("ci");
+        String email     = request.getParameter("email");
+        String nombre    = request.getParameter("nombre");
+        String apellido  = request.getParameter("apellido");
+        String ciudad    = request.getParameter("ciudad");
+        String pais      = request.getParameter("pais");
+        String direccion = request.getParameter("direccion");
+        String telefono  = request.getParameter("telefono"); // en tu DAO es setTel(...)
+        String fechaStr  = request.getParameter("fecha_ingreso");
+
+        System.out.println("Valores leídos (x-www-form-urlencoded):");
+        System.out.printf("ci=[%s], email=[%s], nombre=[%s], apellido=[%s], ciudad=[%s], pais=[%s], direccion=[%s], telefono=[%s], fecha_ingreso=[%s]%n",
+                ci, email, nombre, apellido, ciudad, pais, direccion, telefono, fechaStr);
+
+        // Validaciones
+        if (ci == null || ci.trim().isEmpty()) errors.put("cliente-ci", "La cédula es obligatoria.");
+
+        if (email == null || email.trim().isEmpty()) {
+            errors.put("cliente-email", "El email es obligatorio.");
+        } else if (!EMAIL_PATTERN.matcher(email.trim()).matches()) {
+            errors.put("cliente-email", "El formato del email no es válido.");
+        }
+
+        if (nombre == null || nombre.trim().isEmpty())   errors.put("cliente-nombre", "El nombre es obligatorio.");
+        if (apellido == null || apellido.trim().isEmpty()) errors.put("cliente-apellido", "El apellido es obligatorio.");
+        if (ciudad == null || ciudad.trim().isEmpty())   errors.put("cliente-ciudad", "La ciudad es obligatoria.");
+        if (pais == null || pais.trim().isEmpty())       errors.put("cliente-pais", "El país es obligatorio.");
+        if (direccion == null || direccion.trim().isEmpty()) errors.put("cliente-direccion", "La dirección es obligatoria.");
+        if (telefono == null || telefono.trim().isEmpty())   errors.put("cliente-telefono", "El teléfono es obligatorio.");
+
+        java.sql.Date fechaIngreso = null;
+        if (fechaStr == null || fechaStr.isEmpty()) {
+            errors.put("cliente-fecha-ingreso", "La fecha de ingreso es obligatoria.");
+        } else if (!fechaStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            errors.put("cliente-fecha-ingreso", "Formato de fecha inválido (yyyy-MM-dd).");
+        } else {
+            try {
+                fechaIngreso = java.sql.Date.valueOf(fechaStr);
+            } catch (IllegalArgumentException e) {
+                errors.put("cliente-fecha-ingreso", "La fecha ingresada no es válida.");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            System.out.println("Errores de validación: " + errors);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            jsonResponse.put("success", false);
+            jsonResponse.put("message", "Por favor corrige los errores indicados.");
+            jsonResponse.put("errors", errors);
+            response.getWriter().write(gson.toJson(jsonResponse));
+            return;
+        }
+
+        Cliente c = new Cliente();
+        c.setCi(ci.trim());
+        c.setEmail(email.trim());
+        c.setNombre(nombre.trim());
+        c.setApellido(apellido.trim());
+        c.setCiudad(ciudad.trim());
+        c.setDireccion(direccion.trim());
+        c.setTel(telefono.trim());
+        c.setPais(pais.trim());
+        c.setFechaIngreso(fechaIngreso);
 
         try {
-            ci = getStringValueFromPart(request.getPart("ci"));
-            email = getStringValueFromPart(request.getPart("email"));
-            nombre = getStringValueFromPart(request.getPart("nombre"));
-            apellido = getStringValueFromPart(request.getPart("apellido"));
-            ciudad = getStringValueFromPart(request.getPart("ciudad"));
-            pais = getStringValueFromPart(request.getPart("pais"));
-            direccion = getStringValueFromPart(request.getPart("direccion"));
-            telefono = getStringValueFromPart(request.getPart("telefono"));
-            fechaStr = getStringValueFromPart(request.getPart("fecha_ingreso"));
-
-            System.out.println("Valores leídos de Parts:");
-            System.out.println("  ci: [" + ci + "]");
-            System.out.println("  email: [" + email + "]");
-            System.out.println("  nombre: [" + nombre + "]");
-            System.out.println("  apellido: [" + apellido + "]");
-            System.out.println("  ciudad: [" + ciudad + "]");
-            System.out.println("  pais: [" + pais + "]");
-            System.out.println("  direccion: [" + direccion + "]");
-            System.out.println("  telefono: [" + telefono + "]");
-            System.out.println("  fecha_ingreso: [" + fechaStr + "]");
-
-            if (ci == null || ci.trim().isEmpty()) errors.put("cliente-ci", "La cédula es obligatoria.");
-            if (email == null || email.trim().isEmpty()) {
-                errors.put("cliente-email", "El email es obligatorio.");
-            } else if (!EMAIL_PATTERN.matcher(email.trim()).matches()) {
-                errors.put("cliente-email", "El formato del email no es válido.");
-            }
-            if (nombre == null || nombre.trim().isEmpty()) errors.put("cliente-nombre", "El nombre es obligatorio.");
-            if (apellido == null || apellido.trim().isEmpty()) errors.put("cliente-apellido", "El apellido es obligatorio.");
-            if (ciudad == null || ciudad.trim().isEmpty()) errors.put("cliente-ciudad", "La ciudad es obligatoria.");
-            if (pais == null || pais.trim().isEmpty()) errors.put("cliente-pais", "El país es obligatorio.");
-            if (direccion == null || direccion.trim().isEmpty()) errors.put("cliente-direccion", "La dirección es obligatoria.");
-            if (telefono == null || telefono.trim().isEmpty()) errors.put("cliente-telefono", "El teléfono es obligatorio.");
-
-
-            if (fechaStr == null || fechaStr.isEmpty()) {
-                errors.put("cliente-fecha-ingreso", "La fecha de ingreso es obligatoria.");
-            } else {
-                if (!fechaStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                    errors.put("cliente-fecha-ingreso", "Formato de fecha inválido (yyyy-MM-dd).");
-                } else {
-                    try { fechaIngreso = Date.valueOf(fechaStr); } catch (IllegalArgumentException e) { errors.put("cliente-fecha-ingreso", "La fecha ingresada no es válida."); }
-                }
-            }
-
-            // 3. Si hay errores, devolverlos
-            if (!errors.isEmpty()) {
-                System.out.println("Errores de validación encontrados: " + errors);
-                System.out.println("==== FIN doPost (Error Validacion) ====");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Por favor corrige los errores indicados.");
-                jsonResponse.put("errors", errors);
-                response.getWriter().write(gson.toJson(jsonResponse));
-                return;
-            }
-
-            Cliente c = new Cliente();
-            c.setCi(ci.trim());
-            c.setEmail(email.trim());
-            c.setNombre(nombre.trim());
-            c.setApellido(apellido.trim());
-            c.setCiudad(ciudad.trim());
-            c.setDireccion(direccion.trim());
-            c.setTel(telefono.trim());
-            c.setPais(pais.trim());
-            c.setFechaIngreso(fechaIngreso);
-
-            try {
-                clienteDAO.agregarCliente(c);
-                response.setStatus(HttpServletResponse.SC_CREATED);
-                jsonResponse.put("success", true);
-                jsonResponse.put("message", "Cliente '" + nombre.trim() + " " + apellido.trim() + "' creado exitosamente.");
-                System.out.println("Cliente guardado exitosamente.");
-                System.out.println("==== FIN doPost (Éxito) ====");
-                response.getWriter().write(gson.toJson(jsonResponse));
-
-            } catch (SQLException e) {
-                System.err.println("Error SQL al guardar cliente:"); e.printStackTrace();
-                if (e instanceof SQLIntegrityConstraintViolationException) {
-                    response.setStatus(HttpServletResponse.SC_CONFLICT); jsonResponse.put("success", false);
-                    String errorMsg = e.getMessage().toLowerCase();
-                    if (errorMsg.contains("ci") || errorMsg.contains("primary")) { jsonResponse.put("message", "La cédula ingresada ya existe."); errors.put("cliente-ci", "Esta cédula ya está registrada.");
-                    } else if (errorMsg.contains("email")) { jsonResponse.put("message", "El email ingresado ya existe."); errors.put("cliente-email", "Este email ya está registrado.");
-                    } else { jsonResponse.put("message", "Error de integridad: " + e.getMessage()); }
-                    jsonResponse.put("errors", errors);
-                } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); jsonResponse.put("success", false); jsonResponse.put("message", "Error SQL: " + e.getMessage());
-                }
-                System.out.println("==== FIN doPost (Error SQL) ====");
-                response.getWriter().write(gson.toJson(jsonResponse));
-            }
-
-        } catch (Exception e) { // Captura errores al leer las Parts
-            System.err.println("Error inesperado procesando la petición:"); e.printStackTrace();
-            System.out.println("==== FIN doPost (Error General) ====");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            jsonResponse.put("success", false);
-            jsonResponse.put("message", "Error procesando la solicitud: " + e.getMessage());
+            clienteDAO.agregarCliente(c);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            jsonResponse.put("success", true);
+            jsonResponse.put("message", "Cliente '" + nombre.trim() + " " + apellido.trim() + "' creado exitosamente.");
             response.getWriter().write(gson.toJson(jsonResponse));
-        }
-    }
-
-    private String getStringValueFromPart(Part part) throws IOException {
-        if (part == null) {
-            return null;
-        }
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8))) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                jsonResponse.put("success", false);
+                String errorMsg = e.getMessage().toLowerCase();
+                if (errorMsg.contains("ci") || errorMsg.contains("primary")) {
+                    jsonResponse.put("message", "La cédula ingresada ya existe.");
+                    errors.put("cliente-ci", "Esta cédula ya está registrada.");
+                } else if (errorMsg.contains("email")) {
+                    jsonResponse.put("message", "El email ingresado ya existe.");
+                    errors.put("cliente-email", "Este email ya está registrado.");
+                } else {
+                    jsonResponse.put("message", "Error de integridad: " + e.getMessage());
+                }
+                jsonResponse.put("errors", errors);
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                jsonResponse.put("success", false);
+                jsonResponse.put("message", "Error SQL: " + e.getMessage());
+            }
+            response.getWriter().write(gson.toJson(jsonResponse));
         }
     }
 }
