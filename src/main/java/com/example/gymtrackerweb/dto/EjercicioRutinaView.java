@@ -1,9 +1,8 @@
 package com.example.gymtrackerweb.dto;
 
-import java.math.BigDecimal;
-import java.sql.Date;
+import com.example.gymtrackerweb.model.enums.DiaSemana;
 
-public class EjercicioConProgresoView {
+public class EjercicioRutinaView {
     private int idRutina;
     private String nombreRutina;
     private int idEjercicio;
@@ -11,12 +10,13 @@ public class EjercicioConProgresoView {
     private String grupoMuscular;
     private int series;
     private int repeticionesRutina;
+    private DiaSemana diaSemana;
 
-    public EjercicioConProgresoView(){
+    public EjercicioRutinaView(){
 
     }
 
-    public EjercicioConProgresoView(int idRutina, String nombreRutina, int idEjercicio, String nombreEjercicio, String grupoMuscular, int series, int repeticionesRutina) {
+    public EjercicioRutinaView(int idRutina, String nombreRutina, int idEjercicio, String nombreEjercicio, String grupoMuscular, int series, int repeticionesRutina, DiaSemana diaSemana) {
         this.idRutina = idRutina;
         this.nombreRutina = nombreRutina;
         this.idEjercicio = idEjercicio;
@@ -24,6 +24,7 @@ public class EjercicioConProgresoView {
         this.grupoMuscular = grupoMuscular;
         this.series = series;
         this.repeticionesRutina = repeticionesRutina;
+        this.diaSemana = diaSemana;
     }
 
     public void setIdRutina(int idRutina) {
@@ -80,6 +81,14 @@ public class EjercicioConProgresoView {
 
     public void setRepeticionesRutina(int repeticionesRutina) {
         this.repeticionesRutina = repeticionesRutina;
+    }
+
+    public DiaSemana getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
     }
 }
 

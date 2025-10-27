@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.example.gymtrackerweb.dto.EjercicioConProgresoView" %>
-
+<%@ page import="com.example.gymtrackerweb.dto.EjercicioRutinaView" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %> <%-- Necesario para formatear el nombre del día --%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -77,36 +78,56 @@
             </h2>
 
             <div class="lista-ejercicios">
-                <%
-                    List<EjercicioConProgresoView> ejercicios =
-                            (List<EjercicioConProgresoView>) request.getAttribute("ejercicios");
-                    if (ejercicios != null && !ejercicios.isEmpty()) {
-                        int contador = 1;
-                        int maxSVG = 30;
-                        for (EjercicioConProgresoView e : ejercicios) {
-                            int numeroSVG = Math.min(contador, maxSVG);
-                %>
-                <div class="tarjeta-ejercicio" data-ejercicio-id="<%= e.getIdEjercicio() %>" data-ejercicio-nombre="<%= e.getNombreEjercicio() %>">
-                <div class="tarjeta-ejercicio__icono">
-                        <img src="${pageContext.request.contextPath}/assets/img/svgs/hexagon-number-<%= numeroSVG %>.svg"
-                             width="34" height="34" alt="Icono ejercicio" />
-                    </div>
-                    <div class="tarjeta-ejercicio_contenido">
-                        <h3 class="texto-dorado"><%= e.getNombreEjercicio() %></h3>
-                        <p class="grupo-muscular-label"><%= e.getGrupoMuscular() %></p>
-                        <p class="plan-create__label">
-                            <%= e.getSeries() %> series × <%= e.getRepeticionesRutina() %> Reps
-                        </p>
-                    </div>
+                <c:choose>
+                    <c:when test="${not empty ejerciciosPorDia}">
+                        <%-- Iteramos sobre cada entrada (Día -> Lista de Ejercicios) en el Map --%>
+                        <c:forEach items="${ejerciciosPorDia}" var="entryDia">
+                            <c:set var="diaSemana" value="${entryDia.key}" />
+                            <c:set var="listaEjerciciosDia" value="${entryDia.value}" />
 
-                </div>
-                <%
-                        contador++;
-                    }
-                } else {
-                %>
-                <p class="texto-claro">No se encontraron ejercicios activos.</p>
-                <% } %>
+                            <%-- Solo mostramos el día si tiene ejercicios asignados --%>
+                            <c:if test="${not empty listaEjerciciosDia}">
+                                <%-- Título del Día --%>
+                                <h2 class="titulo-dia titillium-negra texto-dorado" style="margin-top: 1.5rem; margin-bottom: 0.75rem; text-transform: capitalize;">
+                                        ${fn:toLowerCase(diaSemana)} <%-- Muestra Lunes, Martes, etc. en minúscula --%>
+                                        <%-- Opcional: Mostrar Grupos Musculares del Día --%>
+                                        <%-- (Esto requeriría pasar más datos desde el Servlet) --%>
+                                        <%-- <span style="font-size: 0.8em; color: var(--color-gris-400);"> (Pecho, Tríceps)</span> --%>
+                                </h2>
+
+                                <%-- Contenedor para los ejercicios de ESTE día --%>
+                                <div class="lista-ejercicios" style="margin-top: 0;">
+                                        <%-- Iteramos sobre los ejercicios de ESTE día --%>
+                                    <c:forEach items="${listaEjerciciosDia}" var="e" varStatus="loop">
+                                        <%-- Usamos varStatus para el contador del ícono --%>
+                                        <c:set var="numeroSVG" value="${loop.count <= 30 ? loop.count : 30}" /> <%-- Limita a 30 iconos --%>
+
+                                        <%-- La tarjeta del ejercicio (HTML similar al anterior) --%>
+                                        <div class="tarjeta-ejercicio" data-ejercicio-id="${e.idEjercicio}" data-ejercicio-nombre="${e.nombreEjercicio}">
+                                            <div class="tarjeta-ejercicio__icono">
+                                                <img src="${pageContext.request.contextPath}/assets/img/svgs/hexagon-number-${numeroSVG}.svg"
+                                                     width="34" height="34" alt="Icono ejercicio ${loop.count}" />
+                                            </div>
+                                            <div class="tarjeta-ejercicio_contenido">
+                                                <h3 class="texto-blanco">${e.nombreEjercicio}</h3>
+                                                <p class="grupo-muscular-label">${e.grupoMuscular}</p>
+                                                <p class="plan-create__label">
+                                                        ${e.series} series × ${e.repeticionesRutina} Reps
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </c:forEach> <%-- Fin loop ejercicios del día --%>
+                                </div> <%-- Fin lista-ejercicios del día --%>
+                            </c:if> <%-- Fin if not empty listaEjerciciosDia --%>
+                        </c:forEach> <%-- Fin loop días --%>
+                    </c:when>
+                    <c:otherwise>
+                        <%-- Mensaje si la rutina no tiene ejercicios asignados --%>
+                        <div class="lista-ejercicios">
+                            <p class="texto-claro">Esta rutina no tiene ejercicios asignados todavía.</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </section>
         <section id="pantalla-progreso" class="pantalla">

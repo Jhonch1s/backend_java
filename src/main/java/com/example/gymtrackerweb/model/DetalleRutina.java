@@ -58,4 +58,6 @@ public class DetalleRutina {
     public void setRepeticiones(int repeticiones) {
         this.repeticiones = repeticiones;
     }
+
+
 }

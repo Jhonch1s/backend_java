@@ -1,8 +1,10 @@
 package com.example.gymtrackerweb.servlet;
 
 import com.example.gymtrackerweb.dao.ProgresoEjercicioDAO;
-import com.example.gymtrackerweb.dto.EjercicioConProgresoView;
+// Asegúrate que la importación del DTO sea la correcta que usa tu DAO
+import com.example.gymtrackerweb.dto.EjercicioRutinaView; // <--- ¡CAMBIO IMPORTANTE!
 import com.example.gymtrackerweb.model.Cliente;
+import com.example.gymtrackerweb.model.enums.DiaSemana;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +14,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap; // <--- Import agregado
 import java.util.List;
+import java.util.Map; // <--- Import agregado
 
 @WebServlet("/progreso-ejercicios")
 public class ProgresoEjercicioServlet extends HttpServlet {
@@ -23,7 +28,7 @@ public class ProgresoEjercicioServlet extends HttpServlet {
 
         // --- Verificación de sesión (sin cambios) ---
         HttpSession session = request.getSession(false);
-        if (session == null) {
+        if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -34,13 +39,13 @@ public class ProgresoEjercicioServlet extends HttpServlet {
         }
         String clienteId = cliente.getCi();
 
-        // --- INICIO DE LA LÓGICA CORREGIDA ---
-
-        // 1. Obtenemos AMBOS posibles parámetros
+        // --- Lógica para obtener ID de rutina o ejercicio (sin cambios) ---
         String rutinaIdParam = request.getParameter("id");
-        String ejIdParam = request.getParameter("ejId"); // Parámetro del dashboard
+        String ejIdParam = request.getParameter("ejId");
+        String nombreRutina = "Rutina";
 
-        // 2. Comprobamos qué caso es
+        // Mapa para agrupar ejercicios por día (usando el DTO correcto)
+        Map<DiaSemana, List<EjercicioRutinaView>> ejerciciosPorDia = new LinkedHashMap<>();
 
         // CASO A: Venimos de la lista de rutinas (tenemos "id")
         if (rutinaIdParam != null && !rutinaIdParam.isEmpty()) {
@@ -48,43 +53,48 @@ public class ProgresoEjercicioServlet extends HttpServlet {
             try {
                 rutinaId = Integer.parseInt(rutinaIdParam);
             } catch (NumberFormatException e) {
-                // El "id" vino, pero es inválido (ej: "abc")
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de rutina inválido");
                 return;
             }
 
-            // --- Lógica original (sin cambios) ---
             ProgresoEjercicioDAO progresosDAO = new ProgresoEjercicioDAO();
-            List<EjercicioConProgresoView> progreso = progresosDAO.listarEjerciciosConProgreso(clienteId, rutinaId);
-            String nombreRutina = null;
-            if (progreso != null && !progreso.isEmpty()) {
-                nombreRutina = progreso.get(0).getNombreRutina();
-            }
-            request.setAttribute("ejercicios", progreso);
-            request.setAttribute("nombreRutina", nombreRutina != null ? nombreRutina : "Rutina sin nombre");
 
-            System.out.println("Cliente ID: " + clienteId);
-            System.out.println("Ejercicios encontrados: " + progreso.size());
-            System.out.println("Nombre rutina: " + nombreRutina);
+            List<EjercicioRutinaView> todosLosEjercicios = progresosDAO.listarEjerciciosPorRutinaYDia(clienteId, rutinaId);
+
+            if (todosLosEjercicios != null && !todosLosEjercicios.isEmpty()) {
+                nombreRutina = todosLosEjercicios.get(0).getNombreRutina();
+
+                // Agrupamos los ejercicios por día
+                for (EjercicioRutinaView ej : todosLosEjercicios) { // <--- ¡CAMBIO IMPORTANTE!
+                    DiaSemana dia = ej.getDiaSemana(); // <--- ¡TYPO CORREGIDO!
+                    // Validar que el día no sea null (si fromString falló en el DAO)
+                    if (dia != null) {
+                        ejerciciosPorDia.computeIfAbsent(dia, k -> new ArrayList<>()).add(ej);
+                    } else {
+                        System.err.println("Advertencia: Ejercicio con ID " + ej.getIdEjercicio() + " tiene dia_semana nulo o inválido en la BD.");
+                        // Opcionalmente, agruparlos en una categoría "Sin día asignado"
+                        // ejerciciosPorDia.computeIfAbsent(null, k -> new ArrayList<>()).add(ej);
+                    }
+                }
+            }
 
         }
-        // CASO B: Venimos del Dashboard (tenemos "ejId")
+        // CASO B: Venimos del Dashboard (sin cambios)
         else if (ejIdParam != null && !ejIdParam.isEmpty()) {
-            // No hacemos nada. No necesitamos cargar "ejercicios" ni "nombreRutina".
-            // Solo queremos mostrar el JSP. El JavaScript leerá "ejId" de la URL.
             System.out.println("Cargando JSP para detalle de ejercicio (ejId: " + ejIdParam + ")");
         }
-        // CASO C: No vino ni "id" ni "ejId"
+        // CASO C: No vino ni "id" ni "ejId" (sin cambios)
         else {
-            // Esta es una solicitud inválida
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de rutina o ejercicio faltante");
             return;
         }
 
-        // 3. Redirigir al JSP (¡Ahora se ejecuta para ambos casos A y B!)
+        // --- Pasar atributos al JSP (sin cambios) ---
+        request.setAttribute("ejerciciosPorDia", ejerciciosPorDia);
+        request.setAttribute("nombreRutina", nombreRutina);
+
+        // Redirigir al JSP (sin cambios)
         RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/cliente/progreso/progresosCliente.jsp");
         dispatcher.forward(request, response);
-
-        // --- FIN DE LA LÓGICA CORREGIDA ---
     }
 }

@@ -456,3 +456,27 @@ main {
         gap: 0.4rem;
     }
 }
+
+/* ==========================================================
+   ESTILOS PARA AGRUPACIÓN POR DÍA
+   ========================================================== */
+
+.titulo-dia {
+    /* Hereda titillium-negra y texto-dorado del JSP */
+    font-size: 1.4rem; /* Un poco más grande que el título del bloque */
+    margin-top: 2rem; /* Espacio ANTES del título del día */
+    margin-bottom: 0.75rem; /* Espacio ENTRE el título y la lista de ejercicios */
+    padding-bottom: 0.5rem; /* Espacio debajo del texto */
+    border-bottom: 2px solid var(--gg-border); /* Una línea sutil debajo */
+    text-transform: capitalize; /* Asegura que se vea "Lunes", no "LUNES" */
+}
+
+/* Ajuste para el primer título del día, para que no tenga tanto margen superior */
+#pantalla-lista .titulo-dia:first-of-type {
+    margin-top: 1rem;
+}
+
+/* Quitamos el margen superior de la lista cuando está agrupada por día */
+#pantalla-lista .lista-ejercicios {
+    margin-top: 0;
+}
