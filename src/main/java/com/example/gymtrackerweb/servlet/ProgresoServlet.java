@@ -39,7 +39,7 @@ public class ProgresoServlet extends HttpServlet {
             boolean ascendente = "asc".equals(orden);
             String stringIdEjercicio = request.getParameter("idEjercicio");
             Integer idEjercicio = (stringIdEjercicio != null && !stringIdEjercicio.isEmpty()) ? Integer.parseInt(stringIdEjercicio) : null;
-            String stringPagina = request.getParameter("pagina");
+            String stringPagina = request.getParameter("page");
             int paginaActual = (stringPagina != null) ? Integer.parseInt(stringPagina) : 1;
             if (paginaActual < 1) paginaActual = 1;
             int offset = (paginaActual - 1) * ProgresosPorPagina;
@@ -56,6 +56,9 @@ public class ProgresoServlet extends HttpServlet {
             // Contar total
             int totalRegistros = dao.contarProgresosFiltrados(Integer.parseInt(usuario.getCi()), idEjercicio);
             int totalPaginas = (int) Math.ceil((double) totalRegistros / ProgresosPorPagina);
+            if (totalPaginas < 1) totalPaginas = 1;
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+
 
             request.setAttribute("listaProgresos", listaProgresos);
             request.setAttribute("ordenActual", ascendente ? "asc" : "desc");
@@ -69,7 +72,8 @@ public class ProgresoServlet extends HttpServlet {
 
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -113,9 +117,12 @@ public class ProgresoServlet extends HttpServlet {
                 default -> throw new IllegalArgumentException("Accion no reconocida: " + accion);
             }
 
-            // Vuelve a cargar la lista progreso
-            response.sendRedirect(request.getContextPath() + "/cliente/progreso");
-
+            String referer = request.getHeader("referer");
+            if (referer != null && referer.contains("/cliente/progreso")) {
+                response.sendRedirect(referer);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/cliente/progreso");
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -69,7 +69,7 @@
                     </c:forEach>
                 </select>
 
-                <!-- preserva el orden actual y resetea a página 1 -->
+                <!-- preserva el orden actual y resetea a pagina 1 -->
                 <input type="hidden" name="orden" value="${ordenActual}" />
                 <input type="hidden" name="page" value="1" />
 
@@ -163,33 +163,45 @@
     </section>
 
 
+
+    <!-- Paginas --!>
+
     <c:if test="${totalPaginas != null && totalPaginas > 1}">
-        <nav class="u-mt-24 alinear-centro-between">
-            <div></div> <!-- separador a la izquierda si querés alinear center -->
-            <ul style="list-style:none; display:flex; gap:.5rem; padding:0; margin:0;">
-                <!-- Prev -->
+        <nav class="u-mt-24 alinear-centro-center">
+            <ul style="list-style:none; display:flex; flex-wrap:wrap; gap:.5rem; padding:0; margin:0; justify-content:center; align-items:center;">
+
+
+                <!-- Pagina 1 -->
                 <li>
-                    <c:choose>
-                        <c:when test="${paginaActual > 1}">
-                            <c:url var="prevUrl" value="/cliente/progreso">
-                                <c:param name="page" value="${paginaActual - 1}"/>
-                                <c:param name="orden" value="${ordenActual}"/>
-                                <c:if test="${idEjercicioSeleccionado != null}">
-                                    <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
-                                </c:if>
-                            </c:url>
-                            <a class="btn-accion" href="${pageContext.request.contextPath}${prevUrl}">&laquo; Anterior</a>
-                        </c:when>
-                        <c:otherwise>
-                            <span class="btn-accion" style="opacity:.4; pointer-events:none;">&laquo; Anterior</span>
-                        </c:otherwise>
-                    </c:choose>
+                    <c:url var="url1" value="/cliente/progreso">
+                        <c:param name="page" value="1"/>
+                        <c:param name="orden" value="${ordenActual}"/>
+                        <c:if test="${idEjercicioSeleccionado != null}">
+                            <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
+                        </c:if>
+                    </c:url>
+                    <a class="btn-accion" href="${url1}" style="padding:.25rem .6rem;">1</a>
                 </li>
 
-                <!-- Números de página -->
-                <c:forEach var="i" begin="1" end="${totalPaginas}">
-                    <li>
-                        <c:url var="pageUrl" value="/cliente/progreso">
+                <!-- ... -->
+                <c:if test="${paginaActual > 5}">
+                    <li><span style="color:#aaa;">…</span></li>
+                </c:if>
+
+                <!-- Paginas alrededor de la actual -->
+                <c:set var="start" value="${paginaActual - 2}" />
+                <c:set var="end" value="${paginaActual + 2}" />
+
+                <c:if test="${start < 2}">
+                    <c:set var="start" value="2" />
+                </c:if>
+                <c:if test="${end > totalPaginas - 1}">
+                    <c:set var="end" value="${totalPaginas - 1}" />
+                </c:if>
+
+                <c:forEach var="i" begin="${start}" end="${end}">
+                    <c:if test="${i > 1 && i < totalPaginas}">
+                        <c:url var="urlI" value="/cliente/progreso">
                             <c:param name="page" value="${i}"/>
                             <c:param name="orden" value="${ordenActual}"/>
                             <c:if test="${idEjercicioSeleccionado != null}">
@@ -199,42 +211,48 @@
 
                         <c:choose>
                             <c:when test="${i == paginaActual}">
-                            <span class="btn-accion"
-                                  style="border:1px solid rgba(255,241,18,.45); padding:.25rem .6rem; border-radius:8px;">
-                                    ${i}
-                            </span>
+                <span class="btn-accion"
+                      style="border:1px solid rgba(255,241,18,.45); padding:.25rem .6rem; border-radius:8px;">
+                        ${i}
+                </span>
                             </c:when>
                             <c:otherwise>
                                 <a class="btn-accion"
                                    style="padding:.25rem .6rem; border-radius:8px;"
-                                   href="${pageContext.request.contextPath}${pageUrl}">
+                                   href="${urlI}">
                                         ${i}
                                 </a>
                             </c:otherwise>
                         </c:choose>
-                    </li>
+                    </c:if>
                 </c:forEach>
 
-                <!-- Next -->
-                <li>
-                    <c:choose>
-                        <c:when test="${paginaActual < totalPaginas}">
-                            <c:url var="nextUrl" value="/cliente/progreso">
-                                <c:param name="page" value="${paginaActual + 1}"/>
-                                <c:param name="orden" value="${ordenActual}"/>
-                                <c:if test="${idEjercicioSeleccionado != null}">
-                                    <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
-                                </c:if>
-                            </c:url>
-                            <a class="btn-accion" href="${pageContext.request.contextPath}${nextUrl}">Siguiente &raquo;</a>
-                        </c:when>
-                        <c:otherwise>
-                            <span class="btn-accion" style="opacity:.4; pointer-events:none;">Siguiente &raquo;</span>
-                        </c:otherwise>
-                    </c:choose>
-                </li>
+                <!-- ... -->
+                <c:if test="${paginaActual < totalPaginas - 4}">
+                    <li><span style="color:#aaa;">…</span></li>
+                </c:if>
+
+                <!-- Ultima pagina -->
+                <c:if test="${totalPaginas > 1}">
+                    <c:url var="urlLast" value="/cliente/progreso">
+                        <c:param name="page" value="${totalPaginas}"/>
+                        <c:param name="orden" value="${ordenActual}"/>
+                        <c:if test="${idEjercicioSeleccionado != null}">
+                            <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
+                        </c:if>
+                    </c:url>
+                    <a class="btn-accion" href="${urlLast}" style="padding:.25rem .6rem;">${totalPaginas}</a>
+                </c:if>
+
+                <li><span style="color:#eeeeee; font-size: 2.5rem; ">|</span></li>
+
+                <!-- Ir a -->
+                <div class="ir-a-container">
+                    <label for="irPagina">Ir a:</label>
+                    <input type="number" id="irPagina" min="1" max="${totalPaginas}" value="${paginaActual}">
+                    <button type="button" id="btnIr">Ir</button>
+                </div>
             </ul>
-            <div></div> <!-- separador a la derecha -->
         </nav>
     </c:if>
 
