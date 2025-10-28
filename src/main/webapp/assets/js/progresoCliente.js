@@ -104,6 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+
+
+
+
     // Filtro
     const btnFiltroFecha = document.getElementById("btnFiltroFecha");
     const svg = document.getElementById("svg-filtro");
@@ -121,4 +125,32 @@ document.addEventListener("DOMContentLoaded", () => {
         url.searchParams.set("orden", order);
         window.location.href = url.toString();
     });
+
+    // --- Auto-submit del filtro por ejercicio ---
+    const formFiltros = document.getElementById("formFiltros");
+    const filtroEjercicio = document.getElementById("filtroEjercicio");
+    filtroEjercicio?.addEventListener("change", () => {
+        // asegúrate que siempre vaya a la página 1
+        const pageInput = formFiltros.querySelector('input[name="page"]');
+        if (pageInput) pageInput.value = "1";
+        formFiltros.submit();
+    });
+
+    // --- Botón de orden mantiene filtros y resetea a página 1 ---
+    if (btnFiltroFecha && svg) {
+        const initial = btnFiltroFecha.dataset.order;
+        svg.style.transform = initial === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+
+        btnFiltroFecha.addEventListener("click", () => {
+            const order = btnFiltroFecha.dataset.order === "asc" ? "desc" : "asc";
+            btnFiltroFecha.dataset.order = order;
+            svg.style.transform = order === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+
+            const url = new URL(window.location.href);
+            url.searchParams.set("orden", order);
+            url.searchParams.set("page", "1"); // reset de paginación
+            // preserva idEjercicio si ya estaba en la URL
+            window.location.href = url.toString();
+        });
+    }
 });

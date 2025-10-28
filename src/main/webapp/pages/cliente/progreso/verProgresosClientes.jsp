@@ -51,8 +51,32 @@
     <!-- Filtro -->
     <section class="alinear-centro-between u-mb-24">
         <div class="filtros-izquierda">
+            <form id="formFiltros"
+                  method="get"
+                  action="${pageContext.request.contextPath}/cliente/progreso"
+                  class="alinear-centro gap-2">
 
+                <label for="filtroEjercicio" class="m-0">Ejercicio</label>
+                <select name="idEjercicio" id="filtroEjercicio" class="plan-create__control input">
+                    <option value="">Todos</option>
+                    <c:forEach var="ej" items="${listaEjercicios}">
+                        <option value="${ej.id}"
+                                <c:if test="${idEjercicioSeleccionado != null && ej.id == idEjercicioSeleccionado}">selected</c:if>>
+                                ${ej.nombre}
+                        </option>
+                    </c:forEach>
+                </select>
+
+                <!-- preserva el orden actual y resetea a página 1 -->
+                <input type="hidden" name="orden" value="${ordenActual}" />
+                <input type="hidden" name="page" value="1" />
+
+                <noscript>
+                    <button type="submit" class="boton-primario">Aplicar</button>
+                </noscript>
+            </form>
         </div>
+
         <div class="filtros-derecha">
             <button id="btnFiltroFecha"
                     class="btn-accion"
@@ -130,6 +154,82 @@
             </div>
         </c:if>
     </section>
+
+
+    <c:if test="${totalPaginas != null && totalPaginas > 1}">
+        <nav class="u-mt-24 alinear-centro-between">
+            <div></div> <!-- separador a la izquierda si querés alinear center -->
+            <ul style="list-style:none; display:flex; gap:.5rem; padding:0; margin:0;">
+                <!-- Prev -->
+                <li>
+                    <c:choose>
+                        <c:when test="${paginaActual > 1}">
+                            <c:url var="prevUrl" value="/cliente/progreso">
+                                <c:param name="page" value="${paginaActual - 1}"/>
+                                <c:param name="orden" value="${ordenActual}"/>
+                                <c:if test="${idEjercicioSeleccionado != null}">
+                                    <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
+                                </c:if>
+                            </c:url>
+                            <a class="btn-accion" href="${pageContext.request.contextPath}${prevUrl}">&laquo; Anterior</a>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="btn-accion" style="opacity:.4; pointer-events:none;">&laquo; Anterior</span>
+                        </c:otherwise>
+                    </c:choose>
+                </li>
+
+                <!-- Números de página -->
+                <c:forEach var="i" begin="1" end="${totalPaginas}">
+                    <li>
+                        <c:url var="pageUrl" value="/cliente/progreso">
+                            <c:param name="page" value="${i}"/>
+                            <c:param name="orden" value="${ordenActual}"/>
+                            <c:if test="${idEjercicioSeleccionado != null}">
+                                <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
+                            </c:if>
+                        </c:url>
+
+                        <c:choose>
+                            <c:when test="${i == paginaActual}">
+                            <span class="btn-accion"
+                                  style="border:1px solid rgba(255,241,18,.45); padding:.25rem .6rem; border-radius:8px;">
+                                    ${i}
+                            </span>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="btn-accion"
+                                   style="padding:.25rem .6rem; border-radius:8px;"
+                                   href="${pageContext.request.contextPath}${pageUrl}">
+                                        ${i}
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
+                    </li>
+                </c:forEach>
+
+                <!-- Next -->
+                <li>
+                    <c:choose>
+                        <c:when test="${paginaActual < totalPaginas}">
+                            <c:url var="nextUrl" value="/cliente/progreso">
+                                <c:param name="page" value="${paginaActual + 1}"/>
+                                <c:param name="orden" value="${ordenActual}"/>
+                                <c:if test="${idEjercicioSeleccionado != null}">
+                                    <c:param name="idEjercicio" value="${idEjercicioSeleccionado}"/>
+                                </c:if>
+                            </c:url>
+                            <a class="btn-accion" href="${pageContext.request.contextPath}${nextUrl}">Siguiente &raquo;</a>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="btn-accion" style="opacity:.4; pointer-events:none;">Siguiente &raquo;</span>
+                        </c:otherwise>
+                    </c:choose>
+                </li>
+            </ul>
+            <div></div> <!-- separador a la derecha -->
+        </nav>
+    </c:if>
 
 </main>
 <!-- Modal Añadir Progreso -->

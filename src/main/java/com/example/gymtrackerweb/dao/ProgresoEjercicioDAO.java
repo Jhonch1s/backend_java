@@ -317,60 +317,108 @@ public class ProgresoEjercicioDAO {
         }
     }
 
-    public List<ProgresoEjercicio> listarProgresoEjercicioDeUsuarioOrdenadoFecha(ProgresoEjercicio p,boolean Ascendiente){
-        List<ProgresoEjercicio> progresoLista = new ArrayList<>();
-        String orden = Ascendiente ? "ASC" : "DESC";
-        String sql = "SELECT * FROM progreso_ejercicio WHERE id_cliente = ? ORDER BY fecha " + orden;
-        Connection conexion = databaseConection.getInstancia().getConnection();
-        try{
-            PreparedStatement sentencia = conexion.prepareStatement(sql);
-            sentencia.setInt(1, p.getIdCliente());
-            ResultSet resultado = sentencia.executeQuery();
-            while(resultado.next()){
-                ProgresoEjercicio progreso = new ProgresoEjercicio();
-                progreso.setId(resultado.getInt("id_progreso"));
-                progreso.setIdCliente(resultado.getInt("id_cliente"));
-                progreso.setIdEjercicio(resultado.getInt("id_ejercicio"));
-                progreso.setFecha(resultado.getDate("fecha"));
-                progreso.setPesoUsado(resultado.getInt("peso_usado"));
-                progreso.setRepeticiones(resultado.getInt("repeticiones"));
+    public List<ProgresoEjercicio> listarProgresosFiltrados(
+            int idCliente,
+            Integer idEjercicio,
+            boolean ascendente,
+            int limit,
+            int offset
+    ) throws SQLException {
 
-                progresoLista.add(progreso);
-            }
-        }catch(Exception err){
-            System.out.println("Error: "+err.getMessage());
-        }
-        return progresoLista;
-    }
-
-    public List<ProgresoEjercicio> listarProgresoPorEjercicioYFecha(int idCliente, int idEjercicio, boolean ascendente) {
         List<ProgresoEjercicio> progresoLista = new ArrayList<>();
         String orden = ascendente ? "ASC" : "DESC";
-        String sql = "SELECT * FROM progreso_ejercicio WHERE id_cliente = ? AND id_ejercicio = ? ORDER BY fecha " + orden;
+
+        String sql = "SELECT * FROM progreso_ejercicio WHERE id_cliente = ?";
+        if (idEjercicio != null) {
+            sql += " AND id_ejercicio = ?";
+        }
+        sql += " ORDER BY fecha " + orden + " LIMIT ? OFFSET ?";
 
         try (Connection conexion = databaseConection.getInstancia().getConnection();
-             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
 
-            sentencia.setInt(1, idCliente);
-            sentencia.setInt(2, idEjercicio);
+            int idx = 1;
+            ps.setInt(idx++, idCliente);
+            if (idEjercicio != null) {
+                ps.setInt(idx++, idEjercicio);
+            }
+            ps.setInt(idx++, limit);
+            ps.setInt(idx, offset);
 
-            try (ResultSet resultado = sentencia.executeQuery()) {
-                while (resultado.next()) {
-                    ProgresoEjercicio progreso = new ProgresoEjercicio();
-                    progreso.setId(resultado.getInt("id_progreso"));
-                    progreso.setIdCliente(resultado.getInt("id_cliente"));
-                    progreso.setIdEjercicio(resultado.getInt("id_ejercicio"));
-                    progreso.setFecha(resultado.getDate("fecha"));
-                    progreso.setPesoUsado(resultado.getInt("peso_usado"));
-                    progreso.setRepeticiones(resultado.getInt("repeticiones"));
-                    progresoLista.add(progreso);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProgresoEjercicio p = new ProgresoEjercicio();
+                    p.setId(rs.getInt("id_progreso"));
+                    p.setIdCliente(rs.getInt("id_cliente"));
+                    p.setIdEjercicio(rs.getInt("id_ejercicio"));
+                    p.setFecha(rs.getDate("fecha"));
+                    p.setPesoUsado(rs.getInt("peso_usado"));
+                    p.setRepeticiones(rs.getInt("repeticiones"));
+                    progresoLista.add(p);
                 }
             }
-        } catch (Exception err) {
-            System.out.println("Error: " + err.getMessage());
         }
         return progresoLista;
     }
+
+    public int contarProgresosFiltrados(int idCliente, Integer idEjercicio) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM progreso_ejercicio WHERE id_cliente = ?";
+        if (idEjercicio != null) {
+            sql += " AND id_ejercicio = ?";
+        }
+
+        try (Connection conexion = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, idCliente);
+            if (idEjercicio != null) {
+                ps.setInt(2, idEjercicio);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    public List<ProgresoEjercicio> obtenerTodosProgresos(int idCliente, Integer idEjercicio) throws SQLException {
+        List<ProgresoEjercicio> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM progreso_ejercicio WHERE id_cliente = ?";
+        if (idEjercicio != null) {
+            sql += " AND id_ejercicio = ?";
+        }
+        sql += " ORDER BY fecha ASC";
+
+        try (Connection conexion = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, idCliente);
+            if (idEjercicio != null) {
+                ps.setInt(2, idEjercicio);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ProgresoEjercicio p = new ProgresoEjercicio();
+                    p.setId(rs.getInt("id_progreso"));
+                    p.setIdCliente(rs.getInt("id_cliente"));
+                    p.setIdEjercicio(rs.getInt("id_ejercicio"));
+                    p.setFecha(rs.getDate("fecha"));
+                    p.setPesoUsado(rs.getInt("peso_usado"));
+                    p.setRepeticiones(rs.getInt("repeticiones"));
+                    lista.add(p);
+                }
+            }
+        }
+
+        return lista;
+    }
+
     //de: jhon, para listar ejercicios en select html
     public List<EjercicioMin> listarEjerciciosPorCliente(String idCliente) throws SQLException {
         String sql = """
