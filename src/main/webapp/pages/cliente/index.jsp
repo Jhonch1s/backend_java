@@ -48,7 +48,19 @@
     <section class="hero tarjeta borde-redondeado sombra-suave">
         <header class="hero__top alinear-centro-between">
             <div class="alinear-centro-left u-gap-12">
-                <div class="hero__avatar">MR</div>
+                <c:choose>
+                    <c:when test="${not empty clienteFotoUrl}">
+                        <c:set var="heroAvatar"
+                               value="${fn:replace(clienteFotoUrl, '/upload/', '/upload/w_128,h_128,c_fill,g_face,q_auto,f_auto/')}"/>
+                        <img src="${heroAvatar}"
+                             alt="Foto de ${cliente.nombre} ${cliente.apellido}"
+                             class="hero__avatar-img"
+                             style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--gg-border);" />
+                    </c:when>
+                    <c:otherwise>
+                        <div class="hero__avatar">JG</div>
+                    </c:otherwise>
+                </c:choose>
                 <div>
                     <h2 class="m-0 titillium-negrita">
                         ${sessionScope.usuario.nombre} ${sessionScope.usuario.apellido}
@@ -173,10 +185,10 @@
         <div class="prog-list u-mt-8">
             <c:forEach var="p" items="${progresosTop}">
                 <c:set var="claseEstado"
-                       value="${p.difKg > 0 ? 'prog-item--pos-green' : (p.difKg < 0 ? 'prog-item--neg' : 'prog-item--neu')}" />
+                       value="${p.difKg > 0 ? 'prog-item--pos-green' : (p.difKg < 0 ? 'prog-item--neg' : 'prog-item--pos-blue')}" />
 
                 <a class="prog-item ${claseEstado}"
-                   href="${pageContext.request.contextPath}/pages/modulos/cliente/progreso.jsp?ej=${p.idEjercicio}">
+                   href="${pageContext.request.contextPath}/progreso-ejercicios?ejId=${p.idEjercicio}&ejNombre=${fn:escapeXml(p.ejercicio)}">
                     <div class="prog-item__text">
                         <p class="prog-item__title">${p.ejercicio}</p>
                         <p class="prog-item__sub">
@@ -215,7 +227,7 @@
 </main>
 <!-- sticky del nav abajo -->
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
-<script src="${pageContext.request.contextPath}/assets/js/cliente-dashboard.js" defer></script>
+<script src="${pageContext.request.contextPath}/assets/js/cliente-dashboard.js"></script>
 </body>
 </html>
 

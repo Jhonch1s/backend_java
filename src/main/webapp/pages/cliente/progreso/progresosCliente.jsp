@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.example.gymtrackerweb.dto.EjercicioConProgresoView" %>
-
+<%@ page import="com.example.gymtrackerweb.dto.EjercicioRutinaView" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %> <%-- Necesario para formatear el nombre del día --%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -30,7 +31,7 @@
 <body class="fondo-oscuro texto-claro">
 <div class="app">
     <main>
-        <section id="pantalla-lista" class="pantalla activa">
+        <section id="pantalla-lista" class="pantalla">
             <%
                 String nombreRutina = (String) request.getAttribute("nombreRutina");
                 if (nombreRutina == null || nombreRutina.isBlank()) {
@@ -77,262 +78,164 @@
             </h2>
 
             <div class="lista-ejercicios">
-                <%
-                    List<EjercicioConProgresoView> ejercicios =
-                            (List<EjercicioConProgresoView>) request.getAttribute("ejercicios");
-                    if (ejercicios != null && !ejercicios.isEmpty()) {
-                        int contador = 1;
-                        int maxSVG = 9;
-                        for (EjercicioConProgresoView e : ejercicios) {
-                            int numeroSVG = Math.min(contador, maxSVG);
-                %>
-                <div class="tarjeta-ejercicio" data-ejercicio-id="<%= e.getIdEjercicio() %>" data-ejercicio-nombre="<%= e.getNombreEjercicio() %>">
-                <div class="tarjeta-ejercicio__icono">
-                        <img src="${pageContext.request.contextPath}/assets/img/svgs/hexagon-number-<%= numeroSVG %>.svg"
-                             width="34" height="34" alt="Icono ejercicio" />
-                    </div>
-                    <div class="tarjeta-ejercicio_contenido">
-                        <h3 class="texto-dorado"><%= e.getNombreEjercicio() %></h3>
-                        <p class="plan-create__label">
-                            <% if (e.getPesoUsado() != null) { %>
-                            Último: <%= e.getPesoUsado() %> kg × <%= e.getRepeticiones() %> Reps
-                            (<%= new java.text.SimpleDateFormat("dd/MM").format(e.getFechaUltimoRegistro()) %>)
-                            <% } else { %>
-                            Sin registros aún
-                            <% } %>
-                        </p>
-                    </div>
+                <c:choose>
+                    <c:when test="${not empty ejerciciosPorDia}">
+                        <%-- Iteramos sobre cada entrada (Día -> Lista de Ejercicios) en el Map --%>
+                        <c:forEach items="${ejerciciosPorDia}" var="entryDia">
+                            <c:set var="diaSemana" value="${entryDia.key}" />
+                            <c:set var="listaEjerciciosDia" value="${entryDia.value}" />
 
-                </div>
-                <%
-                        contador++;
-                    }
-                } else {
-                %>
-                <p class="texto-claro">No se encontraron ejercicios activos.</p>
-                <% } %>
+                            <%-- Solo mostramos el día si tiene ejercicios asignados --%>
+                            <c:if test="${not empty listaEjerciciosDia}">
+                                <%-- Título del Día --%>
+                                <h2 class="titulo-dia titillium-negra texto-dorado" style="margin-top: 1.5rem; margin-bottom: 0.75rem; text-transform: capitalize;">
+                                        ${fn:toLowerCase(diaSemana)} <%-- Muestra Lunes, Martes, etc. en minúscula --%>
+                                        <%-- Opcional: Mostrar Grupos Musculares del Día --%>
+                                        <%-- (Esto requeriría pasar más datos desde el Servlet) --%>
+                                        <%-- <span style="font-size: 0.8em; color: var(--color-gris-400);"> (Pecho, Tríceps)</span> --%>
+                                </h2>
+
+                                <%-- Contenedor para los ejercicios de ESTE día --%>
+                                <div class="lista-ejercicios" style="margin-top: 0;">
+                                        <%-- Iteramos sobre los ejercicios de ESTE día --%>
+                                    <c:forEach items="${listaEjerciciosDia}" var="e" varStatus="loop">
+                                        <%-- Usamos varStatus para el contador del ícono --%>
+                                        <c:set var="numeroSVG" value="${loop.count <= 30 ? loop.count : 30}" /> <%-- Limita a 30 iconos --%>
+
+                                        <%-- La tarjeta del ejercicio (HTML similar al anterior) --%>
+                                        <div class="tarjeta-ejercicio" data-ejercicio-id="${e.idEjercicio}" data-ejercicio-nombre="${e.nombreEjercicio}">
+                                            <div class="tarjeta-ejercicio__icono">
+                                                <img src="${pageContext.request.contextPath}/assets/img/svgs/hexagon-number-${numeroSVG}.svg"
+                                                     width="34" height="34" alt="Icono ejercicio ${loop.count}" />
+                                            </div>
+                                            <div class="tarjeta-ejercicio_contenido">
+                                                <h3 class="texto-blanco">${e.nombreEjercicio}</h3>
+                                                <p class="grupo-muscular-label">${e.grupoMuscular}</p>
+                                                <p class="plan-create__label">
+                                                        ${e.series} series × ${e.repeticionesRutina} Reps
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </c:forEach> <%-- Fin loop ejercicios del día --%>
+                                </div> <%-- Fin lista-ejercicios del día --%>
+                            </c:if> <%-- Fin if not empty listaEjerciciosDia --%>
+                        </c:forEach> <%-- Fin loop días --%>
+                    </c:when>
+                    <c:otherwise>
+                        <%-- Mensaje si la rutina no tiene ejercicios asignados --%>
+                        <div class="lista-ejercicios">
+                            <p class="texto-claro">Esta rutina no tiene ejercicios asignados todavía.</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </section>
         <section id="pantalla-progreso" class="pantalla">
             <div class="contenedor-botones-volver">
                 <button class="btn-volver boton-primario">← Volver a la lista</button>
-                <button id="btn-volver-limitado" class="boton-primario" style="display: none;">← Ver solo recientes</button>
             </div>
             <h2 id="nombre-ejercicio"></h2>
 
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="${pageContext.request.contextPath}/assets/img/growth.png"
+                    <svg xmlns="http://www.w3.org/2000/svg"
                          width="32"
                          height="32"
-                         alt="Icono de gráfico">
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="var(--color-principal)"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         style="background: none; display: block;">
+                        <path d="M4 15l4 -4l3 3l5 -5l4 4"/>
+                    </svg>
                     Registros recientes
                 </h3>
                 <div id="registros-recientes" class="contenedor-tarjetas"></div>
-                <button id="btn-ver-mas" class="boton-primario btn-historial" style="display: none; margin-top: 1rem; width: 100%;">
-                    Ver historial completo
-                </button>
-            </div>
+                <div id="paginacion-controles" style="display: none; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button id="btn-anterior" class="boton-primario">
+                        <span class="texto-largo">← Anterior</span>
+                        <span class="texto-corto">←</span>
+                    </button>
 
+                    <div id="numeros-pagina" class="paginacion-numeros"></div>
+
+                    <button id="btn-siguiente" class="boton-primario">
+                        <span class="texto-largo">Siguiente →</span>
+                        <span class="texto-corto">→</span>
+                    </button>
+                </div>
+            </div>
             <div class="bloque">
                 <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="${pageContext.request.contextPath}/assets/img/svgs/cup-svg.svg"
+                    <svg xmlns="http://www.w3.org/2000/svg"
                          width="32"
                          height="32"
-                         alt="Icono de copa">
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="var(--color-principal)"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         style="background: none; display: block;">
+                        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM5 4h14M5 4a3 3 0 0 0 0 6M19 4a3 3 0 0 1 0 6"/>
+                    </svg>
                     Mejores PRs
                 </h3>
                 <div id="mejores-prs" class="contenedor-tarjetas"></div>
+
+                <div id="paginacion-controles-prs" style="display: none; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button id="btn-anterior-prs" class="boton-primario">
+                        <span class="texto-largo">← Anterior</span>
+                        <span class="texto-corto">←</span>
+                    </button>
+                    <div id="numeros-pagina-prs" class="paginacion-numeros"></div>
+                    <button id="btn-siguiente-prs" class="boton-primario">
+                        <span class="texto-largo">Siguiente →</span>
+                        <span class="texto-corto">→</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bloque">
+                <h3 class="texto-blanco titillium-negra" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="32"
+                         height="32"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="var(--color-principal)"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         style="background: none; display: block;">
+                        <path d="M12 6L9 9L5 7L6 13L3 17H21L18 13L19 7L15 9L12 6Z" />
+                    </svg>
+                    Mejores RMs
+                </h3>
+                <div id="mejores-rms" class="contenedor-tarjetas"></div>
+
+                <div id="paginacion-controles-rms" style="display: none; justify-content: space-between; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button id="btn-anterior-rms" class="boton-primario">
+                        <span class="texto-largo">← Anterior</span>
+                        <span class="texto-corto">←</span>
+                    </button>
+                    <div id="numeros-pagina-rms" class="paginacion-numeros"></div>
+                    <button id="btn-siguiente-rms" class="boton-primario">
+                        <span class="texto-largo">Siguiente →</span>
+                        <span class="texto-corto">→</span>
+                    </button>
+                </div>
             </div>
         </section>
-
-
     </main>
 </div>
+
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const contextPath = '<%= request.getContextPath() %>';
-        const pantallaLista = document.getElementById("pantalla-lista");
-        const pantallaProgreso = document.getElementById("pantalla-progreso");
-        const nombreEjercicio = document.getElementById("nombre-ejercicio");
-
-        // --- Referencias a todos los botones ---
-        const btnVerMas = document.getElementById("btn-ver-mas");
-        const btnVolverPrincipal = document.querySelector(".btn-volver");
-        const btnVolverLimitado = document.getElementById("btn-volver-limitado"); // Nuevo botón
-        let ejercicioIdActual = null;
-        let ejercicioNombreActual = null;
-
-        async function verProgresoPorId(id, nombre, limite = null) {
-            if (!id) {
-                console.error("ID de ejercicio no definido");
-                return;
-            }
-
-            ejercicioIdActual = id;
-            ejercicioNombreActual = nombre;
-            let url = contextPath + "/detalle-progreso?id=" + encodeURIComponent(id);
-            if (limite) {
-                url += "&limite=" + limite;
-            }
-
-            try {
-                const resp = await fetch(url);
-                const data = await resp.json();
-                console.log("Datos recibidos:", data);
-
-                if (!Array.isArray(data.registros)) {
-                    throw new Error("Respuesta inválida del servidor");
-                }
-                nombreEjercicio.textContent = nombre;
-
-                // --- Lógica para mostrar el botón "Volver" correcto ---
-                if (limite) {
-                    // Si estamos en vista limitada (ej: 5), mostramos el volver principal.
-                    btnVolverPrincipal.style.display = 'inline-flex';
-                    btnVolverLimitado.style.display = 'none';
-                } else {
-                    // Si estamos en vista completa, ocultamos el principal y mostramos el nuevo.
-                    btnVolverPrincipal.style.display = 'none';
-                    btnVolverLimitado.style.display = 'inline-flex';
-                }
-
-                const registrosList = document.getElementById("registros-recientes");
-                registrosList.innerHTML = "";
-                if (Array.isArray(data.registros) && data.registros.length > 0) {
-                    // Añadimos 'index' para la animación en cascada
-                    data.registros.forEach((r, index) => {
-                        const tarjeta = document.createElement("div");
-                        tarjeta.classList.add("tarjeta-registro");
-
-                        // --- LÓGICA DE ANIMACIÓN ---
-                        // Aplicamos un retraso creciente a cada tarjeta.
-                        tarjeta.style.animationDelay = `${index * 0.07}s`;
-
-                        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
-                            tarjeta.classList.add(r.diferenciaPeso > 0 ? "mejora" : "retroceso");
-                        } else {
-                            tarjeta.classList.add("sin-cambio");
-                        }
-                        const fecha = document.createElement("strong");
-                        fecha.className = "registro-fecha titillium-negra";
-                        fecha.textContent = (r.fecha || "sin fecha").trim();
-                        const detalle = document.createElement("p");
-                        detalle.className = "registro-detalle titillium-base";
-                        let texto = "";
-                        if (r.pesoUsado != null && r.repeticiones != null) {
-                            texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
-                        } else if (r.pesoUsado != null) {
-                            texto = r.pesoUsado + " kg";
-                        } else if (r.repeticiones != null) {
-                            texto = r.repeticiones + " Repeticiones";
-                        } else {
-                            texto = "-";
-                        }
-                        detalle.textContent = texto.trim();
-                        tarjeta.appendChild(fecha);
-                        tarjeta.appendChild(detalle);
-                        if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
-                            const diferencia = document.createElement("p");
-                            diferencia.className = "registro-diferencia"; // Ya no necesitas "titillium-base"
-
-                            // --- LÍNEAS MODIFICADAS ---
-                            const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
-                            const icono = r.diferenciaPeso > 0 ? "↑ " : "↓ "; // <-- AÑADIMOS EL ICONO
-
-                            diferencia.textContent = (icono + simbolo + Math.abs(r.diferenciaPeso) + " kg").trim();
-                            // --- FIN DE MODIFICACIÓN ---
-
-                            tarjeta.appendChild(diferencia);
-                        }
-                        registrosList.appendChild(tarjeta);
-                    });
-                } else {
-                    registrosList.innerHTML = "<div class='tarjeta-registro'>No hay registros recientes</div>";
-                }
-
-                const prsList = document.getElementById("mejores-prs");
-                prsList.innerHTML = "";
-                if (Array.isArray(data.prs) && data.prs.length > 0) {
-                    // Añadimos 'index' también aquí para consistencia
-                    data.prs.forEach((r, index) => {
-                        const tarjeta = document.createElement("div");
-                        tarjeta.className = "tarjeta-registro";
-                        tarjeta.style.animationDelay = `${index * 0.07}s`; // Animación
-
-                        const fecha = document.createElement("strong");
-                        fecha.className = "registro-fecha titillium-negra";
-                        fecha.textContent = (r.fecha || "sin fecha").trim();
-                        const detalle = document.createElement("p");
-                        detalle.className = "registro-detalle titillium-base";
-                        let texto = "";
-                        if (r.pesoUsado != null && r.repeticiones != null) {
-                            texto = r.pesoUsado + " kg × " + r.repeticiones + " Repeticiones";
-                        } else if (r.pesoUsado != null) {
-                            texto = r.pesoUsado + " kg";
-                        } else if (r.repeticiones != null) {
-                            texto = r.repeticiones + " Repeticiones";
-                        } else {
-                            texto = "-";
-                        }
-                        detalle.textContent = texto.trim();
-                        tarjeta.appendChild(fecha);
-                        tarjeta.appendChild(detalle);
-                        prsList.appendChild(tarjeta);
-                    });
-                } else {
-                    prsList.innerHTML = "<div class='tarjeta-registro'>No hay PRs registrados</div>";
-                }
-
-                if (data.hayMasRegistros) {
-                    btnVerMas.style.display = 'block';
-                } else {
-                    btnVerMas.style.display = 'none';
-                }
-
-                if (!pantallaProgreso.classList.contains('activa')) {
-                    pantallaLista.classList.remove("activa");
-                    pantallaProgreso.classList.add("activa");
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            } catch (err) {
-                console.error("Error cargando progreso:", err);
-                alert("No se pudo cargar el progreso. Verificá la consola.");
-            }
-        }
-
-        // Evento para el botón principal (volver a la lista de ejercicios)
-        btnVolverPrincipal.addEventListener("click", () => {
-            pantallaProgreso.classList.remove("activa");
-            pantallaLista.classList.add("activa");
-        });
-
-        // --- Evento para el NUEVO botón (volver a la vista limitada) ---
-        btnVolverLimitado.addEventListener('click', () => {
-            if(ejercicioIdActual && ejercicioNombreActual) {
-                // Llama a la función pidiendo solo los 5 recientes.
-                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, 5);
-            }
-        });
-
-        // Evento para ver el historial completo
-        btnVerMas.addEventListener('click', () => {
-            btnVerMas.style.display = 'none';
-            if (ejercicioIdActual && ejercicioNombreActual) {
-                verProgresoPorId(ejercicioIdActual, ejercicioNombreActual, null);
-            }
-        });
-
-        // Evento para cada tarjeta de ejercicio
-        document.querySelectorAll(".tarjeta-ejercicio").forEach(el => {
-            el.addEventListener("click", () => {
-                const id = parseInt(el.dataset.ejercicioId, 10);
-                const nombre = el.dataset.ejercicioNombre;
-                verProgresoPorId(id, nombre, 5);
-            });
-        });
-    });
+    const contextPath = '<%= request.getContextPath() %>';
 </script>
+<script src="${pageContext.request.contextPath}/assets/js/VerProgresoCliente.js" defer></script>
+
 </body>
 </html>

@@ -74,7 +74,6 @@ export function inicializarValidacion(formId) {
             })
             .finally(() => {
                 // --- SIEMPRE SE EJECUTA ---
-                // Restaura el botón
                 if(submitButton){
                     submitButton.disabled = false;
                     submitButton.innerHTML = originalButtonText;
@@ -82,7 +81,6 @@ export function inicializarValidacion(formId) {
             });
     });
 
-    // Limpiar errores mientras el usuario escribe o cambia selección
     form.querySelectorAll("[required], input[type='email']").forEach(input => {
         input.addEventListener("input", () => {
             if (input.validity.valid) limpiarError(input);
@@ -148,14 +146,24 @@ function showToast(message, type = 'success', duration = 4000) {
     const container = document.getElementById('toast-container');
     if (!container) {
         console.error("Elemento #toast-container no encontrado en el DOM.");
-        // Fallback a alert si no existe el contenedor
-        alert(`${type === 'success' ? '✅' : '❌'} ${message}`);
+        alert(`${type === 'success' ? 'Éxito:' : 'Error:'} ${message}`); // Fallback sin ícono
         return;
     }
 
     const toast = document.createElement('div');
-    toast.className = `toast toast--${type}`;
-    toast.textContent = message;
+    toast.className = `toast toast--${type}`; // Aplica clase base y de tipo
+
+    let iconSvg = '';
+    if (type === 'success') {
+        iconSvg = `<svg class="toast__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>`;
+    } else if (type === 'error') {
+        iconSvg = `<svg class="toast__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    }
+
+    toast.innerHTML = `
+        ${iconSvg}
+        <span>${message}</span>
+    `;
 
     container.appendChild(toast);
 

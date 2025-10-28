@@ -127,7 +127,7 @@
 </main>
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
-
+<script src="${pageContext.request.contextPath}/assets/js/nav-active.js"></script>
 <!-- Hook opcional para gráficos (más adelante) -->
 <!--
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

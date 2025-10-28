@@ -175,4 +175,21 @@ body.modal-open{ overflow:hidden; }
 .toast--show{ opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(-4px); }
 .toast--ok{ border-color: #1c6a25; }
 .toast--err{ border-color: #6a1c1c; }
+.hero__avatar-img { display:inline-block; }
+.btn-logout {
+    display: block;
+    width: 100%;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+.btn-logout:hover {
+    background-color: #c9302c;
+}
+
 

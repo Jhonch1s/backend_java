@@ -85,7 +85,6 @@
                 <button class="chip" data-range="6m">6 meses</button>
                 <button class="chip" data-range="12m">12 meses</button>
                 <button class="chip" data-range="all">Todo</button>
-                <button class="chip" data-range="custom">Personalizado</button>
             </div>
         </div>
 

@@ -12,7 +12,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Cliente | Dashboard · Golden Gym</title>
+    <title>Progresos Ejercicio · Golden Gym</title>
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
@@ -32,24 +32,26 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ProgresoClientes.css">
-
     <!-- rstilos para el dashboard cliente, forzamos actualizar estilos al cambiar css con ?v=20251011a-->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css?v=20251011a">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ProgresoClientes.css">
+
+
+
 </head>
 
 <body class="fondo-oscuro texto-claro">
 <main class="main-panel u-mx-auto u-p-24">
 
     <!-- Encabezado -->
-    <section class="alinear-centro-between u-mb-24">
+    <section class="alinear-centro-between u-mb-24 pr-item">
         <h2 class="titillium-negra texto-dorado">Progreso de Ejercicios</h2>
 
         <button id="btnAddProgreso" class="boton-primario" type="button">+ Añadir Progreso</button>
     </section>
 
     <!-- Filtro -->
-    <section class="alinear-centro-between u-mb-24">
+    <section class="alinear-centro-between u-mb-24 arrow">
         <div class="filtros-izquierda">
             <form id="formFiltros"
                   method="get"
@@ -107,17 +109,19 @@
                         </c:if>
                     </c:forEach>
 
-                    <p class="m-0 mt-1 texto-dorado">
+                    <p class="m-0 mt-1 texto-dorado p">
                         Fecha:
                         <fmt:formatDate value="${p.fecha}" pattern="dd/MM/yyyy"/>
                     </p>
+                <div class="kdata">
                     <p class="m-0 mt-1">Peso usado: <strong>${p.pesoUsado}</strong> kg</p>
                     <p class="m-0">Repeticiones: <strong>${p.repeticiones}</strong></p>
                 </div>
+            </div>
 
                 <div class="progreso-item__acciones alinear-centro gap-2">
                     <button class="btn-accion" id="svg-editar" data-id="${p.id}" data-action="editar" title="Editar">
-                        <svg class="icono" width="64px" height="64px" viewBox="0 0 16 16" fill="none"
+                        <svg class="icono" width="20px" height="20px" viewBox="0 0 16 16" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
                             <g id="SVGRepo_bgCarrier" stroke-width="1"></g>
                             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -131,7 +135,10 @@
                     </button>
 
                     <button class="btn-accion" data-id="${p.id}" data-action="eliminar" title="Eliminar">
-                        <svg class="icono" id="svg-eliminar" viewBox="0 0 24 24" fill="none"
+                        <svg class="icono" id="svg-eliminar"
+                             width="20px" height="20px"
+                             viewBox="0 0 24 24"
+                             fill="none"
                              xmlns="http://www.w3.org/2000/svg">
                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -330,6 +337,5 @@
 
 <%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script src="${pageContext.request.contextPath}/assets/js/progresoCliente.js" defer></script>
-
 </body>
 </html>

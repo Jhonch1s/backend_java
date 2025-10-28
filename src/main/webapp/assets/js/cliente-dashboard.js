@@ -9,15 +9,21 @@ const fetchJSON = async (input, init) => {
     return r.json();
 };
 
-// router basado en anchors con data-route
 (() => {
+    // Solo corre si explícitamente la página lo pide
+    if (!document.body || document.body.getAttribute('data-hash-router') !== '1') return;
+
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+
     function setActiveTab(path) {
-        document.querySelectorAll('[data-tab]').forEach(el => {
+        nav.querySelectorAll('[data-tab]').forEach(el => {
             el.setAttribute('aria-current', el.dataset.tab === path ? 'page' : 'false');
         });
     }
 
     function onRouteChange() {
+        if (!location.hash) return; // <- clave: no toques nada si no hay hash
         const hash = location.hash.replace('#', '');
         const path = hash.startsWith('/') ? hash : '/' + hash;
         setActiveTab(path);
@@ -33,7 +39,8 @@ const fetchJSON = async (input, init) => {
     });
 
     window.addEventListener('hashchange', onRouteChange);
-    onRouteChange();
+    // No llamamos onRouteChange() en load si no hay hash
+    if (location.hash) onRouteChange();
 })();
 
 // marcar entrada/salida sin recargar

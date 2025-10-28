@@ -17,6 +17,35 @@
     --gg-brand-ink: var(--brand-ink, #1b1b1b);
     --gg-focus: var(--brand-300, #ffd84d);
     --gg-shadow-lg: 0 28px 60px rgba(0, 0, 0, .45);
+
+    /* --- COLORES SEMÁNTICOS (ESTADOS) --- */
+    --color-exito: #22C55E; /* Verde para mejoras */
+    --color-exito-fondo-1: rgba(34, 197, 94, 0.18);
+    --color-exito-fondo-2: rgba(20, 120, 60, 0.22);
+    --color-exito-sombra: #22C55E33; /* Sombra de color verde */
+
+    --color-peligro: #DC2626; /* Rojo para retrocesos */
+    --color-peligro-fondo-1: rgba(220, 38, 38, 0.18);
+    --color-peligro-fondo-2: rgba(120, 20, 20, 0.22);
+    --color-peligro-sombra: #DC262633; /* Sombra de color rojo */
+
+    --color-info: #2563EB; /* Azul para "sin cambio" */
+    --color-info-fondo-1: rgba(37, 99, 235, 0.18);
+    --color-info-fondo-2: rgba(30, 64, 175, 0.22);
+    --color-info-sombra: #2563EB33; /* Sombra de color azul */
+
+    /* --- COLORES ESPECIALES (RÉCORDS) --- */
+    --color-pr-plata: #C0C0C0; /* Plata para PRs */
+    --color-pr-fondo-1: rgba(192, 192, 192, .08);
+    --color-pr-fondo-2: rgba(120, 120, 120, .12);
+    --color-pr-sombra: rgba(192, 192, 192, 0.12);
+
+    --color-rm-oro: #FFD700; /* Oro para RMs */
+    --color-rm-borde: #8B5A00; /* Borde oscuro para RMs */
+    --color-rm-fondo-1: rgba(255, 215, 0, .08);
+    --color-rm-fondo-2: rgba(80, 60, 10, .12);
+    --color-rm-sombra: rgba(255, 215, 0, 0.12);
+
     /* Tipografía */
     --fuente-base: "Titillium Web", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 

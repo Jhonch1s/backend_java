@@ -126,12 +126,9 @@
 
 
 </main>
+<%@ include file="/pages/modulos/bottom-nav.jsp" %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/compararProgreso.js" defer></script>
-<script>
-
-</script>
-
 </body>
 </html>
 

@@ -26,8 +26,8 @@
     align-items: center;
     justify-content: center;
     fill: var(--color-blanco);
-    height: 2rem;
-    width: 2rem;
+    height: 20px;
+    width: 20px;
     transition: all .2s ease;
 }
 
@@ -37,8 +37,8 @@
 }
 
 #svg-eliminar {
-    height: 2.2rem;
-    width: 2.2rem;
+    height: 25px;
+    width: 25px;
 }
 
 #svg-eliminar:hover {
@@ -99,4 +99,46 @@ label {
 #svg-filtro{
     fill: var(--color-principal);
     transition: transform 0.0001s;
+}
+.pr-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px;
+    background: var(--gg-chip,#2a2a2a);
+    border: 1px solid var(--color-gris-700);
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+.texto-dorado{
+    margin: 0 20px;
+}
+.p{
+    margin: 0;
+}
+.arrow{
+    margin-bottom: 10px;
+}
+.tarjeta{
+    padding:10px 15px;
+}
+
+.progreso-item__acciones{
+    flex-direction: column;
+}
+
+.progreso-item__info{
+    margin-left: 10px;
+}
+
+.kdata{
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    gap: 7px;
+}
+.mt-1{
+    margin: 0;
 }
