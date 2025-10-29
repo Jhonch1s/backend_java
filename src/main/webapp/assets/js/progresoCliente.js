@@ -112,17 +112,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnFiltroFecha = document.getElementById("btnFiltroFecha");
     const svg = document.getElementById("svg-filtro");
 
-    // --- Auto-submit del filtro por ejercicio ---
+    // Filtro ejercicio
     const formFiltros = document.getElementById("formFiltros");
     const filtroEjercicio = document.getElementById("filtroEjercicio");
     filtroEjercicio?.addEventListener("change", () => {
-        // asegúrate que siempre vaya a la página 1
         const pageInput = formFiltros.querySelector('input[name="page"]');
         if (pageInput) pageInput.value = "1";
         formFiltros.submit();
     });
 
-    // --- Botón de orden mantiene filtros y resetea a página 1 ---
+    // Boton de filtro asc/desc
     if (btnFiltroFecha && svg) {
         const initial = btnFiltroFecha.dataset.order;
         svg.style.transform = initial === "asc" ? "rotate(180deg)" : "rotate(0deg)";

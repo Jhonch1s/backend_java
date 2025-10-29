@@ -390,4 +390,52 @@ public class MovimientoDAO {
         }
     }
 
+    public List<MovimientoView> listarViewFiltrado(Integer idStaff, LocalDateTime desde, LocalDateTime hasta) throws SQLException {
+        StringBuilder sql = new StringBuilder("""
+        SELECT m.id_mov, m.fecha_hora, m.importe,
+               s.nombre_completo AS staff_nombre,
+               mp.nombre AS medio_pago_nombre,
+               tc.nombre AS tipo_cliente_nombre,
+               o.nombre AS origen_nombre,
+               m.id_membresia,
+               CASE WHEN c.ci IS NOT NULL THEN CONCAT(c.nombre, ' ', c.apellido) ELSE NULL END AS cliente_nombre
+        FROM movimiento m
+        LEFT JOIN staff s ON s.id = m.id_staff
+        LEFT JOIN medio_pago mp ON mp.id = m.medio_pago_id
+        LEFT JOIN tipo_cliente tc ON tc.id = m.tipo_cliente_id
+        LEFT JOIN origen_movimiento o ON o.id = m.origen_id
+        LEFT JOIN cliente c ON c.ci = m.id_cliente
+        WHERE 1=1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (idStaff != null) {
+            sql.append(" AND m.id_staff = ?");
+            params.add(idStaff);
+        }
+        if (desde != null) {
+            sql.append(" AND m.fecha_hora >= ?");
+            params.add(Timestamp.valueOf(desde));
+        }
+        if (hasta != null) {
+            sql.append(" AND m.fecha_hora < ?");
+            params.add(Timestamp.valueOf(hasta));
+        }
+
+        sql.append(" ORDER BY m.fecha_hora DESC");
+
+        try (Connection cn = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                List<MovimientoView> lista = new ArrayList<>();
+                while (rs.next()) lista.add(mapMovimientoView(rs));
+                return lista;
+            }
+        }
+    }
+
 }
