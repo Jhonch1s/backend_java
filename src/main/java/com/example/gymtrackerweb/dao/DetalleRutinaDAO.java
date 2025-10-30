@@ -14,8 +14,6 @@ import java.util.List;
 
 public class DetalleRutinaDAO {
 
-    // --- Métodos originales para detalle_rutina (ligeramente ajustados) ---
-
     // Cambiado para devolver el ID generado
     public int agregarDetalle(DetalleRutina d) {
         String sql = "INSERT INTO detalle_rutina (id_ejercicio, id_rutina, series, repeticiones) VALUES (?, ?, ?, ?)";
