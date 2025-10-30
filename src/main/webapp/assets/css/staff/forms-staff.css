@@ -332,3 +332,19 @@ body.layout {
     outline: 1px solid currentColor;
     background: rgba(0,0,0,0.06);
 }
+
+.vista--cliente-mostrar .sidebar__nav a[href*="/staff/cliente/listar"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+.vista--cliente-mostrar .sidebar__nav a[href*="/staff/cliente/listar"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+.vista--cliente-mostrar .sidebar__nav a[href*="/staff/cliente/listar"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}

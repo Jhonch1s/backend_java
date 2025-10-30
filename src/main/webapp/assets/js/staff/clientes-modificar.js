@@ -537,4 +537,21 @@
     if ($search.value && normalizeCI($search.value).length > 0) {
         fetchSuggest($search.value);
     }
+    document.addEventListener("DOMContentLoaded", () => {
+        const base = document.body.dataset.base || "";
+        const prefillCi = document.body.dataset.prefillCi ||
+            (new URLSearchParams(location.search).get("ci") || "").replace(/[.\-\s]/g, "");
+
+        if (prefillCi) {
+            console.log("[clientes-modificar] Autocargando cliente", prefillCi);
+            // Inyecta la CI en el campo de búsqueda y dispara el flujo normal
+            const $search = document.querySelector("#lookup-ci");
+            if ($search) $search.value = prefillCi;
+
+            // Activar búsqueda y relleno
+            if (typeof fetchDetalle === "function") {
+                fetchDetalle(prefillCi);
+            }
+        }
+    });
 })();
