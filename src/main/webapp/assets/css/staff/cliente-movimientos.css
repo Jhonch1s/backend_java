@@ -37,6 +37,13 @@
     color: var(--gg-text);
 }
 
+/* Para que no se muestre la scrollbar en pantallas grandes (Por alguna razon setearle el max width directamente no hace nada) */
+@media (min-width: 1200px) {
+    .u-maxw-1100 {
+        max-width: 1350px;
+    }
+}
+
 @media (max-width: 1100px) {
     .filtros {
         grid-template-columns: repeat(3, minmax(160px, 1fr));
@@ -212,4 +219,22 @@
     color: var(--color-blanco);
     margin: .5rem 0 1rem;
     text-align: Left;
+}
+
+.tabla-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.tabla-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, rgba(255, 240, 0, 0.6), rgba(251, 235, 4, 0.45));
+    border-radius: 12px;
+    transition: opacity 0.1s ease;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
 }

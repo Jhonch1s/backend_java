@@ -43,18 +43,23 @@
     <h1 class="view__title">Listado de Movimientos</h1>
 
     <form id="filtroForm" class="filtros">
-        <label>Staff (usuario):
-            <input type="text" name="staff" placeholder="Ej: MaxiStaff">
-        </label>
-        <label>Cliente CI:
-            <input type="number" name="cliente" placeholder="Ej: 12345678">
-        </label>
-        <label>Desde:
-            <input type="date" name="desde">
-        </label>
-        <label>Hasta:
-            <input type="date" name="hasta">
-        </label>
+        <form id="filtroForm" class="filtros">
+            <label>Staff (usuario):
+                <input type="text" name="staff" placeholder="Ej: MaxiStaff"
+                       value="${param.staff != null ? param.staff : ''}">
+            </label>
+            <label>Cliente CI:
+                <input type="number" name="cliente" placeholder="Ej: 12345678"
+                       value="${param.cliente != null ? param.cliente : ''}">
+            </label>
+            <label>Desde:
+                <input type="date" name="desde"
+                       value="${param.desde != null ? param.desde : ''}">
+            </label>
+            <label>Hasta:
+                <input type="date" name="hasta"
+                       value="${param.hasta != null ? param.hasta : ''}">
+            </label>
 
         <div class="filtros__acciones">
             <button type="submit" class="btn btn--amarillo">Filtrar</button>
