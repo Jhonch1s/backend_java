@@ -56,11 +56,10 @@
       </li>
     </ul>
 
-    <!-- SECCIÓN CLIENTE -->
     <h3 class="sidebar__section"><span>Cliente</span></h3>
     <ul>
       <li>
-        <a href="${pageContext.request.contextPath}/pages/staff/cliente/crearCliente.jsp" data-link>
+        <a href="${pageContext.request.contextPath}/staff/clientes/crear" data-link>
           <!-- ícono usuario plus -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="7" r="4"/>
@@ -70,7 +69,7 @@
         </a>
       </li>
       <li>
-        <a href="${pageContext.request.contextPath}/pages/staff/cliente/modificarCliente.jsp" data-link>
+        <a href="${pageContext.request.contextPath}/staff/clientes/modificar" data-link>
           <!-- ícono lápiz -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 20h9"/>
@@ -80,7 +79,7 @@
         </a>
       </li>
       <li>
-        <a href="#/clientes/listar" data-link>
+        <a href="${pageContext.request.contextPath}/staff/cliente/listar" data-link>
           <!-- ícono lista -->
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="8" y1="6" x2="21" y2="6"/>

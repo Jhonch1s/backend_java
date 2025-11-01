@@ -29,14 +29,14 @@ public class ClienteModificarServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // Solo POST
-        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        resp.setContentType("application/json; charset=UTF-8");
-        resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-        try (PrintWriter out = resp.getWriter()) {
-            out.write("{\"success\":false,\"message\":\"Método no permitido. Use POST.\"}");
-        }
+        // Redirigimos al servlet de página conservando querystring (?ci=...)
+        String qs = req.getQueryString();
+        String ctx = req.getContextPath();
+        String target = ctx + "/staff/clientes/modificar" + (qs != null ? "?" + qs : "");
+        resp.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT); // 307
+        resp.setHeader("Location", target);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
