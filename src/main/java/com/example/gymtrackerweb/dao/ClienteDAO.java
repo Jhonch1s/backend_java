@@ -1,5 +1,7 @@
 package com.example.gymtrackerweb.dao;
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.ClienteRutinaDTO;
+import com.example.gymtrackerweb.dto.RutinaAsignadaDTO;
 import com.example.gymtrackerweb.dto.MembresiaPlanView;
 import com.example.gymtrackerweb.model.Cliente;
 import org.mindrot.jbcrypt.BCrypt;
@@ -340,6 +342,40 @@ public class ClienteDAO {
                 return c;
             }
         }
+    }
+
+    public List<ClienteRutinaDTO> listarFilasClienteRutinaActiva() {
+        List<ClienteRutinaDTO> filas = new ArrayList<>();
+
+        // SQL simple que trae duplicados (como el que tenías)
+        String sql = "SELECT " +
+                "  c.ci, c.nombre, c.apellido, " +
+                "  r.nombre AS rutina_nombre, " +
+                "  rc.fecha_asignacion, rc.estado " +
+                "FROM cliente c " +
+                "LEFT JOIN rutina_cliente rc ON c.ci = rc.id_cliente AND rc.estado = 'activa' " +
+                "LEFT JOIN rutina r ON rc.id_rutina = r.id " +
+                "ORDER BY c.apellido, c.nombre, rc.fecha_asignacion DESC"; // Ordena por cliente
+
+        try (Connection conn = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                filas.add(new ClienteRutinaDTO(
+                        rs.getString("ci"),
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getString("rutina_nombre"), // Puede ser null
+                        rs.getDate("fecha_asignacion"), // Puede ser null
+                        rs.getString("estado") // Puede ser null
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar filas de cliente-rutina: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return filas;
     }
 
 }

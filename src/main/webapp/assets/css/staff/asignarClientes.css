@@ -1,0 +1,130 @@
+/* ==========================================================
+   ESTILOS PARA ASIGNAR CLIENTES
+   ========================================================== */
+
+/* Tarjeta de Cliente */
+.cliente-rutina-card {
+    display: grid;
+    grid-template-columns: 1fr auto; /* Info a la izq, botón a la der */
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem; /* Separación entre tarjetas de cliente */
+
+    /* ¡ESTILOS DE CARD AÑADIDOS! (de forms-staff.css) */
+    background: var(--gg-surface, #141417);
+    border: 1px solid var(--gg-border, #29292e);
+    border-radius: var(--radio-md, 12px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.3); /* Sombra más sutil */
+    color: var(--gg-text, #e9e9ee);
+}
+
+.cliente-rutina-card__info h3 {
+    margin: 0;
+    font-weight: 900;
+}
+.cliente-rutina-card__info p {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+}
+.cliente-rutina-card__actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* ==========================================================
+   BOTONES (Requeridos para esta página)
+   ========================================================== */
+.btn--sm {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 8px;
+    width: auto;
+    box-shadow: none !important;
+    text-decoration: none; /* Para que <button> y <a> se vean igual */
+}
+.btn--ejercicios {
+    --btn-bg: var(--color-info, #2563EB);
+    --btn-bg-hover: color-mix(in srgb, var(--color-info, #2563EB) 90%, #000 10%);
+    --btn-fg: white;
+}
+
+/* ==========================================================
+   MODAL DE ASIGNACIÓN
+   ========================================================== */
+
+#form-asignar-rutina .field {
+    margin-bottom: 1.75rem;
+}
+
+#form-asignar-rutina .field .error {
+    height: 0;
+    min-height: 0;
+    margin: 0;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+#form-asignar-rutina .field .error:not(:empty) {
+    height: auto;
+    min-height: 1.1em;
+    opacity: 1;
+    margin-top: 0.35rem;
+}
+
+.modal-feedback {
+    min-height: 1.1em;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.feedback-exito {
+    color: var(--color-exito);
+    font-weight: bold;
+}
+.feedback-error {
+    color: var(--color-peligro);
+    font-weight: bold;
+}
+
+#modal-select-rutina:disabled {
+    cursor: wait;
+    background-color: var(--gg-border);
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.paginacion-controles {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+#contador-pagina {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gg-text-muted);
+}
+.paginacion-controles .btn {
+    width: auto;
+    flex-shrink: 0;
+}
+.paginacion-controles .btn:disabled {
+    opacity: 0.5;
+    background: var(--gg-border);
+    cursor: not-allowed;
+    color: var(--gg-text-muted);
+    box-shadow: none;
+}

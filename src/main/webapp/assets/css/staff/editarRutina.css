@@ -1,0 +1,426 @@
+/* ==========================================================
+   --- LAYOUT PRINCIPAL ---
+   ========================================================== */
+
+.constructor-layout {
+    display: grid;
+    grid-template-columns: 550px 1fr;
+    gap: 1.5rem;
+    align-items: flex-start;
+    height: 75vh;
+    margin-top: 1.5rem;
+}
+
+.constructor-columna {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.constructor-columna.card,
+.constructor-columna > .card {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.constructor-columna h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espacio entre el ícono y el texto */
+    margin: 0; /* Quitamos el margen default del h3 */
+}
+
+.constructor-columna h3 .icon-book {
+    width: 20px;
+    height: 20px;
+    color: var(--gg-text-muted); /* Un color gris sutil */
+    flex-shrink: 0;
+}
+
+.filtros-biblioteca {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem; /* Espacio entre el label y el input */
+}
+
+/* Estilo del Label */
+.filtro-item .label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gg-text-muted);
+}
+
+/* Regla existente (la moví aquí para agrupar) */
+.filtros-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+/* ==========================================================
+   --- SCROLL ---
+   ========================================================== */
+
+.lista-scroll {
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: transparent;
+    border: none;
+    padding: 0.25rem 0.25rem 0.25rem 0;
+    margin-right: -5px;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--gg-border) transparent;
+}
+.lista-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+.lista-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.lista-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--gg-border);
+    border-radius: 20px;
+}
+.lista-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* ==========================================================
+   --- TARJETA BASE (BIBLIOTECA) ---
+   ========================================================== */
+
+.ejercicio-card {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    border-radius: 8px;
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+.ejercicio-card:hover {
+    background-color: var(--gg-surface-2);
+    border-color: var(--color-principal);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.ejercicio-card strong {
+    flex-basis: 100%;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem; /* Un poco más de espacio */
+}
+
+/* Nuevo contenedor para los labels */
+.card-labels {
+    display: flex;
+    gap: 0.75rem; /* Espacio entre los dos labels */
+    font-size: 0.9rem;
+    font-weight: 600; /* Hacemos ambos labels semi-bold */
+}
+
+.ejercicio-card .grupo-label {
+    color: var(--color-principal); /* Amarillo */
+    text-transform: capitalize;
+}
+
+.dificultad-label {
+}
+
+.dificultad-label.PRINCIPIANTE {
+    color: var(--accent-success);
+}
+.dificultad-label.INTERMEDIO {
+    color: var(--accent-info);
+}
+.dificultad-label.AVANZADO {
+    color: var(--accent-danger);
+}
+
+/* ==========================================================
+   --- TARJETA ASIGNADA (DERECHA) ---
+   ========================================================== */
+
+.ejercicio-card.asignado {
+    background-color: var(--gg-surface-2);
+    display: flex;
+    flex-direction: column; /* ¡CAMBIO! Ahora es vertical */
+    gap: 0.75rem; /* Espacio entre fila de arriba y de abajo */
+    padding: 0.85rem 1rem; /* Padding igual a la tarjeta de la biblioteca */
+}
+
+/* Fila superior (Handle, Nombre, Quitar) */
+.card-top-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.ejercicio-card.asignado .drag-handle {
+    cursor: grab;
+    color: var(--gg-text-muted);
+    font-weight: 900;
+    padding-right: 0.5rem; /* Espacio */
+}
+.ejercicio-card.asignado .ej-nombre {
+    flex-grow: 1;
+    margin: 0;
+    font-size: 1.25rem;
+}
+.btn-quitar-ej {
+    background: transparent;
+    border: none;
+    color: var(--color-peligro);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+}
+
+/* Fila inferior (Labels, Inputs) */
+.card-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Labels a la izq, inputs a la der */
+    width: 100%;
+    padding-left: 1.6rem; /* Alinea con el nombre (espacio del drag-handle) */
+}
+
+/* Re-usamos los estilos de la biblioteca para los labels */
+.card-bottom-row .card-labels {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Nuevo wrapper para los inputs (para agruparlos) */
+.card-inputs-wrapper {
+    display: flex;
+    gap: 1rem; /* Espacio entre "Series" y "Reps" */
+}
+
+/* ==========================================================
+   --- INPUTS SERIES / REPS PERSONALIZADOS ---
+   ========================================================== */
+
+.ejercicio-card.asignado .ej-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.ejercicio-card.asignado .ej-inputs label {
+    font-size: 0.9rem;
+    color: var(--gg-text-muted);
+}
+
+.input-number-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--gg-bg);
+    border: 1px solid var(--gg-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.btn-spin {
+    background-color: var(--gg-surface-2);
+    border: none;
+    color: var(--gg-text);
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background-color 0.2s, color 0.2s;
+}
+.btn-spin:hover {
+    background-color: var(--color-principal);
+    color: #000;
+}
+.btn-spin[data-action="decrement"] { border-right: 1px solid var(--gg-border); }
+.btn-spin[data-action="increment"] { border-left: 1px solid var(--gg-border); }
+
+.ej-inputs .input-num {
+    width: 45px;
+    padding: 0.4rem 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    background-color: var(--gg-bg);
+    color: var(--gg-text);
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    margin: 0;
+}
+.ej-inputs .input-num::-webkit-inner-spin-button,
+.ej-inputs .input-num::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* ==========================================================
+   --- TABS DE DÍAS Y HEADER DERECHO ---
+   ========================================================== */
+
+/* ¡NUEVO! Contenedor de Pestañas + Botón Guardar */
+.card-header {
+    display: flex;
+    justify-content: space-between; /* Pestañas a la izq, botón a la der */
+    align-items: center;
+    border-bottom: 2px solid var(--gg-border);
+    margin-bottom: 0.5rem;
+}
+
+.builder__dias-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    /* Borde y margen ahora los maneja .card-header */
+}
+.tab-dia {
+    all: unset;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--gg-text-muted);
+    border-bottom: 3px solid transparent;
+    transform: translateY(2px);
+}
+.tab-dia.activo {
+    color: var(--color-principal);
+    border-bottom-color: var(--color-principal);
+}
+
+/* ¡CAMBIO! Botón de guardar ahora es simple */
+#btn-guardar-rutina {
+    width: auto; /* Ancho automático */
+    margin-left: 1rem; /* Espacio para separarlo de las pestañas */
+    flex-shrink: 0; /* Evita que se encoja */
+    /* Hereda estilos de .btn (de style.css o utilidades.css) */
+}
+
+
+/* ==========================================================
+   --- PANELES DE DÍAS ---
+   ========================================================== */
+
+.dia-panel {
+    display: none;
+    height: 100%;
+    padding: 0.5rem 0; /* Padding lateral quitado */
+}
+.dia-panel.activo {
+    display: block;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: var(--color-principal);
+}
+.sortable-drag {
+    opacity: 1 !important;
+}
+
+/* ==========================================================
+   --- ESTILO PARA EJERCICIO YA ASIGNADO ---
+   ========================================================== */
+
+.ejercicio-card.asignado-a-dia {
+    opacity: 0.5;
+    background-color: var(--gg-surface);
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+.ejercicio-card.asignado-a-dia::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background-color: var(--color-exito);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    margin-right: 0.25rem;
+}
+
+/* ==========================================================
+   --- PAGINACIÓN BIBLIOTECA ---
+   ========================================================== */
+
+.biblioteca-paginacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--gg-border);
+    margin-top: 0.75rem;
+}
+#biblio-contador {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gg-text-muted);
+}
+.btn-paginacion {
+    all: unset;
+    cursor: pointer;
+    background-color: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+.btn-paginacion:hover {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: #000;
+}
+.btn-paginacion:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: var(--gg-surface);
+}
+
+
+/* ==========================================================
+   --- ARREGLO DEFINITIVO PARA OCULTAR FLECHAS ---
+   ========================================================== */
+
+input[type=number],
+.ej-inputs .input-num {
+    -moz-appearance: textfield !important;
+    -webkit-appearance: none !important;
+    appearance: textfield !important;
+    margin: 0 !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+.ej-inputs .input-num::-webkit-inner-spin-button,
+.ej-inputs .input-num::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+    gap: 0.75rem; /* Mismo 'gap' que el resto de los filtros */
+}
