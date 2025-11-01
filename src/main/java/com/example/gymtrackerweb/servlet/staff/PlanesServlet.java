@@ -48,12 +48,6 @@ public class PlanesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        HttpSession session = request.getSession(false);
-//        Object staff = (session != null) ? session.getAttribute("staff") : null;
-//        if (staff == null) {
-//            response.sendRedirect(request.getContextPath() + "/login");
-//            return;
-//        }
 
         String accion = request.getParameter("accion");
         PlanDAO dao = new PlanDAO();
