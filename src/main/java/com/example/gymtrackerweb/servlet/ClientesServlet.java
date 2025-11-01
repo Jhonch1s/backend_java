@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "ClientesServlet", value = "/api/clientes/crear")
-// @MultipartConfig  // <-- QUITAR ESTA ANOTACIÓN
+
 public class ClientesServlet extends HttpServlet {
 
     private final ClienteDAO clienteDAO = new ClienteDAO();
@@ -41,7 +41,6 @@ public class ClientesServlet extends HttpServlet {
             return;
         }
 
-        // Importante para UTF-8 con x-www-form-urlencoded:
         request.setCharacterEncoding("UTF-8");
 
         response.setContentType("application/json;charset=UTF-8");
@@ -56,7 +55,7 @@ public class ClientesServlet extends HttpServlet {
         String ciudad    = request.getParameter("ciudad");
         String pais      = request.getParameter("pais");
         String direccion = request.getParameter("direccion");
-        String telefono  = request.getParameter("telefono"); // en tu DAO es setTel(...)
+        String telefono  = request.getParameter("telefono");
         String fechaStr  = request.getParameter("fecha_ingreso");
 
         System.out.println("Valores leídos (x-www-form-urlencoded):");

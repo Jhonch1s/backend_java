@@ -9,10 +9,9 @@ import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 
 
-@WebServlet(name = "ClienteModificarPageServlet", urlPatterns = {"/staff/clientes/modificar"})
-public class ClienteModificarPageServlet extends HttpServlet {
+@WebServlet(name = "ClienteModificarRenderServlet", urlPatterns = {"/staff/clientes/modificar"})
+public class ClienteModificarRenderServlet extends HttpServlet {
 
-    // 👉 Ajustá esta ruta al lugar real de tu JSP
     private static final String JSP_PATH = "/pages/staff/cliente/modificarCliente.jsp";
 
     @Override
@@ -20,22 +19,21 @@ public class ClienteModificarPageServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
-        String ciParam = req.getParameter("ci");
-        String ci = normalizeCi(ciParam);
+        var session = req.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            // redirigir al login
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
 
-        // Si llega una CI válida, la pasamos al JSP como atributo
+        String ci = req.getParameter("ci");
+
         if (ci != null && !ci.isBlank()) {
             req.setAttribute("prefillCi", ci);
         }
 
-        // Siempre derivamos al JSP, haya o no CI
         RequestDispatcher rd = req.getRequestDispatcher(JSP_PATH);
         rd.forward(req, resp);
-    }
-
-    private String normalizeCi(String ci) {
-        if (ci == null) return null;
-        return ci.replaceAll("[.\\-\\s]", "").trim();
     }
 }
 

@@ -135,7 +135,7 @@ public class ClienteListadoDAO {
              PreparedStatement psCount = cn.prepareStatement(countSql.toString());
              PreparedStatement psList  = cn.prepareStatement(listSql.toString())) {
 
-            setArgs(psCount, args);
+            setArgs(psCount, whereArgs);
             try (ResultSet rs = psCount.executeQuery()) {
                 total = rs.next() ? rs.getInt(1) : 0;
             }
@@ -176,7 +176,6 @@ public class ClienteListadoDAO {
         return new PageResult<>(items, total, p.page, p.size);
     }
 
-    // ========= helpers internos =========
 
     private static boolean notBlank(String s) {
         return s != null && !s.trim().isEmpty();

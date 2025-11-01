@@ -33,11 +33,16 @@ public class ListarClientesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ClienteListadoDAO.ListarClientesParams p = new ClienteListadoDAO.ListarClientesParams();
+        var session = req.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            // redirigir al login
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
         if (this.dao == null) {
             this.dao = new ClienteListadoDAO();
         }
         try {
-            // -------- Parseo de parámetros --------
             p.q       = trimToNull(req.getParameter("q"));
             p.ciudad  = trimToNull(req.getParameter("ciudad"));
             p.pais    = trimToNull(req.getParameter("pais"));
@@ -51,7 +56,6 @@ public class ListarClientesServlet extends HttpServlet {
             p.page    = clamp(parseIntOr(req.getParameter("page"), 1), 1, Integer.MAX_VALUE);
             p.size    = clamp(parseIntOr(req.getParameter("size"), 20), 1, 100);
 
-            // -------- Consulta principal --------
             ClienteListadoDAO.PageResult<ClienteListadoDTO> page = dao.listar(p);
 
             for (ClienteListadoDTO dto : page.items) {
@@ -61,7 +65,6 @@ public class ListarClientesServlet extends HttpServlet {
                 }
             }
 
-            // -------- Catálogos (selects) --------
             // Si no querés pegar a la BD cada vez, podés cachearlo en ServletContext.
             List<String> ciudades = distinctFromCliente("ciudad");
             List<String> paises   = distinctFromCliente("pais");

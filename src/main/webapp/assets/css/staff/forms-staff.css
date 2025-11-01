@@ -117,7 +117,7 @@ body.layout {
 .view, .view__header { margin: 0; }
 .view__header > *:first-child { margin-top: 0; }
 
-.vista--cliente-crear .sidebar__nav a[href*="cliente/crearCliente.jsp"] {
+.vista--cliente-crear .sidebar__nav a[href*="/staff/clientes/crear"] {
     background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
     color: var(--color-principal, #fff112);
     border-radius: 3px;
@@ -125,11 +125,11 @@ body.layout {
     padding-left: 12px;
 }
 
-.vista--cliente-crear .sidebar__nav a[href*="cliente/crearCliente.jsp"] svg {
+.vista--cliente-crear .sidebar__nav a[href*="/staff/clientes/crear"] svg {
     stroke: var(--color-principal, #fff112);
 }
 
-.vista--cliente-crear .sidebar__nav a[href*="cliente/crearCliente.jsp"]:hover {
+.vista--cliente-crear .sidebar__nav a[href*="/staff/clientes/crear"]:hover {
     background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
 }
 
@@ -149,7 +149,7 @@ body.layout {
     align-items: center;
     gap: 10px;
     min-width: 260px;
-    max-width: 420px;
+    max-width: 800px;
     padding: 12px 14px;
     border-radius: 10px;
     border: 1px solid var(--gg-border, #29292e);
@@ -182,7 +182,7 @@ body.layout {
 
 /* Activo en aside: solo en modificarCliente.jsp */
 
-.vista--cliente-modificar .sidebar__nav a[href*="cliente/modificarCliente.jsp"] {
+.vista--cliente-modificar .sidebar__nav a[href*="/staff/clientes/modificar"] {
     background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
     color: var(--color-principal, #fff112);
     border-radius: 3px;
@@ -190,11 +190,11 @@ body.layout {
     padding-left: 12px;
 }
 
-.vista--cliente-modificar .sidebar__nav a[href*="cliente/modificarCliente.jsp"] svg {
+.vista--cliente-modificar .sidebar__nav a[href*="/staff/clientes/modificar"] svg {
     stroke: var(--color-principal, #fff112);
 }
 
-.vista--cliente-modificar .sidebar__nav a[href*="cliente/modificarCliente.jsp"]:hover {
+.vista--cliente-modificar .sidebar__nav a[href*="/staff/clientes/modificar"]:hover {
     background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
 }
 
