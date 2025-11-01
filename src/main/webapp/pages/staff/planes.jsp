@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/planes.css">
 </head>
 
-<body>
+<body class="layout vista--plan-administrar">
 
 <div class="layout">
     <%@ include file="/pages/modulos/aside-nav-staff.jsp" %>

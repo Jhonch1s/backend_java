@@ -20,7 +20,7 @@ public class ClienteCrearServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         var session = req.getSession(false);
-        if (session == null || session.getAttribute("usuario") == null) {
+        if (session == null || session.getAttribute("admin") == null) {
             // redirigir al login
             resp.sendRedirect(req.getContextPath() + "/login");
             return;

@@ -20,12 +20,14 @@ public class PlanesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        HttpSession session = request.getSession(false);
-//        Object staff = (session != null) ? session.getAttribute("staff") : null;
-//        if (staff == null) {
-//            response.sendRedirect(request.getContextPath() + "/login");
-//            return;
-//        }
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        var session = request.getSession(false);
+        if (session == null || session.getAttribute("admin") == null) {
+            // redirigir al login
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         try {
             PlanDAO dao = new PlanDAO();

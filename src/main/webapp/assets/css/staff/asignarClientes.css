@@ -128,3 +128,19 @@
     color: var(--gg-text-muted);
     box-shadow: none;
 }
+
+.vista--rutina-asignar .sidebar__nav a[href*="/admin/asignar-rutina-cliente"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+.vista--rutina-asignar .sidebar__nav a[href*="/admin/asignar-rutina-cliente"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+.vista--rutina-asignar .sidebar__nav a[href*="/admin/asignar-rutina-cliente"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}

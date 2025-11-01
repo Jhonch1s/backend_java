@@ -238,3 +238,19 @@
 .tabla-wrapper::-webkit-scrollbar-thumb:hover {
     opacity: 1;
 }
+
+.vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+.vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+.vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}

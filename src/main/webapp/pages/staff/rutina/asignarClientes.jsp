@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/asignarClientes.css">
 </head>
-<body class="layout">
+<body class="layout vista--rutina-asignar">
 <jsp:include page="/pages/modulos/aside-nav-staff.jsp" />
 
 <main class="layout__content">

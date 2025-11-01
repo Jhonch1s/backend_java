@@ -20,7 +20,15 @@ public class MovimientosServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
+        var session = request.getSession(false);
+        if (session == null || session.getAttribute("admin") == null) {
+            // redirigir al login
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
         try {
             MovimientoDAO dao = new MovimientoDAO();
 

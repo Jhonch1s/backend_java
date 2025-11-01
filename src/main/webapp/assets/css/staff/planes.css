@@ -177,3 +177,19 @@
 .toggle input:checked ~ .toggle__track .toggle__thumb {
     transform: translateX(calc(var(--w) - var(--h)));
 }
+
+.vista--plan-administrar .sidebar__nav a[href*="/staff/planes"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+.vista--plan-administrar .sidebar__nav a[href*="/staff/planes"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+.vista--plan-administrar .sidebar__nav a[href*="/staff/planes"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}

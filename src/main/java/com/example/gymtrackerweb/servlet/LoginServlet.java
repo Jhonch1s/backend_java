@@ -79,8 +79,8 @@ public class LoginServlet extends HttpServlet {
                     return;
                 }
                 HttpSession sesion = request.getSession();
-                sesion.setAttribute("usuario", staff);
-                response.sendRedirect(request.getContextPath() + "/pages/dashboard.jsp");
+                sesion.setAttribute("admin", staff);
+                response.sendRedirect(request.getContextPath() + "/staff/cliente/listar");
             }else {
                 request.setAttribute("error", "Usuario o contraseña incorrectos.");
                 request.getRequestDispatcher("/pages/login.jsp").forward(request, response);

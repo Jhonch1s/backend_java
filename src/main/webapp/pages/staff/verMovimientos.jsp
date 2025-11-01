@@ -38,8 +38,7 @@
 </head>
 
 
-<body>
-<div class="layout">
+<body class="layout vista--movimiento-ver" >
     <%@ include file="/pages/modulos/aside-nav-staff.jsp" %>
 <main class="u-maxw-1100 u-mx-auto u-p-32">
     <h1 class="view__title">Listado de Movimientos</h1>
@@ -131,7 +130,6 @@
         </c:otherwise>
     </c:choose>
 </main>
-</div>
 <script>
     const contextPath = '<%= request.getContextPath() %>';
 </script>
