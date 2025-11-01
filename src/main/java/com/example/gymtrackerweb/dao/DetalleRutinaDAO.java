@@ -1,6 +1,7 @@
 package com.example.gymtrackerweb.dao;
 
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.EjercicioAsignadoView;
 import com.example.gymtrackerweb.model.DetalleRutina;
 import com.example.gymtrackerweb.model.enums.DiaSemana; // Importamos el Enum
 
@@ -239,6 +240,76 @@ public class DetalleRutinaDAO {
             System.err.println("Error verificando existencia de día para detalle: " + e.getMessage());
         }
         return false; // Asumir que no existe si hay error
+    }
+
+    public List<EjercicioAsignadoView> listarEjerciciosAsignados(int idRutina) {
+        List<EjercicioAsignadoView> ejerciciosAsignados = new ArrayList<>();
+
+        String sql = """
+        SELECT
+            dr.id AS id_detalle_rutina,
+            e.id AS id_ejercicio,
+            e.nombre AS nombre_ejercicio,
+            gm.nombre AS nombre_grupo_muscular,
+            dr.series,
+            dr.repeticiones
+        FROM detalle_rutina dr
+        JOIN ejercicio e ON dr.id_ejercicio = e.id
+        LEFT JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id
+        WHERE dr.id_rutina = ?
+        ORDER BY dr.id 
+    """;
+
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, idRutina);
+            ResultSet resultado = sentencia.executeQuery();
+
+            while (resultado.next()) {
+                EjercicioAsignadoView view = new EjercicioAsignadoView();
+                view.setIdDetalleRutina(resultado.getInt("id_detalle_rutina"));
+                view.setIdEjercicio(resultado.getInt("id_ejercicio"));
+                view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
+                view.setGrupoMuscular(resultado.getString("nombre_grupo_muscular"));
+                view.setSeries(resultado.getInt("series"));
+                view.setRepeticiones(resultado.getInt("repeticiones"));
+
+                List<DiaSemana> dias = listarDiasPorDetalle(view.getIdDetalleRutina());
+                view.setDias(dias);
+
+                ejerciciosAsignados.add(view);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar ejercicios asignados: " + e.getMessage());
+            throw new RuntimeException("Error al listar ejercicios asignados", e);
+        }
+        return ejerciciosAsignados;
+    }
+
+    public DetalleRutina listarDetallesPorId(int id) {
+        DetalleRutina d = null;
+        String sql = "SELECT * FROM detalle_rutina WHERE id = ?";
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+
+            sentencia.setInt(1, id); // Seteamos el ID
+
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                if (resultado.next()) { // Si se encontró una fila
+                    d = new DetalleRutina();
+                    d.setId(resultado.getInt("id"));
+                    d.setId_ejercicio(resultado.getInt("id_ejercicio"));
+                    d.setId_rutina(resultado.getInt("id_rutina"));
+                    d.setSeries(resultado.getInt("series"));
+                    d.setRepeticiones(resultado.getInt("repeticiones"));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar detalle de rutina por ID: " + e.getMessage());
+            // Considera relanzar una excepción
+        }
+        return d; // Devuelve el objeto (o null si no se encontró)
     }
 
 }

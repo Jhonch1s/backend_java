@@ -1,0 +1,260 @@
+
+.admin-header { margin-bottom: 1.5rem; }
+.admin-action-bar { margin-bottom: 1.5rem; }
+
+.admin-action-bar .btn {
+    width: auto;
+}
+
+.filtros-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-end;
+    padding: 1.25rem;
+}
+.filtro-item {
+    flex-grow: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filtro-item .label {
+    font-size: 0.9rem;
+}
+.filtro-item .control {
+    background-color: var(--gg-bg);
+}
+
+.filtro-item--nombre {
+    flex-grow: 2;
+}
+.filtro-item--boton {
+    align-self: flex-end;
+}
+.filtro-item--boton .btn {
+    width: 100%;
+}
+
+
+.rutina-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.resultados-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block: 1.5rem 1rem;
+}
+
+#contador-resultados {
+    margin: 0;
+}
+
+.rutina-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: var(--gg-surface-2, #19191d);
+    border: 1px solid var(--gg-border);
+    border-radius: var(--radio-md);
+    transition: opacity 0.2s ease, display 0.2s; /* Para el filtro */
+}
+.rutina-card__info h3 { margin: 0; font-weight: 900; }
+.rutina-card__info p { margin: 0.25rem 0 0; font-size: 0.9rem; text-transform: capitalize; color: var(--gg-text-muted, #b6b6bb); }
+.rutina-card__actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+.btn--sm { padding: 0.5rem 0.8rem; font-size: 0.85rem; font-weight: 700; border-radius: 8px; width: auto; box-shadow: none !important; }
+.btn--detalle { --btn-bg: #4A5568; --btn-bg-hover: #5A6578; --btn-fg: white; }
+.btn--ejercicios { --btn-bg: var(--color-info, #2563EB); --btn-bg-hover: color-mix(in srgb, var(--color-info, #2563EB) 90%, #000 10%); --btn-fg: white; text-decoration: none;}
+.btn--eliminar { --btn-bg: var(--color-peligro, #DC2626); --btn-bg-hover: color-mix(in srgb, var(--color-peligro, #DC2626) 90%, #000 10%); --btn-fg: white; }
+
+#paginacion-rutinas-controles {
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.paginacion-numeros {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex: 1; min-width: 0; overflow: hidden;
+}
+#paginacion-rutinas-controles .btn {
+    width: auto; flex-shrink: 0;
+}
+.boton-pagina {
+    background-color: var(--gg-surface-2); color: var(--color-gris-200); border: 1.5px solid var(--gg-border);
+    border-radius: 8px; width: 36px; height: 36px; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.boton-pagina:hover { background-color: var(--color-principal); border-color: var(--color-principal); color: var(--color-principal-oscuro); }
+.boton-pagina.activo { background-color: var(--color-principal); border-color: var(--color-principal); color: var(--color-principal-oscuro); font-weight: 900; }
+
+
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); padding-top: 60px; }
+.modal-contenido { background-color: var(--color-principal-oscuro); margin: 5% auto; padding: 2rem; border: 1px solid var(--gg-border); width: 80%; max-width: 500px; border-radius: var(--radio-md); position: relative; box-shadow: var(--sombra-suave); }
+.modal-cerrar { color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 28px; font-weight: bold; cursor: pointer; }
+.modal-cerrar:hover, .modal-cerrar:focus { color: var(--color-blanco); text-decoration: none; }
+.feedback-exito { color: var(--color-exito); font-weight: bold; }
+.feedback-error { color: var(--color-peligro); font-weight: bold; }
+
+@media (max-width: 768px) {
+    .rutina-card { grid-template-columns: 1fr; gap: 1rem; }
+    .rutina-card__actions { justify-content: flex-start; }
+    .filtros-container { flex-direction: column; gap: 1rem; align-items: stretch; }
+
+    #paginacion-rutinas-controles .btn .texto-largo { display: none; }
+    #paginacion-rutinas-controles .btn .texto-corto { display: inline; }
+    #paginacion-rutinas-controles .btn {
+        width: 36px; height: 36px; /* Hacerlos cuadrados como los números */
+        padding: 0; font-size: 1rem;
+    }
+}
+@media (min-width: 769px) {
+    /* Ocultar texto corto en botones de paginación */
+    #paginacion-rutinas-controles .btn .texto-corto { display: none; }
+}
+
+
+.modal {
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 1rem;
+
+    padding-top: 1rem;
+}
+
+@keyframes modal-pop-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-contenido {
+    background-color: var(--gg-surface-2);
+    border-radius: 12px;
+    max-width: 550px;
+    width: 100%;
+    padding: 2rem;
+    margin: auto;
+
+    animation: modal-pop-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modal-contenido h2 {
+    font-family: "Titillium Web", sans-serif;
+    font-weight: 900;
+    color: var(--gg-text-primary, #fff);
+    margin: 0;
+    line-height: 1.2;
+    padding-right: 2.5rem;
+}
+
+.modal-contenido .form {
+    margin-top: 1rem;
+    padding: 0;
+    gap: 2.25rem;
+}
+
+.modal-contenido .form .field {
+    margin-bottom: 2rem;
+}
+
+.modal-cerrar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    border-radius: 50%;
+    color: var(--gg-text-muted);
+    width: 36px;
+    height: 36px;
+
+    /* Centrado automático con Flexbox */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Limpieza de estilos de botón */
+    padding: 0;
+
+    text-decoration: none;
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+}
+
+.modal-cerrar .icon {
+    width: 18px;  /* Tamaño del ícono */
+    height: 18px;
+    /* El color se hereda (currentColor) de la regla .modal-cerrar */
+}
+
+.modal-cerrar:hover,
+.modal-cerrar:focus {
+    background: var(--color-peligro);
+    color: white;
+    border-color: var(--color-peligro);
+    transform: scale(1.05) rotate(90deg);
+}
+
+.modal-feedback {
+    min-height: 1.1em;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.feedback-exito {
+    color: var(--color-exito);
+    font-weight: bold;
+    text-align: center;
+}
+.feedback-error {
+    color: var(--color-peligro);
+    font-weight: bold;
+    text-align: center;
+}
+
+#eliminar-actions {
+    margin-top: 1.5rem;
+    justify-content: center;
+    gap: 1rem;
+}
+
+#form-crear-rutina .field .error {
+    /* Por defecto, no ocupan espacio */
+    height: 0;
+    min-height: 0;
+    margin: 0;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+/* * Cuando tu JavaScript (gestionRutinas.js) añada un mensaje de error,
+ * el div dejará de estar vacío (:not(:empty)) y le damos espacio.
+*/
+#form-crear-rutina .field .error:not(:empty) {
+    height: auto;
+    min-height: 1.1em; /* Altura estándar para el texto */
+    opacity: 1;
+    margin-top: 0.35rem; /* Espacio para separarlo del input */
+}

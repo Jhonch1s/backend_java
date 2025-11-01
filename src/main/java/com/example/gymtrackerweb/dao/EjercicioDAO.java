@@ -2,12 +2,15 @@ package com.example.gymtrackerweb.dao;
 
 
 import com.example.gymtrackerweb.db.databaseConection;
+import com.example.gymtrackerweb.dto.EjercicioDTO;
+import com.example.gymtrackerweb.dto.EjercicioRutinaView;
 import com.example.gymtrackerweb.model.Ejercicio;
 import com.example.gymtrackerweb.model.enums.Dificultad;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,6 +157,63 @@ public class EjercicioDAO {
             System.out.println("Error al verificar existencia de ejercicio: " + e.getMessage());
         }
         return false;
+    }
+
+    public List<EjercicioRutinaView> listarTodosEjerciciosDetallados() {
+        List<EjercicioRutinaView> ejercicios = new ArrayList<>();
+        String sql = """
+        SELECT
+            e.id AS id_ejercicio,
+            e.nombre AS nombre_ejercicio,
+            gm.nombre AS nombre_grupo_muscular
+        FROM ejercicio e
+        LEFT JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id
+        ORDER BY e.nombre
+    """;
+
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql);
+             ResultSet resultado = sentencia.executeQuery()) {
+
+            while (resultado.next()) {
+                EjercicioRutinaView view = new EjercicioRutinaView();
+                view.setIdEjercicio(resultado.getInt("id_ejercicio"));
+                view.setNombreEjercicio(resultado.getString("nombre_ejercicio"));
+                view.setGrupoMuscular(resultado.getString("nombre_grupo_muscular"));
+                // Los otros campos (series, reps, dia) quedan en null/0
+                ejercicios.add(view);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar todos los ejercicios detallados: " + e.getMessage());
+            throw new RuntimeException("Error al listar todos los ejercicios detallados", e);
+        }
+        return ejercicios;
+    }
+
+    public List<EjercicioDTO> listarTodosDTO() {
+        List<EjercicioDTO> ejercicios = new ArrayList<>();
+        String sql = "SELECT e.id, e.nombre, e.dificultad, e.grupo_muscular_id, gm.nombre as grupo_nombre " +
+                "FROM ejercicio e " +
+                "LEFT JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id " +
+                "ORDER BY e.nombre";
+        Connection conn = databaseConection.getInstancia().getConnection();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                EjercicioDTO dto = new EjercicioDTO();
+                dto.setId(rs.getInt("id"));
+                dto.setNombre(rs.getString("nombre"));
+                dto.setDificultad(rs.getString("dificultad"));
+                dto.setGrupoMuscularId(rs.getInt("grupo_muscular_id"));
+                dto.setGrupoMuscularNombre(rs.getString("grupo_nombre"));
+                ejercicios.add(dto);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar EjercicioDTOs: " + e.getMessage());
+        }
+        return ejercicios;
     }
 
 
