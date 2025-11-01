@@ -38,9 +38,9 @@
 }
 
 /* Para que no se muestre la scrollbar en pantallas grandes (Por alguna razon setearle el max width directamente no hace nada) */
-@media (min-width: 1200px) {
+@media (min-width: 1500px) {
     .u-maxw-1100 {
-        max-width: 1350px;
+        max-width: 1500px;
     }
 }
 

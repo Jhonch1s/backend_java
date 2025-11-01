@@ -1,0 +1,179 @@
+
+.badge {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .8rem;
+    border: 1px solid var(--gg-border);
+}
+.badge--activo {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22C55E;
+}
+.badge--inactivo {
+    background: rgba(220, 38, 38, 0.15);
+    color: #DC2626;
+}
+
+.btn--icon {
+    background: transparent;
+    border: 1px solid var(--gg-border);
+    color: var(--gg-text);
+    padding: .35rem .85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .2s ease, transform .1s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: .85rem;
+}
+
+.btn--icon:hover {
+    background: rgba(255,255,255,.05);
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.7);
+    z-index: 1000;
+}
+.modal.oculto { display: none; }
+
+.modal__contenido {
+    width: min(92vw, 520px);
+    background: var(--gg-surface);
+    border: 1px solid var(--gg-border);
+    border-radius: 16px;
+    position: relative;
+    padding: 1.2rem;
+}
+
+.modal-cerrar {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: transparent; border: 0;
+    color: var(--color-rojo);
+    cursor: pointer;
+    width: 2.25rem; height: 2.25rem;
+    border-radius: 8px;
+}
+.modal-cerrar:hover { transform: scale(1.06); }
+
+.form-grid .group-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .9rem;
+}
+@media (max-width: 720px) {
+    .form-grid .group-2 { grid-template-columns: 1fr; }
+}
+.form-grid label {
+    display: grid;
+    gap: .35rem;
+    font-weight: 700;
+    color: var(--gg-text);
+}
+.plan-create__control {
+    appearance: none;
+    background: var(--gg-surface-2);
+    color: var(--gg-text);
+    border: 1px solid var(--gg-border);
+    border-radius: 12px;
+    padding: .85rem .9rem;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.plan-create__control:focus {
+    outline: none;
+    border-color: var(--gg-focus);
+    box-shadow: 0 0 0 3px rgba(255, 241, 18, .15);
+    background: #101010;
+}
+
+.checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .35rem;
+}
+.checkbox input { accent-color: var(--gg-brand); }
+
+.input-error {
+    color: var(--color-rojo);
+    font-size: .9rem;
+    min-height: 1.1em;
+}
+
+.tarjeta { padding: 1rem 1.2rem; }
+
+.acciones { margin-top: 1rem; }
+
+.btn--editar,
+.btn--estado {
+    font-size: 0.9rem;
+    padding: .55rem 1rem;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: all .18s ease;
+}
+.btn--peligro {
+    background: var(--color-peligro-fondo-1);
+    color: var(--color-peligro);
+    border: 1px solid var(--color-peligro-fondo-2);
+}
+.btn--peligro:hover {
+    background: var(--color-peligro-fondo-2);
+    box-shadow: 0 0 0 2px var(--color-peligro-sombra);
+}
+
+.tabla-datos td .btn {
+    margin-inline: .25rem;
+}
+
+.form-grid .toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .75rem;
+    width: 100%;
+    user-select: none;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.toggle__track { margin-left: auto; }
+
+.toggle {
+    --w: 42px; --h: 24px;
+    padding-top: 1.25rem;
+}
+.toggle input { position: absolute; opacity: 0; pointer-events: none; }
+
+.toggle__track {
+    position: relative;
+    width: var(--w); height: var(--h);
+    background: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    border-radius: var(--h);
+    transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.toggle__thumb {
+    position: absolute; top: 2px; left: 2px;
+    width: calc(var(--h) - 4px); height: calc(var(--h) - 4px);
+    border-radius: 50%;
+    background: #fff;
+    transition: transform .2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+
+.toggle input:checked ~ .toggle__track {
+    background: var(--gg-brand);
+}
+.toggle input:checked ~ .toggle__track .toggle__thumb {
+    transform: translateX(calc(var(--w) - var(--h)));
+}
