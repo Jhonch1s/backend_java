@@ -55,21 +55,22 @@ public class LoginServlet extends HttpServlet {
         }*/
 
         try{
-            String resultado = u.validarLoginFlexible(usuario, contrasena);
-            if ("cliente".equals(resultado)) {
-                // cosas con cliente
-                ClienteDAO clienteDao = new ClienteDAO();
-                Cliente cliente = clienteDao.buscarPorCi(usuario);
-                if(cliente == null){
-                    request.setAttribute("error", "Cliente no encontrado.");
-                    request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
-                    return;
-                }
-                HttpSession sesion = request.getSession();
-                sesion.setAttribute("usuario", cliente);
-                response.sendRedirect(request.getContextPath() + "/cliente");
-                return;
-            } else if ("staff".equals(resultado)) {
+//            String resultado = u.validarLoginFlexible(usuario, contrasena);
+//            if ("cliente".equals(resultado)) {
+//                // cosas con cliente
+//                ClienteDAO clienteDao = new ClienteDAO();
+//                Cliente cliente = clienteDao.buscarPorCi(usuario);
+//                if(cliente == null){
+//                    request.setAttribute("error", "Cliente no encontrado.");
+//                    request.getRequestDispatcher("/pages/login.jsp").forward(request, response);
+//                    return;
+//                }
+//                HttpSession sesion = request.getSession();
+//                sesion.setAttribute("usuario", cliente);
+//                response.sendRedirect(request.getContextPath() + "/cliente");
+//                return;
+//            } else
+            if (true) {
                 StaffDAO staff = new StaffDAO();
                 staff.iniciarSesion(usuario);
                 if(staff == null){
