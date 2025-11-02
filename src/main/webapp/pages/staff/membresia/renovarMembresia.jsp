@@ -23,7 +23,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Registrar Membresía · Golden Gym</title>
+    <title>Renovar Membresía · Golden Gym</title>
     <!-- Favicons para dar iconos a la web si se usa desde móbil y se quiere anclar al inicio, etc. -->
     <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
@@ -40,7 +40,7 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
 </head>
-<body class="layout vista--membresia-registrar">
+<body class="layout vista--membresia-renovar">
 <%@ include file="/pages/modulos/icons-sprite.jsp" %>
 <%@ include file="/pages/modulos/aside-nav-staff.jsp" %>
 <% SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy");
@@ -52,16 +52,17 @@
    Plan plan = null;
    Date fechaDeInicio = null;
    Date fechaDeFin = null;
+   Membresia membresia = membresiaDAO.obtenerMembresiaPorCedula(request.getParameter("ci"));
    %>
 <main class="layout__content">
     <section class="view card form-card membresia-registrar">
         <header class="view__header card__header">
             <a href="javascript:history.back()" class="breadcrumb__link u-mb-16">← Volver</a>
-            <h1 class="view__title titillium-negra">Registrar Membresía</h1>
-            <p class="view__sub">Registrando membresía para <%= cliente.getNombre() %> <%= cliente.getApellido() %>.</p>
+            <h1 class="view__title titillium-negra">Renovar Membresía</h1>
+            <p class="view__sub">Renovando membresía de <%= cliente.getNombre() %> <%= cliente.getApellido() %>.</p>
         </header>
-        <% if (membresiaDAO.obtenerMembresiaPorCedula(request.getParameter("ci")) != null) { %>
-        <div class="card__body">Este cliente ya tiene una membresía registrada. Puede <a href="renovar?ci=<%= request.getParameter("ci") %>">renovarla</a> o <a href="cambiar?ci=<%= request.getParameter("ci") %>">cambiarla</a>.</div>
+        <% if (membresia == null) { %>
+        <div class="card__body">Este cliente no tiene una membresía registrada. Debe <a href="registrar?ci=<%= request.getParameter("ci") %>">registrarla</a> primero.</div>
         <% } else if (request.getMethod().equals("POST")) {
             String idplan = request.getParameter("plan");
             String idcliente = request.getParameter("ci");
@@ -80,18 +81,19 @@
             if (plan.getDuracionUnidadId() == 4) {
                 fechaDeFin = Date.valueOf(LocalDate.now().plusYears(plan.getDuracionTotal()));
             }
-            int idNuevaMembresia = membresiaDAO.agregarMembresia(new Membresia(-1, Integer.parseInt(idplan), idcliente, fechaDeInicio, fechaDeFin, 1));
-            if (idNuevaMembresia == -1) { %>
-        <div class="card__body">Hubo un error mega-fatal al registrar esta membresía. Por favor comuníquese inmediatamente con soporte técnico: 2907 3991 int. 201 de 9 a 17 hs. Gracias.</div>
-        <%
-            }
-            else {
-                EventoMembresiaDAO eventoDAO = new EventoMembresiaDAO();
-                eventoDAO.agregarEventoMembresia(new EventoMembresia(-1, 1, idNuevaMembresia, 2, Timestamp.from(Instant.now()), "web")); %>
-        <div class="card__body">Se registró la membresía con el plan <%= plan.getNombre() %>.<br>Fecha de inicio: <%= formateador.format(fechaDeInicio) %><br>Fecha de fin: <%= formateador.format(fechaDeFin)%></div>
-         <% }
-            } else { %>
-        <form id="form-registrar-membresia"
+            membresiaDAO.modificarMembresia(new Membresia(membresia.getId(), Integer.parseInt(idplan), idcliente, fechaDeInicio, fechaDeFin, 1));
+            EventoMembresiaDAO eventoDAO = new EventoMembresiaDAO();
+            eventoDAO.agregarEventoMembresia(new EventoMembresia(-1, 1, membresia.getId(), 1, Timestamp.from(Instant.now()), "web")); %>
+        <div class="card__body">Se renovó la membresía con el plan <%= plan.getNombre() %>.<br>Fecha de inicio: <%= formateador.format(fechaDeInicio) %><br>Fecha de fin: <%= formateador.format(fechaDeFin)%></div>
+         <% } else { %>
+        <div class="card__body">
+            <h2>Membresía actual</h2>
+            Plan id: <%= membresia.getIdPlan() %><br>
+            Fecha de inicio: <%= formateador.format(membresia.getFechaInicio()) %><br>
+            Fecha de fin: <%= formateador.format(membresia.getFechaFin()) %><br>
+            Estado: <%= (LocalDate.now().isAfter(membresia.getFechaFin().toLocalDate()) ? "Inactiva" : "Activa") %>
+        </div>
+        <form id="form-renovar-membresia"
               class="form card__body"
               method="post" novalidate>
 
@@ -115,7 +117,7 @@
                     <svg class="icon" width="20" height="20" aria-hidden="true">
                         <use href="#i-user-add"></use>
                     </svg>
-                    Registrar Membresía
+                    Renovar Membresía
                 </button>
             </div>
         </form>

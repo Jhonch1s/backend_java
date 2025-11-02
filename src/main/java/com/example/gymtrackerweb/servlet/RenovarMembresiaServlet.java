@@ -12,8 +12,8 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet("/staff/membresia/registrar")
-public class RegistrarMembresiaServlet extends HttpServlet {
+@WebServlet("/staff/membresia/renovar")
+public class RenovarMembresiaServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -33,7 +33,7 @@ public class RegistrarMembresiaServlet extends HttpServlet {
             return;
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/staff/membresia/registrarMembresia.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/staff/membresia/renovarMembresia.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -55,7 +55,7 @@ public class RegistrarMembresiaServlet extends HttpServlet {
             return;
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/staff/membresia/registrarMembresia.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/pages/staff/membresia/renovarMembresia.jsp");
         dispatcher.forward(request, response);
     }
 }
