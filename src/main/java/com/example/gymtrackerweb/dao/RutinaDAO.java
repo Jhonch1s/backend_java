@@ -1,10 +1,7 @@
 package com.example.gymtrackerweb.dao;
 
 import com.example.gymtrackerweb.db.databaseConection;
-import com.example.gymtrackerweb.dto.EjercicioAsignadoDTO;
-import com.example.gymtrackerweb.dto.EjercicioDTO;
-import com.example.gymtrackerweb.dto.GuardarRutinaPayloadDTO;
-import com.example.gymtrackerweb.dto.RutinaCard;
+import com.example.gymtrackerweb.dto.*;
 import com.example.gymtrackerweb.model.Rutina;
 import com.example.gymtrackerweb.model.enums.Objetivo;
 
@@ -18,9 +15,8 @@ public class RutinaDAO {
     public int agregarRutina(Rutina r) {
         String sql = "INSERT INTO rutina (nombre, objetivo, duracion_semanas) VALUES (?, ?, ?)";
         int generatedId = -1;
-
-        try (Connection conexion = databaseConection.getInstancia().getConnection();
-             PreparedStatement sentencia = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             sentencia.setString(1, r.getNombre());
             sentencia.setString(2, r.getObjetivo().name());
@@ -47,29 +43,25 @@ public class RutinaDAO {
 
     public boolean eliminarRutina(int id) {
         String sql = "DELETE FROM rutina WHERE id = ?";
+        Connection conexion = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement sentencia = conexion.prepareStatement(sql)) {
 
-        // Usamos try-with-resources para asegurar que la conexión y la sentencia se cierren
-        try (Connection conexion = databaseConection.getInstancia().getConnection();
-             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setInt(1, id);
 
-            sentencia.setInt(1, id); // Usamos el ID directamente
-
-            // Usamos executeUpdate(), que devuelve el número de filas afectadas
             int filasAfectadas = sentencia.executeUpdate();
 
-            // Si filasAfectadas > 0, significa que se borró exitosamente.
             return filasAfectadas > 0;
 
         } catch (Exception err) {
             System.out.println("Error al eliminar rutina: " + err.getMessage());
-            return false; // Retornamos false si algo salió mal
+            return false;
         }
     }
 
     public void modificarRutina(Rutina r) {
         String sql = "UPDATE rutina SET nombre = ?, objetivo = ?, duracion_semanas = ? WHERE id = ?";
+        Connection conexion = databaseConection.getInstancia().getConnection();
         try{
-            Connection conexion = databaseConection.getInstancia().getConnection();
             PreparedStatement sentencia = conexion.prepareStatement(sql);
             sentencia.setString(1, r.getNombre());
             sentencia.setString(2, r.getObjetivo().name());
@@ -164,7 +156,6 @@ public class RutinaDAO {
         return null;
     }
 
-    // Últimas 3 rutinas asignadas al cliente
     public List<RutinaCard> ultimas3PorCliente(String idCliente) throws SQLException {
         final String sql = """
             SELECT
@@ -220,7 +211,6 @@ public class RutinaDAO {
 
     public List<EjercicioAsignadoDTO> listarEjerciciosAsignados(int rutinaId) {
         List<EjercicioAsignadoDTO> asignados = new ArrayList<>();
-        // SQL complejo que une 5 tablas
         String sql = "SELECT " +
                 "  dr.series, dr.repeticiones, drd.dia_semana, " +
                 "  e.id as ej_id, e.nombre as ej_nombre, e.dificultad as ej_dificultad, " +
@@ -230,9 +220,9 @@ public class RutinaDAO {
                 "JOIN ejercicio e ON dr.id_ejercicio = e.id " +
                 "LEFT JOIN grupo_muscular gm ON e.grupo_muscular_id = gm.id " +
                 "WHERE dr.id_rutina = ? " +
-                "ORDER BY drd.dia_semana"; // Puedes ordenar como prefieras
-
-        try (Connection conn = databaseConection.getInstancia().getConnection();
+                "ORDER BY drd.dia_semana";
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, rutinaId);
@@ -272,9 +262,8 @@ public class RutinaDAO {
         String sqlDeleteDetalles = "DELETE FROM detalle_rutina WHERE id_rutina = ?";
         String sqlInsertDetalle = "INSERT INTO detalle_rutina (id_rutina, id_ejercicio, series, repeticiones) VALUES (?, ?, ?, ?)";
         String sqlInsertDia = "INSERT INTO detalle_rutina_dia (id_detalle_rutina, dia_semana) VALUES (?, ?)";
-
+        conn = databaseConection.getInstancia().getConnection();
         try {
-            conn = databaseConection.getInstancia().getConnection();
             conn.setAutoCommit(false);
 
             psDeleteDias = conn.prepareStatement(sqlDeleteDias);
@@ -309,7 +298,6 @@ public class RutinaDAO {
                         }
                     }
 
-                    // Insertar en detalle_rutina_dia
                     psInsertDia.setInt(1, nuevoDetalleId);
                     psInsertDia.setString(2, dia);
                     psInsertDia.executeUpdate();
@@ -341,44 +329,79 @@ public class RutinaDAO {
 
     }
 
-    public void asignarNuevaRutinaCliente(String clienteId, int rutinaId, LocalDate fechaAsignacion) throws SQLException {
-        String sqlUpdateOld = "UPDATE rutina_cliente SET estado = 'COMPLETA' WHERE id_cliente = ? AND estado = 'activa'";
+    public void asignarNuevaRutinaCliente(Connection conn, String clienteId, int rutinaId, LocalDate fechaAsignacion) throws SQLException {
+
         String sqlInsertNew = "INSERT INTO rutina_cliente (id_cliente, id_rutina, fecha_asignacion, estado) VALUES (?, ?, ?, 'activa')";
-
-        Connection conn = null;
-        conn = databaseConection.getInstancia().getConnection();
-        try {
-            conn.setAutoCommit(false);
-
-            try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdateOld)) {
-                psUpdate.setString(1, clienteId);
-                psUpdate.executeUpdate();
-            }
 
             try (PreparedStatement psInsert = conn.prepareStatement(sqlInsertNew)) {
                 psInsert.setString(1, clienteId);
                 psInsert.setInt(2, rutinaId);
                 psInsert.setDate(3, java.sql.Date.valueOf(fechaAsignacion));
                 psInsert.executeUpdate();
-            }
-
-            conn.commit();
-
-        } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    System.err.println("Error en rollback: " + ex.getMessage());
-                }
-            }
+            } catch (SQLException e) {
             System.err.println("Error al asignar rutina: " + e.getMessage());
             throw e;
-        } finally {
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
+        }
+    }
+
+    public List<RutinaAsignadaConIdDTO> listarRutinasActivasPorCliente(String clienteId) {
+        List<RutinaAsignadaConIdDTO> asignadas = new ArrayList<>();
+
+        String sql = "SELECT rc.id as asignacion_id, r.id as rutina_id, r.nombre as rutina_nombre, rc.fecha_asignacion, rc.estado " +
+                "FROM rutina_cliente rc " +
+                "JOIN rutina r ON rc.id_rutina = r.id " +
+                "WHERE rc.id_cliente = ? AND rc.estado = 'activa' " +
+                "ORDER BY rc.fecha_asignacion DESC";
+
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, clienteId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+
+                    asignadas.add(new RutinaAsignadaConIdDTO(
+                            rs.getInt("asignacion_id"),
+                            rs.getInt("rutina_id"),
+                            rs.getString("rutina_nombre"),
+                            rs.getDate("fecha_asignacion"),
+                            rs.getString("estado")
+                    ));
+                }
             }
+        } catch (SQLException e) {
+            System.err.println("Error al listar rutinas activas por cliente: " + e.getMessage());
+        }
+        return asignadas;
+    }
+
+    public boolean eliminarAsignacion(int asignacionId) {
+        String sql = "DELETE FROM rutina_cliente WHERE id = ?";
+        Connection conn = databaseConection.getInstancia().getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, asignacionId);
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar asignación: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void eliminarAsignacion(Connection conn, int asignacionId) throws SQLException {
+        String sql = "DELETE FROM rutina_cliente WHERE id = ?";
+        // Usamos la conexión que nos pasa el servlet
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, asignacionId);
+            int filasAfectadas = ps.executeUpdate();
+            if (filasAfectadas == 0) {
+                System.err.println("Advertencia: No se encontró la asignacionId " + asignacionId + " para eliminar.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar asignación (dentro de TX): " + e.getMessage());
+            throw e;
         }
     }
 

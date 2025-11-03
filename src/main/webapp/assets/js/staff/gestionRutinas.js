@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Referencias a Elementos del Modal (Crear) ---
     const modal = document.getElementById('modal-crear-rutina');
     const btnAbrirModal = document.getElementById('btn-abrir-modal-crear');
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const formCrear = document.getElementById('form-crear-rutina');
     const feedbackCreacion = document.getElementById('feedback-creacion');
-    // Referencias a inputs para limpiar errores
+
     const inputNombre = document.getElementById('rutina-nombre');
     const inputObjetivo = document.getElementById('rutina-objetivo');
     const inputDuracion = document.getElementById('rutina-duracion');
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorObjetivo = document.getElementById('error-objetivo');
     const errorDuracion = document.getElementById('error-duracion');
 
-    // --- Referencias a Elementos del Modal (Editar/Detalles) ---
     const modalDetalles = document.getElementById('modal-editar-detalles');
     const btnCerrarDetalles = document.getElementById('btn-cerrar-detalles');
     const formDetalles = document.getElementById('form-editar-detalles');
@@ -44,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Lógica Modal Crear ---
     function abrirModal() {
         formCrear.reset();
         feedbackCreacion.textContent = '';
@@ -128,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Lógica Filtros y Paginación ---
     const ITEMS_POR_PAGINA = 7;
 
     const filtroNombre = document.getElementById('filtro-nombre');
@@ -148,12 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const numerosPagina = document.getElementById('numeros-pagina-rutinas');
 
     let paginaActual = 1;
-    let tarjetasFiltradas = [...todasLasTarjetas]; // Al inicio, son todas
+    let tarjetasFiltradas = [...todasLasTarjetas];
 
     function actualizarVista() {
-        if (!listaContenedor) return; // No hacer nada si no hay contenedor
+        if (!listaContenedor) return;
 
-        // 1. Filtrar
         filtrarTarjetas();
 
         const totalPaginas = Math.ceil(tarjetasFiltradas.length / ITEMS_POR_PAGINA);

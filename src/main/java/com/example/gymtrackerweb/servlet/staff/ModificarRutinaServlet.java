@@ -34,19 +34,16 @@ public class ModificarRutinaServlet extends HttpServlet {
 
             switch (action) {
                 case "agregar":
-                    // Esta acción ahora crea el detalle Y asigna los días
                     agregarEjercicioCompleto(request, response, dao, jsonResponse);
                     break;
 
                 case "quitar":
-                    // Esta acción no cambia
                     int idDetalleRutina = Integer.parseInt(request.getParameter("idDetalleRutina"));
                     dao.eliminarDetalle(idDetalleRutina); // Asume ON DELETE CASCADE
                     jsonResponse.put("success", true);
                     break;
 
                 case "modificar":
-                    // Esta acción ahora actualiza series/reps Y recalcula los días
                     modificarEjercicioCompleto(request, response, dao, jsonResponse);
                     break;
 
@@ -65,10 +62,6 @@ public class ModificarRutinaServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Crea una nueva fila en detalle_rutina y asigna sus días en detalle_rutina_dia.
-     * Esta es la lógica para el "Modal Rápido" al agregar.
-     */
     private void agregarEjercicioCompleto(HttpServletRequest request, HttpServletResponse response, DetalleRutinaDAO dao, Map<String, Object> jsonResponse) throws Exception {
         int idRutina = Integer.parseInt(request.getParameter("idRutina"));
         int idEjercicio = Integer.parseInt(request.getParameter("idEjercicio"));
@@ -108,17 +101,12 @@ public class ModificarRutinaServlet extends HttpServlet {
         jsonResponse.put("dias", dias != null ? dias : new String[0]);
     }
 
-    /**
-     * Modifica un detalle_rutina existente y recalcula todos sus días.
-     * Esta es la lógica para el "Modal Rápido" al editar.
-     */
     private void modificarEjercicioCompleto(HttpServletRequest request, HttpServletResponse response, DetalleRutinaDAO dao, Map<String, Object> jsonResponse) throws Exception {
         int idDetalleRutina = Integer.parseInt(request.getParameter("idDetalleRutina"));
         int series = Integer.parseInt(request.getParameter("series"));
         int repeticiones = Integer.parseInt(request.getParameter("repeticiones"));
         String[] dias = request.getParameterValues("dias[]");
 
-        // 1. Actualizar series y reps en detalle_rutina
         DetalleRutina detalleModif = dao.listarDetallesPorId(idDetalleRutina);
         if(detalleModif == null) throw new Exception("Detalle no encontrado");
 
@@ -126,10 +114,8 @@ public class ModificarRutinaServlet extends HttpServlet {
         detalleModif.setRepeticiones(repeticiones);
         dao.modificarDetalle(detalleModif);
 
-        // 2. Borrar TODOS los días anteriores (simple y efectivo)
         dao.eliminarDiasDeDetalle(idDetalleRutina);
 
-        // 3. Agregar los días nuevos
         if (dias != null && dias.length > 0) {
             for (String diaStr : dias) {
                 DiaSemana diaEnum = DiaSemana.fromString(diaStr);

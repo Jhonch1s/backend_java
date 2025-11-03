@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -51,25 +52,31 @@
 
                             <div class="rutina-card__info">
                                 <h3 class="m-0 titillium-negra">${clienteCard.clienteNombre} ${clienteCard.clienteApellido}</h3>
-                                <p class="m-0 mt-1" style="color: var(--gg-text-muted);">CI: ${clienteCard.clienteCi}</p>
+
+                                <p class="cliente-rutina-card__ci">CI: ${clienteCard.clienteCi}</p>
 
                                 <c:choose>
                                     <c:when test="${not empty clienteCard.rutinas}">
-                                        <p class="m-0 mt-2" style="font-weight: 600;">Rutina(s) Activa(s):</p>
 
-                                        <ul style="padding-left: 20px; margin: 0.25rem 0 0; font-size: 0.9rem;">
+                                        <p class="cliente-rutina-card__label">Rutina(s) Activa(s):</p>
+
+                                        <ul class="cliente-rutina-card__lista">
                                             <c:forEach items="${clienteCard.rutinas}" var="rutina">
-                                                <li style="color: var(--color-principal); margin-bottom: 0.25rem;">
+                                                <li class="cliente-rutina-card__lista-item">
                                                         ${rutina.rutinaNombre}
-                                                    <span style="color: var(--gg-text-muted); font-size: 0.85rem;">
-                                                        (Asignada: ${rutina.fechaAsignacion})
+                                                    <span class="cliente-rutina-card__lista-fecha">
+                                                        <c:if test="${not empty rutina.fechaAsignacion}">
+                                                            (Asignada:
+                                                            <fmt:parseDate value="${rutina.fechaAsignacion}" pattern="yyyy-MM-dd" var="fechaParseada" />
+                                                            <fmt:formatDate value="${fechaParseada}" pattern="dd/MM/yyyy" />)
+                                                        </c:if>
                                                     </span>
                                                 </li>
                                             </c:forEach>
                                         </ul>
                                     </c:when>
                                     <c:otherwise>
-                                        <p class="m-0 mt-2" style="font-weight: 600; color: var(--color-peligro);">
+                                        <p class="cliente-rutina-card__label cliente-rutina-card__label--sin-rutina">
                                             Sin rutina activa
                                         </p>
                                     </c:otherwise>
@@ -101,33 +108,95 @@
 
 <div id="modal-asignar-rutina" class="modal">
     <div class="modal-contenido">
+
         <button id="btn-cerrar-modal" class="modal-cerrar" aria-label="Cerrar modal">
             <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </button>
-        <h2 class="titillium-negra">Asignar Rutina a <br><span id="modal-cliente-nombre" style="color: var(--color-principal);"></span></h2>
 
-        <form id="form-asignar-rutina" class="form">
-            <input type="hidden" id="modal-cliente-id" name="clienteId">
-            <div class="field">
-                <label for="modal-select-rutina" class="label">Nueva Rutina:</label>
-                <select id="modal-select-rutina" name="rutinaId" class="control" required>
-                    <option value="" disabled selected>Cargando rutinas...</option>
-                </select>
-                <div class="error" id="error-rutina"></div>
+        <h2 class="titillium-negra">Gestionar Rutinas de <br><span id="modal-cliente-nombre" style="color: var(--color-principal);"></span></h2>
+
+        <input type="hidden" id="modal-cliente-id-hidden">
+
+        <div class="modal-layout-split">
+
+            <div class="modal-columna">
+                <h4>Rutina(s) Activa(s) Actuales</h4>
+                <div id="modal-rutinas-actuales" class="lista-scroll-modal">
+                </div>
             </div>
+
+            <div class="modal-columna">
+                <h4>Asignar Nueva Rutina</h4>
+
+                <div class="modal-filtros-grid">
+                    <div class="filtro-item-modal">
+                        <label for="modal-filtro-rutina" class="label-sm">Buscar por Nombre:</label>
+                        <input type="text" id="modal-filtro-rutina" class="control" placeholder="Ej: Full body...">
+                    </div>
+
+                    <div class="filtro-item-modal">
+                        <label for="modal-filtro-objetivo" class="label-sm">Filtrar por Objetivo:</label>
+                        <select id="modal-filtro-objetivo" class="control">
+                            <option value="todos">Todos los objetivos</option>
+                            <option value="HIPERTROFIA">Hipertrofia</option>
+                            <option value="FUERZA">Fuerza</option>
+                            <option value="TONIFICAR">Tonificar</option>
+                            <option value="RESISTENCIA">Resistencia</option>
+                            <option value="PERDIDA_PESO">Pérdida de Peso</option>
+                        </select>
+                    </div>
+
+                    <div class="filtro-item-modal">
+                        <label for="modal-filtro-duracion" class="label-sm">Filtrar por Duración:</label>
+                        <select id="modal-filtro-duracion" class="control">
+                            <option value="todas">Todas las duraciones</option>
+                            <option value="4">4 semanas</option>
+                            <option value="6">6 semanas</option>
+                            <option value="8">8 semanas</option>
+                            <option value="12">12 semanas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="modal-rutinas-disponibles" class="lista-scroll-modal">
+                </div>
+
+                <div id="modal-paginacion-controles" class="biblioteca-paginacion" style="display: none;">
+                    <button type="button" id="modal-anterior" class="btn-paginacion">‹</button>
+                    <span id="modal-contador">Pág 1 / 1</span>
+                    <button type="button" id="modal-siguiente" class="btn-paginacion">›</button>
+                </div>
+
+                <div class="error" id="error-rutina" style="margin-top: 0.5rem; min-height: 1.1em;"></div>
+            </div>
+        </div>
+
+        <form id="form-asignar-rutina" class="form" style="margin-top: 1rem;">
+
+            <input type="hidden" id="modal-rutinas-ids-seleccionadas" name="rutinasIds" value="">
+
             <div class="field">
-                <label for="modal-fecha-asignacion" class="label">Fecha de Inicio:</label>
+                <label for="modal-fecha-asignacion" class="label">Fecha de Inicio (para la nueva rutina):</label>
                 <input type="date" id="modal-fecha-asignacion" name="fechaAsignacion" class="control" required>
                 <div class="error" id="error-fecha"></div>
             </div>
+
             <div class="form__actions">
-                <button type="submit" class="btn btn--primary btn--xl">Guardar Asignación</button>
+                <button type="submit" class="btn btn--primary btn--xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Guardar Asignación
+                </button>
             </div>
             <p id="feedback-asignacion" class="modal-feedback"></p>
         </form>
+
     </div>
 </div>
 
