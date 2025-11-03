@@ -1,0 +1,256 @@
+.filtros {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(160px, 1fr));
+    gap: 1rem;
+    align-items: end;
+    background: var(--gg-surface);
+    border: 1px solid var(--gg-border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.filtros__acciones {
+    display: flex;
+    gap: .75rem;
+    align-self: flex-end;
+}
+
+.btn {
+    font-weight: 700;
+    border-radius: 8px;
+    padding: .6rem 1.25rem;
+    border: none;
+    cursor: pointer;
+    transition: background .2s ease, transform .1s ease;
+}
+
+.btn--amarillo {
+    background: var(--gg-brand);
+    color: #000;
+    box-shadow: 0 3px 0 color-mix(in srgb, var(--gg-brand) 55%, #c5ad00);
+}
+.btn--amarillo:hover { transform: translateY(-1px); }
+.btn--gris {
+    background: transparent;
+    border: 1px solid var(--gg-border);
+    color: var(--gg-text);
+}
+
+/* Para que no se muestre la scrollbar en pantallas grandes (Por alguna razon setearle el max width directamente no hace nada) */
+@media (min-width: 1500px) {
+    .u-maxw-1100 {
+        max-width: 1500px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .filtros {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .tabla-wrapper {
+        overflow-x: visible;
+    }
+}
+
+@media (max-width: 720px) {
+    .filtros {
+        grid-template-columns: 1fr;
+    }
+}
+
+.filtros label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    color: var(--gg-text-muted);
+    font-size: .95rem;
+    gap: .35rem;
+}
+
+.filtros input {
+    background: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    color: var(--gg-text);
+    border-radius: 8px;
+    padding: .55rem .75rem;
+    min-width: 160px;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.filtros input:focus {
+    outline: none;
+    border-color: var(--gg-focus);
+    box-shadow: 0 0 0 3px rgba(255, 241, 18, .15);
+    background: #101010;
+}
+
+/* Grupo de acciones (Filtrar / Reiniciar) */
+.filtros .acciones {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    padding: .75rem 1rem;
+    font-weight: 800;
+    letter-spacing: .3px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform .06s ease, box-shadow .2s ease, background .2s ease, filter .2s ease;
+}
+
+.btn:active {
+    transform: translateY(0.5px);
+}
+
+.btn--primary {
+    background: var(--gg-brand);
+    color: var(--gg-brand-ink);
+    box-shadow: 0 6px 0 color-mix(in srgb, var(--gg-brand) 55%, #c5ad00),
+    0 12px 24px rgba(0, 0, 0, .35);
+}
+
+.btn--primary:hover {
+    filter: brightness(0.97);
+}
+
+.btn--ghost {
+    background: transparent;
+    color: var(--gg-text);
+    border: 1px solid var(--gg-border);
+}
+
+.btn--ghost:hover {
+    background: rgba(255,255,255,.04);
+}
+
+.form__error-message {
+    color: var(--color-rojo);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+    min-height: 1.1em;
+}
+
+.alerta-error {
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #ff9c9c;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    margin: 0 0 1rem 0;
+}
+
+/* tabla */
+.tabla-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--gg-border);
+    background: var(--gg-surface);
+}
+
+.tabla-datos {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+    background: var(--gg-surface);
+    font-size: .95rem;
+}
+
+.tabla-datos th, .tabla-datos td {
+    padding: .75rem 1rem;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabla-datos thead {
+    background: var(--gg-surface-2);
+    color: var(--gg-text);
+    text-transform: uppercase;
+    font-weight: 700;
+    border-bottom: 1px solid var(--gg-border);
+}
+
+.tabla-datos tbody tr:nth-child(odd) {
+    background: var(--gg-surface-2);
+}
+
+.tabla-datos tbody tr:hover {
+    background: rgba(255, 255, 255, .04);
+}
+
+.tabla-datos td {
+    color: var(--gg-text-muted);
+}
+
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.paginacion a {
+    text-decoration: none;
+    color: var(--gg-brand);
+    font-weight: 700;
+}
+
+.paginacion a:hover {
+    text-decoration: underline;
+}
+
+.total-filtrado{
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-blanco);
+    margin: .5rem 0 1rem;
+    text-align: Left;
+}
+
+.tabla-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.tabla-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, rgba(255, 240, 0, 0.6), rgba(251, 235, 4, 0.45));
+    border-radius: 12px;
+    transition: opacity 0.1s ease;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
+}
+
+.vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+.vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+.vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}

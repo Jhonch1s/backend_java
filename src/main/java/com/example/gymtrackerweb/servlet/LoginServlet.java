@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
+
 @WebServlet(name = "LoginServlet", value = "/login") //Esto me dice como accedo al login
 public class LoginServlet extends HttpServlet {
 
@@ -78,8 +79,8 @@ public class LoginServlet extends HttpServlet {
                     return;
                 }
                 HttpSession sesion = request.getSession();
-                sesion.setAttribute("usuario", staff);
-                response.sendRedirect(request.getContextPath() + "/pages/dashboard.jsp");
+                sesion.setAttribute("admin", staff);
+                response.sendRedirect(request.getContextPath() + "/staff/cliente/listar");
             }else {
                 request.setAttribute("error", "Usuario o contraseña incorrectos.");
                 request.getRequestDispatcher("/pages/login.jsp").forward(request, response);

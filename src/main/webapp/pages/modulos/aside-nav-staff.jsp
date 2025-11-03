@@ -79,30 +79,12 @@
     <h3 class="sidebar__section"><span>Plan</span></h3>
     <ul>
       <li>
-        <a href="#/planes/nuevo" data-link>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          <span>Crear Plan</span>
-        </a>
-      </li>
-      <li>
-        <a href="#/planes/modificar" data-link>
+        <a href="${pageContext.request.contextPath}/staff/planes" data-link>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 20h9"/>
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
           </svg>
-          <span>Modificar Plan</span>
-        </a>
-      </li>
-      <li>
-        <a href="#/planes/desactivar" data-link>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="9"/>
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
-          </svg>
-          <span>Desactivar Plan</span>
+          <span>Administrar Planes</span>
         </a>
       </li>
     </ul>
@@ -145,6 +127,22 @@
         </a>
       </li>
     </ul>
+    <h3 class="sidebar__section"><span>Movimientos</span></h3>
+    <ul>
+      <li>
+        <a href="${pageContext.request.contextPath}/staff/movimientos" data-link>
+          <!-- ícono credencial -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <circle cx="4" cy="6" r="1"/>
+            <circle cx="4" cy="12" r="1"/>
+            <circle cx="4" cy="18" r="1"/>
+          </svg>
+          <span>Ver Movimientos</span>
+        </a>
+      </li>
 
     <!-- SECCIÓN CUENTA -->
     <h3 class="sidebar__section"><span>Cuenta</span></h3>

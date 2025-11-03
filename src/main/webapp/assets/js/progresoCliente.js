@@ -31,8 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const card = btn.closest(".progreso-item");
             const idEjercicio = card.dataset.ejercicio;
             const fechaTexto = card.querySelector(".texto-dorado").innerText.replace("Fecha: ", "").trim();
-            const peso = card.querySelector("p:nth-of-type(2)").innerText.match(/\d+/)?.[0] || "";
-            const reps = card.querySelector("p:nth-of-type(3)").innerText.match(/\d+/)?.[0] || "";
+            const peso = card.querySelector(".kdata p:nth-of-type(1)").innerText.match(/\d+/)?.[0] || "";
+            const reps = card.querySelector(".kdata p:nth-of-type(2)").innerText.match(/\d+/)?.[0] || "";
 
             const partes = fechaTexto.split("/");
             const fechaISO = partes.length === 3 ? `${partes[2]}-${partes[1]}-${partes[0]}` : "";
@@ -104,21 +104,67 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+
+
+
+
     // Filtro
     const btnFiltroFecha = document.getElementById("btnFiltroFecha");
     const svg = document.getElementById("svg-filtro");
+
+    // Filtro ejercicio
+    const formFiltros = document.getElementById("formFiltros");
+    const filtroEjercicio = document.getElementById("filtroEjercicio");
+    filtroEjercicio?.addEventListener("change", () => {
+        const pageInput = formFiltros.querySelector('input[name="page"]');
+        if (pageInput) pageInput.value = "1";
+        formFiltros.submit();
+    });
+
+    // Boton de filtro asc/desc
     if (btnFiltroFecha && svg) {
         const initial = btnFiltroFecha.dataset.order;
         svg.style.transform = initial === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+
+        btnFiltroFecha.addEventListener("click", () => {
+            const order = btnFiltroFecha.dataset.order === "asc" ? "desc" : "asc";
+            btnFiltroFecha.dataset.order = order;
+            svg.style.transform = order === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+
+            const url = new URL(window.location.href);
+            url.searchParams.set("orden", order);
+            url.searchParams.set("page", "1"); // reset de paginación
+            // preserva idEjercicio si ya estaba en la URL
+            window.location.href = url.toString();
+        });
     }
 
-    btnFiltroFecha.addEventListener("click", () => {
-        const order = btnFiltroFecha.dataset.order === "asc" ? "desc" : "asc";
-        btnFiltroFecha.dataset.order = order;
-        svg.style.transform = order === "asc" ? "rotate(180deg)" : "rotate(0deg)";
+    const inputIrPagina = document.getElementById("irPagina");
+    const btnIr = document.getElementById("btnIr");
 
-        const url = new URL(window.location.href);
-        url.searchParams.set("orden", order);
-        window.location.href = url.toString();
-    });
+    if (inputIrPagina && btnIr) {
+        const ir = () => {
+            let page = parseInt(inputIrPagina.value, 10);
+            const max = parseInt(inputIrPagina.max, 10);
+            if (isNaN(page) || page < 1) page = 1;
+            if (page > max) page = max;
+
+            const params = new URLSearchParams(window.location.search);
+            const orden = params.get("orden") || "desc";
+            const idEjercicio = params.get("idEjercicio");
+
+            let nuevaUrl = `${window.location.pathname}?page=${page}&orden=${orden}`;
+            if (idEjercicio) nuevaUrl += `&idEjercicio=${idEjercicio}`;
+            window.location.href = nuevaUrl;
+        };
+
+        btnIr.addEventListener("click", ir);
+        inputIrPagina.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                ir();
+            }
+        });
+    }
+
 });

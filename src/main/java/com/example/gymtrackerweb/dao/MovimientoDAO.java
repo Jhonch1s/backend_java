@@ -4,6 +4,7 @@ import com.example.gymtrackerweb.dto.ClienteMin;
 import com.example.gymtrackerweb.dto.*;
 import com.example.gymtrackerweb.model.Movimiento;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
@@ -388,6 +389,153 @@ public class MovimientoDAO {
             System.out.println("Error verificando membresía/cliente: " + e.getMessage());
             return false;
         }
+    };
+
+    public List<MovimientoViewExtra> listarMovimientosFiltrados(
+            String staffLogin,
+            String ciCliente,
+            LocalDate desde,
+            LocalDate hasta,
+            int limit,
+            int offset
+    ) throws SQLException {
+
+        List<MovimientoViewExtra> lista = new ArrayList<>();
+
+        String sql = """
+        SELECT
+            m.id_mov,
+            m.fecha_hora,
+            m.importe,
+            m.id_membresia,
+            s.nombre_completo  AS staff_nombre,
+            s.usuario_login    AS staff_login,
+            mp.nombre          AS medio_pago_nombre,
+            tc.nombre          AS tipo_cliente_nombre,
+            o.nombre           AS origen_nombre,
+            c.ci               AS cliente_ci,
+            CASE WHEN c.ci IS NOT NULL THEN CONCAT(c.nombre, ' ', c.apellido) ELSE NULL END AS cliente_nombre,
+            p.nombre           AS plan_nombre
+        FROM movimiento m
+        LEFT JOIN staff              s  ON s.id  = m.id_staff
+        LEFT JOIN medio_pago         mp ON mp.id = m.medio_pago_id
+        LEFT JOIN tipo_cliente       tc ON tc.id = m.tipo_cliente_id
+        LEFT JOIN origen_movimiento  o  ON o.id  = m.origen_id
+        LEFT JOIN cliente            c  ON c.ci  = m.id_cliente
+        LEFT JOIN membresia          me ON me.id = m.id_membresia
+        LEFT JOIN plan               p  ON p.id  = me.id_plan
+        WHERE 1=1
+        """;
+
+        if (staffLogin != null && !staffLogin.isBlank()) sql += " AND s.usuario_login = ?";
+        if (ciCliente != null && !ciCliente.isBlank())   sql += " AND m.id_cliente = ?";
+        if (desde != null)                                sql += " AND m.fecha_hora >= ?";
+        if (hasta != null)                                sql += " AND m.fecha_hora < ?";
+
+        sql += " ORDER BY m.fecha_hora DESC LIMIT ? OFFSET ?";
+
+        try (Connection cn = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            int idx = 1;
+            if (staffLogin != null && !staffLogin.isBlank()) ps.setString(idx++, staffLogin);
+            if (ciCliente != null && !ciCliente.isBlank())   ps.setString(idx++, ciCliente);
+            if (desde != null)                                ps.setTimestamp(idx++, Timestamp.valueOf(desde.atStartOfDay()));
+            if (hasta != null)                                ps.setTimestamp(idx++, Timestamp.valueOf(hasta.plusDays(1).atStartOfDay()));
+
+            ps.setInt(idx++, limit);
+            ps.setInt(idx, offset);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MovimientoViewExtra v = new MovimientoViewExtra();
+                    v.setIdMov(rs.getLong("id_mov"));
+                    Timestamp ts = rs.getTimestamp("fecha_hora");
+                    v.setFechaHora(ts == null ? null : ts.toLocalDateTime());
+                    v.setImporte(rs.getBigDecimal("importe"));
+                    v.setIdMembresia(rs.getObject("id_membresia", Integer.class));
+                    v.setStaffNombre(rs.getString("staff_nombre"));
+                    v.setMedioPagoNombre(rs.getString("medio_pago_nombre"));
+                    v.setTipoClienteNombre(rs.getString("tipo_cliente_nombre"));
+                    v.setOrigenNombre(rs.getString("origen_nombre"));
+                    v.setClienteCi(rs.getString("cliente_ci"));
+                    v.setClienteNombre(rs.getString("cliente_nombre"));
+                    v.setPlanNombre(rs.getString("plan_nombre"));
+                    lista.add(v);
+                }
+            }
+        }
+        return lista;
     }
 
+    public int contarMovimientosFiltrados(
+            String staffLogin,
+            String ciCliente,
+            LocalDate desde,
+            LocalDate hasta
+    ) throws SQLException {
+
+        String sql = """
+        SELECT COUNT(*) AS total
+        FROM movimiento m
+        LEFT JOIN staff             s  ON s.id  = m.id_staff
+        LEFT JOIN cliente           c  ON c.ci  = m.id_cliente
+        WHERE 1=1
+        """;
+
+        if (staffLogin != null && !staffLogin.isBlank()) sql += " AND s.usuario_login = ?";
+        if (ciCliente != null && !ciCliente.isBlank())   sql += " AND m.id_cliente = ?";
+        if (desde != null)                                sql += " AND m.fecha_hora >= ?";
+        if (hasta != null)                                sql += " AND m.fecha_hora < ?";
+
+        try (Connection cn = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            int idx = 1;
+            if (staffLogin != null && !staffLogin.isBlank()) ps.setString(idx++, staffLogin);
+            if (ciCliente != null && !ciCliente.isBlank())   ps.setString(idx++, ciCliente);
+            if (desde != null)                                ps.setTimestamp(idx++, Timestamp.valueOf(desde.atStartOfDay()));
+            if (hasta != null)                                ps.setTimestamp(idx++, Timestamp.valueOf(hasta.plusDays(1).atStartOfDay()));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt("total");
+            }
+        }
+        return 0;
+    }
+
+    public BigDecimal sumarImportesFiltrados(
+            String staffLogin,
+            String ciCliente,
+            LocalDate desde,
+            LocalDate hasta
+    ) throws SQLException {
+
+        String sql = """
+        SELECT COALESCE(SUM(m.importe), 0) AS total
+        FROM movimiento m
+        LEFT JOIN staff s ON s.id = m.id_staff
+        WHERE 1=1
+    """;
+
+        if (staffLogin != null && !staffLogin.isBlank()) sql += " AND s.usuario_login = ?";
+        if (ciCliente != null && !ciCliente.isBlank())   sql += " AND m.id_cliente = ?";
+        if (desde != null)                                sql += " AND m.fecha_hora >= ?";
+        if (hasta != null)                                sql += " AND m.fecha_hora < ?";
+
+        try (Connection cn = databaseConection.getInstancia().getConnection();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            int idx = 1;
+            if (staffLogin != null && !staffLogin.isBlank()) ps.setString(idx++, staffLogin);
+            if (ciCliente != null && !ciCliente.isBlank())   ps.setString(idx++, ciCliente);
+            if (desde != null)                                ps.setTimestamp(idx++, Timestamp.valueOf(desde.atStartOfDay()));
+            if (hasta != null)                                ps.setTimestamp(idx++, Timestamp.valueOf(hasta.plusDays(1).atStartOfDay()));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal("total");
+            }
+        }
+        return BigDecimal.ZERO;
+    }
 }

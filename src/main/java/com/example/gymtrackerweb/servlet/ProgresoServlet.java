@@ -27,18 +27,44 @@ public class ProgresoServlet extends HttpServlet {
             return;
         }
 
+        final int ProgresosPorPagina = 20;
+
         try {
             ProgresoEjercicioDAO dao = new ProgresoEjercicioDAO();
             ProgresoEjercicio progresoEjercicio = new ProgresoEjercicio();
             progresoEjercicio.setIdCliente(Integer.parseInt(usuario.getCi()));
 
+            // Parametros
             String orden = request.getParameter("orden");
             boolean ascendente = "asc".equals(orden);
+            String stringIdEjercicio = request.getParameter("idEjercicio");
+            Integer idEjercicio = (stringIdEjercicio != null && !stringIdEjercicio.isEmpty()) ? Integer.parseInt(stringIdEjercicio) : null;
+            String stringPagina = request.getParameter("page");
+            int paginaActual = (stringPagina != null) ? Integer.parseInt(stringPagina) : 1;
+            if (paginaActual < 1) paginaActual = 1;
+            int offset = (paginaActual - 1) * ProgresosPorPagina;
 
-            List<ProgresoEjercicio> lista = dao.listarProgresoEjercicioDeUsuarioOrdenadoFecha(progresoEjercicio, ascendente);
-            request.setAttribute("listaProgresos", lista);
+            // Conseguir lista
+            List<ProgresoEjercicio> listaProgresos = dao.listarProgresosFiltrados(
+                    Integer.parseInt(usuario.getCi()),
+                    idEjercicio,
+                    ascendente,
+                    ProgresosPorPagina,
+                    offset
+            );
+
+            // Contar total
+            int totalRegistros = dao.contarProgresosFiltrados(Integer.parseInt(usuario.getCi()), idEjercicio);
+            int totalPaginas = (int) Math.ceil((double) totalRegistros / ProgresosPorPagina);
+            if (totalPaginas < 1) totalPaginas = 1;
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+
+
+            request.setAttribute("listaProgresos", listaProgresos);
             request.setAttribute("ordenActual", ascendente ? "asc" : "desc");
-
+            request.setAttribute("idEjercicioSeleccionado", idEjercicio);
+            request.setAttribute("paginaActual", paginaActual);
+            request.setAttribute("totalPaginas", totalPaginas);
             EjercicioDAO ejercicioDAO = new EjercicioDAO();
             request.setAttribute("listaEjercicios", ejercicioDAO.listarEjercicios());
 
@@ -46,7 +72,7 @@ public class ProgresoServlet extends HttpServlet {
 
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -90,9 +116,12 @@ public class ProgresoServlet extends HttpServlet {
                 default -> throw new IllegalArgumentException("Accion no reconocida: " + accion);
             }
 
-            // Vuelve a cargar la lista progreso
-            response.sendRedirect(request.getContextPath() + "/cliente/progreso");
-
+            String referer = request.getHeader("referer");
+            if (referer != null && referer.contains("/cliente/progreso")) {
+                response.sendRedirect(referer);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/cliente/progreso");
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

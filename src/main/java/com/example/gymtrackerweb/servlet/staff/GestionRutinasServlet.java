@@ -23,11 +23,15 @@ public class GestionRutinasServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-//        HttpSession session = request.getSession(false);
-//        if (session == null || session.getAttribute("usuarioStaff") == null) {
-//            response.sendRedirect(request.getContextPath() + "/login"); // Ajusta la URL del login si es diferente
-//            return;
-//        }
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        var session = request.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            // redirigir al login
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         RutinaDAO rutinaDAO = new RutinaDAO();
         List<Rutina> listaRutinas = null;

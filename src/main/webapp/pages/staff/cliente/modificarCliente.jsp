@@ -199,7 +199,7 @@
           <!-- Imagen del plan -->
           <div class="mt-2">
             <img id="sum-membresia-img"
-                 src="${pageContext.request.contextPath}/assets/img/plan-placeholder.jpg"
+                 src="${pageContext.request.contextPath}/assets/img/plan-placeholder.png"
                  alt="Plan"
                  style="width:100%;max-height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--gg-border);" />
           </div>

@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/gestionRutinas.css">
 </head>
 
-<body class="layout">
+<body class="layout vista--rutina-crear">
 
 <jsp:include page="/pages/modulos/aside-nav-staff.jsp" />
 

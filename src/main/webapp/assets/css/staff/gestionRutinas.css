@@ -258,3 +258,18 @@
     opacity: 1;
     margin-top: 0.35rem; /* Espacio para separarlo del input */
 }
+.vista--rutina-crear .sidebar__nav a[href*="/admin/gestion-rutinas"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+.vista--rutina-crear .sidebar__nav a[href*="/admin/gestion-rutinas"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+.vista--rutina-crear .sidebar__nav a[href*="/admin/gestion-rutinas"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}
