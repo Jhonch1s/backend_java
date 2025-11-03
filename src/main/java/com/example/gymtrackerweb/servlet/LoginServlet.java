@@ -71,8 +71,8 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/cliente");
                 return;
             } else if ("staff".equals(resultado)) {
-                StaffDAO staff = new StaffDAO();
-                staff.iniciarSesion(usuario);
+                StaffDAO staffDAO = new StaffDAO();
+                Staff staff = staffDAO.iniciarSesion(usuario);
                 if(staff == null){
                     request.setAttribute("error", "Staff no encontrado.");
                     request.getRequestDispatcher("/pages/login.jsp").forward(request, response);

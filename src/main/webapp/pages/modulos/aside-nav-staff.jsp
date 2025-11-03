@@ -89,44 +89,7 @@
       </li>
     </ul>
 
-    <!-- SECCIÓN MEMBRESÍA -->
-    <h3 class="sidebar__section"><span>Membresía</span></h3>
-    <ul>
-      <li>
-        <a href="#/membresias/nueva" data-link>
-          <!-- ícono credencial -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="16" rx="2"/>
-            <circle cx="12" cy="10" r="3"/>
-            <path d="M6 18a6 6 0 0 1 12 0"/>
-          </svg>
-          <span>Crear Membresía</span>
-        </a>
-      </li>
-      <li>
-        <a href="#/membresias/renovar" data-link>
-          <!-- ícono renovar -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="23 4 23 10 17 10"/>
-            <polyline points="1 20 1 14 7 14"/>
-            <path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0 0 20.49 15"/>
-          </svg>
-          <span>Renovar Membresía</span>
-        </a>
-      </li>
-      <li>
-        <a href="#/membresias/cambiar" data-link>
-          <!-- ícono swap -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="16 3 21 8 16 13"/>
-            <line x1="4" y1="8" x2="21" y2="8"/>
-            <polyline points="8 21 3 16 8 11"/>
-            <line x1="3" y1="16" x2="20" y2="16"/>
-          </svg>
-          <span>Cambiar Membresía</span>
-        </a>
-      </li>
-    </ul>
+    <!-- SECCIÓN MOVIMIENTOS -->
     <h3 class="sidebar__section"><span>Movimientos</span></h3>
     <ul>
       <li>
@@ -143,22 +106,21 @@
           <span>Ver Movimientos</span>
         </a>
       </li>
+    </ul>
 
     <!-- SECCIÓN CUENTA -->
     <h3 class="sidebar__section"><span>Cuenta</span></h3>
     <ul>
-      <li>
-        <form action="${pageContext.request.contextPath}/logout" method="post" style="margin: 0;">
-          <button type="submit" class="btn logout-button">
-            <!-- ícono candado -->
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-            <span>Cerrar sesión</span>
-          </button>
-        </form>
-      </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/logout" data-link>
+                <!-- ícono credencial -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Cerrar sesión</span>
+            </a>
+        </li>
     </ul>
   </nav>
 </aside>

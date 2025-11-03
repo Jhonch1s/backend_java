@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-perfil.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/mostrarCliente.css" />
 </head>
 <body class="layout vista--cliente-mostrar"
@@ -453,6 +453,34 @@
 
                 <article class="tarjeta mt-2">
                     <div class="bloque__head">
+                        <h2 class="bloque__title m-0">Datos del cliente</h2>
+                    </div>
+
+                    <div class="client-summary__kpis">
+                        <div class="kpi">
+                            <div class="kpi__label">Visitas mes</div>
+                            <div class="kpi__value" id="sum-visitas-mes">-</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi__label">Prom. minutos</div>
+                            <div class="kpi__value" id="sum-prom-minutos">-</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi__label">Entrenos totales</div>
+                            <div class="kpi__value" id="sum-total-entrenos">-</div>
+                        </div>
+                    </div>
+
+                    <div class="client-summary__contact">
+                        <p><strong>Email:</strong> <span id="sum-email">-</span></p>
+                        <p><strong>Teléfono:</strong> <span id="sum-tel">-</span></p>
+                        <p><strong>Ciudad/Pais:</strong> <span id="sum-ciudad-pais">-</span></p>
+                        <p><strong>Ingreso:</strong> <span id="sum-ingreso">-</span></p>
+                    </div>
+                </article>
+
+                <article class="tarjeta mt-2">
+                    <div class="bloque__head">
                         <h2 class="bloque__title m-0">Membresía</h2>
                     </div>
 
@@ -465,30 +493,21 @@
 
                     <div class="membresia-grid mt-2">
                         <p class="m-0 mt-2">Plan: <strong id="sum-plan-nombre">Sin plan</strong></p>
-                        <p class="m-0 mt-1">Vence: <strong id="sum-membresia-vence">-</strong></p>
-                        <p class="m-0 mt-1"><span id="sum-membresia-dias" class="mini-badge">-</span></p>
                         <p class="m-0 mt-1">Estado: <span id="sum-membresia-estado">Sin membresía</span></p>
+                        <p class="m-0 mt-1">Vence: <strong id="sum-membresia-vence">-</strong>&nbsp;&nbsp;<span id="sum-membresia-dias" class="mini-badge">-</span></p>
+                    </div>
+
+                    <div class="form__actions">
+                        <a id="sum-registrar-btn" href="#" class="btn btn--ghost">Registrar</a><a id="sum-renovar-btn" href="#" class="btn btn--ghost">Renovar</a><a id="sum-cambiar-btn" href="#" class="btn btn--ghost">Cambiar</a>
                     </div>
                 </article>
-
-                <div class="client-summary__kpis">
-                    <div class="kpi"><div class="kpi__label">Visitas mes</div><div class="kpi__value" id="sum-visitas-mes">-</div></div>
-                    <div class="kpi"><div class="kpi__label">Prom. minutos</div><div class="kpi__value" id="sum-prom-minutos">-</div></div>
-                    <div class="kpi"><div class="kpi__label">Entrenos totales</div><div class="kpi__value" id="sum-total-entrenos">-</div></div>
-                </div>
-
-                <div class="client-summary__contact">
-                    <p><strong>Email:</strong> <span id="sum-email">-</span></p>
-                    <p><strong>Teléfono:</strong> <span id="sum-tel">-</span></p>
-                    <p><strong>Ciudad/Pais:</strong> <span id="sum-ciudad-pais">-</span></p>
-                    <p><strong>Ingreso:</strong> <span id="sum-ingreso">-</span></p>
-                </div>
             </aside>
         </div>
     </div>
 </div>
 
 </main>
+<script>const APP_ROOT = "${pageContext.request.contextPath}";</script>
 <script src="${pageContext.request.contextPath}/assets/js/staff/clientes-mostrar.js" defer></script>
 
 </body>

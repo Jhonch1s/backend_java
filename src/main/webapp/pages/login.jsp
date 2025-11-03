@@ -42,7 +42,7 @@
             <div class="login__campo">
                 <label class="login__label" for="usuario">Usuario</label>
                 <input class="login__input" type="text" id="usuario" name="usuario" inputmode="numeric"
-                       placeholder="Nombre de Usuario" autocomplete="username" required
+                       placeholder="Nombre de Usuario" autocomplete="username" autofocus required
                        aria-describedby="error-usuario">
                 <p class="login__error" id="error-usuario" role="alert" aria-live="polite"></p>
             </div>

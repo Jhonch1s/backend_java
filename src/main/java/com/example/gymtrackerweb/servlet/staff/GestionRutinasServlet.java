@@ -27,7 +27,7 @@ public class GestionRutinasServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         var session = request.getSession(false);
-        if (session == null || session.getAttribute("usuario") == null) {
+        if (session == null || session.getAttribute("admin") == null) {
             // redirigir al login
             response.sendRedirect(request.getContextPath() + "/login");
             return;
