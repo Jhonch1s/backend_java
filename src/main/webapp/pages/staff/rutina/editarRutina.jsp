@@ -8,7 +8,6 @@
     <title>Editor de Rutina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <%-- Estilos base del sitio --%>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
@@ -16,7 +15,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
 
-    <%-- Estilos específicos de esta página --%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/editarRutina.css">
 </head>
 <body class="layout">

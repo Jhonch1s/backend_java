@@ -2,39 +2,105 @@
    ESTILOS PARA ASIGNAR CLIENTES
    ========================================================== */
 
+.rutina-list {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    align-items: stretch; /* Mantiene las tarjetas alineadas */
+}
+
+/* 2. Tablets (ej. > 768px) */
+@media (min-width: 768px) {
+    .rutina-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (min-width: 1200px) {
+    .rutina-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1600px) {
+    .rutina-list {
+        grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+    }
+}
+
 /* Tarjeta de Cliente */
 .cliente-rutina-card {
-    display: grid;
-    grid-template-columns: 1fr auto; /* Info a la izq, botón a la der */
-    align-items: center;
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
     padding: 1.25rem;
-    margin-bottom: 1rem; /* Separación entre tarjetas de cliente */
-
-    /* ¡ESTILOS DE CARD AÑADIDOS! (de forms-staff.css) */
     background: var(--gg-surface, #141417);
     border: 1px solid var(--gg-border, #29292e);
     border-radius: var(--radio-md, 12px);
-    box-shadow: 0 10px 30px rgba(0,0,0,.3); /* Sombra más sutil */
+    box-shadow: 0 10px 30px rgba(0,0,0,.3);
     color: var(--gg-text, #e9e9ee);
 }
 
+.cliente-rutina-card__info {
+    flex-grow: 1; /* Empuja el botón al fondo */
+}
+
+/* Título de la tarjeta (ya usa titillium-negra) */
 .cliente-rutina-card__info h3 {
     margin: 0;
     font-weight: 900;
 }
-.cliente-rutina-card__info p {
+
+/* Párrafo de la Cédula (CI) */
+.cliente-rutina-card__ci {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: var(--gg-text-muted); /* Color de utilidades */
+}
+
+/* Label "Rutina(s) Activa(s):" */
+.cliente-rutina-card__label {
+    margin: 0.75rem 0 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gg-text-muted); /* Color de utilidades */
+}
+
+.cliente-rutina-card__label--sin-rutina {
+    color: var(--color-peligro);
+}
+
+.cliente-rutina-card__lista {
+    list-style-position: outside;
+    padding-left: 20px;
     margin: 0.25rem 0 0;
     font-size: 0.9rem;
 }
+
+.cliente-rutina-card__lista-item {
+    color: var(--color-principal);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.cliente-rutina-card__lista-fecha {
+    color: var(--gg-text-muted);
+    font-size: 0.85rem;
+    font-weight: 400;
+    margin-left: 0.25rem;
+}
+
+
 .cliente-rutina-card__actions {
     display: flex;
     gap: 0.75rem;
+    align-self: flex-end;
+    margin-top: 0.5rem;
 }
 
-/* ==========================================================
-   BOTONES (Requeridos para esta página)
-   ========================================================== */
 .btn--sm {
     padding: 0.5rem 0.8rem;
     font-size: 0.85rem;
@@ -42,7 +108,7 @@
     border-radius: 8px;
     width: auto;
     box-shadow: none !important;
-    text-decoration: none; /* Para que <button> y <a> se vean igual */
+    text-decoration: none;
 }
 .btn--ejercicios {
     --btn-bg: var(--color-info, #2563EB);
@@ -50,48 +116,6 @@
     --btn-fg: white;
 }
 
-/* ==========================================================
-   MODAL DE ASIGNACIÓN
-   ========================================================== */
-
-#form-asignar-rutina .field {
-    margin-bottom: 1.75rem;
-}
-
-#form-asignar-rutina .field .error {
-    height: 0;
-    min-height: 0;
-    margin: 0;
-    opacity: 0;
-    transition: all 0.2s ease;
-}
-
-#form-asignar-rutina .field .error:not(:empty) {
-    height: auto;
-    min-height: 1.1em;
-    opacity: 1;
-    margin-top: 0.35rem;
-}
-
-.modal-feedback {
-    min-height: 1.1em;
-    text-align: center;
-    margin-top: 0.5rem;
-}
-
-.feedback-exito {
-    color: var(--color-exito);
-    font-weight: bold;
-}
-.feedback-error {
-    color: var(--color-peligro);
-    font-weight: bold;
-}
-
-#modal-select-rutina:disabled {
-    cursor: wait;
-    background-color: var(--gg-border);
-}
 
 .filtro-item {
     display: flex;
@@ -127,4 +151,319 @@
     cursor: not-allowed;
     color: var(--gg-text-muted);
     box-shadow: none;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 1rem;
+}
+
+@keyframes modal-pop-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-contenido {
+    background-color: var(--gg-surface-2);
+    border-radius: 12px;
+    max-width: 90vw;
+    width: 1300px; /* Ancho aumentado */
+    max-height: 90vh;
+    padding: 1.5rem 2rem;
+    margin: auto;
+    position: relative;
+    animation: modal-pop-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modal-contenido h2 {
+    font-family: "Titillium Web", sans-serif;
+    font-weight: 900;
+    color: var(--gg-text-primary, #fff);
+    margin: 0;
+    line-height: 1.2;
+    padding-right: 2.5rem;
+}
+.modal-contenido .form {
+    margin-top: 1rem;
+}
+
+.modal-cerrar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    border-radius: 50%;
+    color: var(--gg-text-muted);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    text-decoration: none;
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+    z-index: 10;
+}
+.modal-cerrar .icon { width: 18px; height: 18px; }
+.modal-cerrar:hover,
+.modal-cerrar:focus {
+    background: var(--color-peligro);
+    color: white;
+    border-color: var(--color-peligro);
+    transform: scale(1.05) rotate(90deg);
+}
+
+
+.modal-layout-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    max-height: 70vh;
+    overflow: hidden;
+}
+
+.modal-columna {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-columna h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--gg-text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.lista-scroll-modal {
+    height: auto;
+    flex-grow: 1;
+    min-height: 0;
+    overflow-y: auto;
+    background-color: var(--gg-bg);
+    border-radius: var(--radio-md);
+    border: 1px solid var(--gg-border);
+    padding: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gg-border) transparent;
+}
+
+
+.rutina-actual-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem;
+    background-color: var(--gg-surface);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+.rutina-actual-item span {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.rutina-actual-item .fecha {
+    font-size: 0.8rem;
+    color: var(--gg-text-muted);
+}
+.btn-quitar-simple {
+    background: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    color: var(--color-peligro);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.filtro-modal {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+.filtro-modal .control {
+    background-color: var(--gg-bg);
+}
+
+
+.biblioteca-paginacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--gg-border);
+    margin-top: 0.75rem;
+}
+#modal-paginacion-controles {
+    padding: 0.5rem 0.25rem;
+    border-top: 1px solid var(--gg-border);
+    margin-top: 0.5rem;
+    flex-shrink: 0;
+}
+#modal-contador {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gg-text-muted);
+}
+.btn-paginacion {
+    all: unset;
+    cursor: pointer;
+    background-color: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+.btn-paginacion:hover {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: #000;
+}
+.btn-paginacion:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: var(--gg-surface);
+}
+
+#form-asignar-rutina .field {
+    margin-bottom: 1.75rem;
+}
+#form-asignar-rutina .field .error {
+    height: 0; min-height: 0; margin: 0; opacity: 0; transition: all 0.2s ease;
+}
+#form-asignar-rutina .field .error:not(:empty) {
+    height: auto; min-height: 1.1em; opacity: 1; margin-top: 0.35rem;
+}
+.modal-feedback {
+    min-height: 1.1em; text-align: center; margin-top: 0.5rem;
+}
+.feedback-exito {
+    color: var(--color-exito); font-weight: bold;
+}
+.feedback-error {
+    color: var(--color-peligro); font-weight: bold;
+}
+
+.checkbox-card-rutina {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--gg-surface);
+    border: 2px solid var(--gg-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox-card-rutina:hover {
+    border-color: var(--gg-focus);
+}
+
+.checkbox-card-rutina:has(input:checked) {
+    border-color: var(--color-principal);
+    background-color: var(--gg-surface-2);
+}
+
+.checkbox-card-info strong {
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.checkbox-card-rutina input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.15em;
+    height: 1.15em;
+    border: 2px solid var(--gg-border);
+    border-radius: 4px;
+    background-color: var(--gg-bg);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.checkbox-card-rutina input[type="checkbox"]:checked {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+
+.checkbox-card-rutina.ya-asignada {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: var(--gg-surface);
+    border-color: transparent;
+}
+.checkbox-card-rutina.ya-asignada:hover {
+    border-color: var(--color-peligro);
+}
+
+.rutina-actual-item.marcada-para-quitar {
+    opacity: 0.6;
+    background-color: var(--gg-surface);
+}
+
+.rutina-actual-item.marcada-para-quitar > span {
+    text-decoration: line-through;
+    text-decoration-color: var(--color-peligro);
+    text-decoration-thickness: 2px;
+}
+
+.rutina-actual-item.marcada-para-quitar .btn-quitar-simple {
+    color: var(--color-principal);
+    border-color: var(--color-principal);
+}
+
+
+.filtro-modal {
+    margin-bottom: 0;
+}
+
+/* Nuevo Grid para los 3 filtros */
+.modal-filtros-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+}
+
+.filtro-item-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.filtro-item-modal .label-sm {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gg-text-muted);
+    padding-left: 0.25rem;
+}
+
+.filtro-item-modal .control {
+    background-color: var(--gg-bg);
 }

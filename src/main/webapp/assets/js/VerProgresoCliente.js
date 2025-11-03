@@ -1,41 +1,34 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // --- CONSTANTES ---
     const TAMANO_PAGINA_FE = 5; // 5 items por página para PRs y RMs (Frontend)
 
-    // --- Referencias a elementos (Principales) ---
     const pantallaLista = document.getElementById("pantalla-lista");
     const pantallaProgreso = document.getElementById("pantalla-progreso");
     const nombreEjercicio = document.getElementById("nombre-ejercicio");
     const btnVolverPrincipal = document.querySelector(".btn-volver");
 
-    // --- Referencias (Registros Recientes - CON NÚMEROS) ---
     const paginacionControles = document.getElementById("paginacion-controles");
     const btnAnterior = document.getElementById("btn-anterior");
     const btnSiguiente = document.getElementById("btn-siguiente");
     const numerosPagina = document.getElementById("numeros-pagina");
     const registrosList = document.getElementById("registros-recientes");
 
-    // --- Referencias (Mejores PRs - CON NÚMEROS) ---
     const paginacionControlesPRs = document.getElementById("paginacion-controles-prs");
     const btnAnteriorPRs = document.getElementById("btn-anterior-prs");
     const btnSiguientePRs = document.getElementById("btn-siguiente-prs");
     const numerosPaginaPRs = document.getElementById("numeros-pagina-prs");
     const prsList = document.getElementById("mejores-prs");
 
-    // --- Referencias (Mejores RMs - CON NÚMEROS) ---
     const paginacionControlesRMs = document.getElementById("paginacion-controles-rms");
     const btnAnteriorRMs = document.getElementById("btn-anterior-rms");
     const btnSiguienteRMs = document.getElementById("btn-siguiente-rms");
     const numerosPaginaRMs = document.getElementById("numeros-pagina-rms");
     const rmsList = document.getElementById("mejores-rms");
 
-    // --- Variables de estado ---
     let ejercicioIdActual = null;
     let ejercicioNombreActual = null;
-    let paginaActual = 1; // Página de Registros Recientes (API)
+    let paginaActual = 1;
     let vinoDeDashboard = false;
 
-    // Estado de paginación de Frontend
     let prsCompletos = [];
     let rmsCompletos = [];
     let paginaActualPRs = 1;
@@ -64,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ejercicioIdActual = id;
         ejercicioNombreActual = nombre;
-        paginaActual = pagina; // Página de Registros Recientes (API)
+        paginaActual = pagina;
 
         let url = contextPath + "/detalle-progreso?id=" + encodeURIComponent(id) + "&pagina=" + pagina;
 
@@ -91,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 registrosList.innerHTML = "<div class='tarjeta-registro'>No hay registros recientes</div>";
             }
 
-            // --- 2. Renderizar Paginación (Registros Recientes - CON NÚMEROS) ---
             renderizarBotonesPaginacionConNumeros(
                 data.totalPaginas,
                 data.paginaActual,
@@ -115,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
             renderizarPRs();
             renderizarRMs();
 
-            // --- Lógica de cambio de pantalla (sin cambios) ---
             if (!pantallaProgreso.classList.contains('activa')) {
                 pantallaLista.classList.remove("activa");
                 pantallaProgreso.classList.add("activa");
@@ -192,9 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /**
-     * Crea una tarjeta de registro reciente (con diferencia de peso)
-     */
     function crearTarjetaRegistro(r, index) {
         const tarjeta = document.createElement("div");
         tarjeta.classList.add("tarjeta-registro");
@@ -249,7 +237,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         tarjeta.appendChild(crearElemento("p", "registro-detalle titillium-base", textoDetalle.trim()));
 
-        // Creamos el texto de diferencia
         const diferencia = crearElemento("p", "registro-diferencia", "");
         if (r.diferenciaPeso != null && r.diferenciaPeso !== 0) {
             const simbolo = r.diferenciaPeso > 0 ? "+" : "-";
@@ -345,7 +332,6 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarRMs();
     });
 
-    // --- Listener de Tarjetas (sin cambios) ---
     document.querySelectorAll(".tarjeta-ejercicio").forEach(el => {
         el.addEventListener("click", () => {
             const id = parseInt(el.dataset.ejercicioId, 10);

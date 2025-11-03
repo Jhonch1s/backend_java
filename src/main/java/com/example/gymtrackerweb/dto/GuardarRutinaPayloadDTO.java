@@ -6,7 +6,6 @@ public class GuardarRutinaPayloadDTO {
     private int rutinaId;
     private Map<String, List<EjercicioGuardadoDTO>> dias;
 
-    // Inner class para la lista de ejercicios
     public static class EjercicioGuardadoDTO {
         private int ejercicioId;
         private int series;

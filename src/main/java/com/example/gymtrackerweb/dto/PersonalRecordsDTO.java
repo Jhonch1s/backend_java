@@ -1,11 +1,9 @@
 package com.example.gymtrackerweb.dto;
 
-// Usamos ProgresoEjercicio como una forma simple de guardar un par (peso, reps)
 import com.example.gymtrackerweb.model.ProgresoEjercicio;
 
 public class PersonalRecordsDTO {
 
-    // Bloque "Mejores RMs" (reps = 1)
     private ProgresoEjercicio bestActual1RM; // ej: 200kg x 1 rep
 
     // Bloque "Récords (Sets)" (reps > 1)

@@ -35,13 +35,12 @@ public class CargarAsignacionesServlet extends HttpServlet {
             ClienteConRutinasDTO clienteCard = clientesMap.get(ci);
 
             if (clienteCard == null) {
-                // Si es la primera vez que vemos este cliente, creamos su tarjeta
                 clienteCard = new ClienteConRutinasDTO(
                         ci,
                         fila.getClienteNombre(),
                         fila.getClienteApellido()
                 );
-                clientesMap.put(ci, clienteCard); // Lo agregamos al Map
+                clientesMap.put(ci, clienteCard);
             }
 
             if (fila.getRutinaNombre() != null) {
