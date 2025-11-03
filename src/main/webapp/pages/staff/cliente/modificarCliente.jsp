@@ -27,7 +27,9 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
 </head>
-<body class="layout vista--cliente-modificar" data-base="${pageContext.request.contextPath}">
+<body class="layout vista--cliente-modificar"
+      data-base="${pageContext.request.contextPath}"
+      data-prefill-ci="${prefillCi}">
 
 <%@ include file="/pages/modulos/icons-sprite.jsp" %>
 <%@ include file="/pages/modulos/aside-nav-staff.jsp" %>
@@ -180,7 +182,7 @@
       <aside class="client-summary" aria-live="polite" aria-busy="false">
         <div class="client-summary__header">
           <img class="client-summary__avatar"
-               src="${pageContext.request.contextPath}/assets/img/user-placeholder.jpg"
+               src="${pageContext.request.contextPath}/assets/img/user-placeholder.svg"
                alt="Foto del cliente">
           <div>
             <div class="client-summary__name" id="sum-nombre">—</div>
@@ -249,8 +251,7 @@
           <p><strong>Ingreso:</strong> <span id="sum-ingreso">-</span></p>
         </div>
       </aside>
-
-
+    </div>
       <div id="toast-container" class="toast-container"></div>
 </main>
 
