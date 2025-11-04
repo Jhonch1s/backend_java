@@ -11,7 +11,8 @@
 <%@ page import="java.time.Instant" %>
 <%@ page import="java.sql.Date" %>
 <%@ page import="java.time.LocalDate" %>
-<%@ page import="java.text.SimpleDateFormat" %><%--
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.time.temporal.ChronoUnit" %><%--
   Created by IntelliJ IDEA.
   User: Juan
   Date: 10/28/2025
@@ -50,8 +51,8 @@
    List<Plan> planes = planDAO.listarTodos();
    MembresiaDAO membresiaDAO = new MembresiaDAO();
    Plan plan = null;
-   Date fechaDeInicio = null;
-   Date fechaDeFin = null;
+   LocalDate fechaDeInicio = null;
+   LocalDate fechaDeFin = null;
    Membresia membresia = membresiaDAO.obtenerMembresiaPorCedula(request.getParameter("ci"));
    %>
 <main class="layout__content">
@@ -67,28 +68,36 @@
             String idplan = request.getParameter("plan");
             String idcliente = request.getParameter("ci");
             plan = planDAO.buscarPorId(Integer.parseInt(idplan));
-            fechaDeInicio = Date.valueOf(LocalDate.now());
-            fechaDeFin = null;
+            fechaDeInicio = membresia.getFechaInicio().toLocalDate();
+            fechaDeFin = membresia.getFechaFin().toLocalDate();
+            if (ChronoUnit.DAYS.between(fechaDeFin, LocalDate.now()) > 10) {
+                fechaDeInicio = LocalDate.now();
+                fechaDeFin = LocalDate.now();
+            }
+            else if (LocalDate.now().isAfter(fechaDeFin)) {
+                fechaDeFin = LocalDate.now();
+            }
             if (plan.getDuracionUnidadId() == 1) {
-                fechaDeFin = Date.valueOf(LocalDate.now().plusDays(plan.getDuracionTotal()));
+                fechaDeFin = fechaDeFin.plusDays(plan.getDuracionTotal());
             }
             if (plan.getDuracionUnidadId() == 2) {
-                fechaDeFin = Date.valueOf(LocalDate.now().plusWeeks(plan.getDuracionTotal()));
+                fechaDeFin = fechaDeFin.plusWeeks(plan.getDuracionTotal());
             }
             if (plan.getDuracionUnidadId() == 3) {
-                fechaDeFin = Date.valueOf(LocalDate.now().plusMonths(plan.getDuracionTotal()));
+                fechaDeFin = fechaDeFin.plusMonths(plan.getDuracionTotal());
             }
             if (plan.getDuracionUnidadId() == 4) {
-                fechaDeFin = Date.valueOf(LocalDate.now().plusYears(plan.getDuracionTotal()));
+                fechaDeFin = fechaDeFin.plusYears(plan.getDuracionTotal());
             }
-            membresiaDAO.modificarMembresia(new Membresia(membresia.getId(), Integer.parseInt(idplan), idcliente, fechaDeInicio, fechaDeFin, 1));
+            membresiaDAO.modificarMembresia(new Membresia(membresia.getId(), Integer.parseInt(idplan), idcliente, Date.valueOf(fechaDeInicio), Date.valueOf(fechaDeFin), 1));
             EventoMembresiaDAO eventoDAO = new EventoMembresiaDAO();
             eventoDAO.agregarEventoMembresia(new EventoMembresia(-1, 1, membresia.getId(), 1, Timestamp.from(Instant.now()), "web")); %>
-        <div class="card__body">Se renovó la membresía con el plan <%= plan.getNombre() %>.<br>Fecha de inicio: <%= formateador.format(fechaDeInicio) %><br>Fecha de fin: <%= formateador.format(fechaDeFin)%></div>
-         <% } else { %>
+        <div class="card__body">Se renovó la membresía con el plan <%= plan.getNombre() %>.<br>Fecha de inicio: <%= formateador.format(Date.valueOf(fechaDeInicio)) %><br>Fecha de fin: <%= formateador.format(Date.valueOf(fechaDeFin))%></div>
+         <% } else {
+         Plan planActual = planDAO.buscarPorId(membresia.getIdPlan());%>
         <div class="card__body">
             <h2>Membresía actual</h2>
-            Plan id: <%= membresia.getIdPlan() %><br>
+            Plan: <%= planActual.getNombre() %><br>
             Fecha de inicio: <%= formateador.format(membresia.getFechaInicio()) %><br>
             Fecha de fin: <%= formateador.format(membresia.getFechaFin()) %><br>
             Estado: <%= (LocalDate.now().isAfter(membresia.getFechaFin().toLocalDate()) ? "Inactiva" : "Activa") %>
@@ -105,7 +114,7 @@
                         <option value="<%= i.getId() %>"><%= i.getNombre() %> (<%= i.getDuracionTotal() %> <%= (i.getDuracionTotal() == 1 ? i.getDuracionUnidadNombre().toLowerCase() : (i.getDuracionUnidadNombre().equals("Mes") ? i.getDuracionUnidadNombre().toLowerCase() + "es" : i.getDuracionUnidadNombre().toLowerCase() + "s")) %> - $<%= i.getValor().toString() %>)</option>
                         <% } %>
                     </select>
-                    <small class="hint">Plan, eso es todo.</small>
+                    <small class="hint">Seleccione el plan que el cliente desea.</small>
                     <div class="error" id="error-membresia-plan"></div>
                 </div>
             </div>
