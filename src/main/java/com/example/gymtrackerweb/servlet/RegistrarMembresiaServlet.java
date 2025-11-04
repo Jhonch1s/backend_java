@@ -27,7 +27,7 @@ public class RegistrarMembresiaServlet extends HttpServlet {
         }
 
         // Obtener el cliente desde la sesión
-        Staff staff = (Staff) session.getAttribute("usuario");
+        Staff staff = (Staff) session.getAttribute("admin");
         if (staff == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -49,7 +49,7 @@ public class RegistrarMembresiaServlet extends HttpServlet {
         }
 
         // Obtener el cliente desde la sesión
-        Staff staff = (Staff) session.getAttribute("usuario");
+        Staff staff = (Staff) session.getAttribute("admin");
         if (staff == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;

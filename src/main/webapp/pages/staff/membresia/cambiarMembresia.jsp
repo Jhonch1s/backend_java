@@ -1,17 +1,13 @@
-<%@ page import="com.example.gymtrackerweb.dao.ClienteDAO" %>
-<%@ page import="com.example.gymtrackerweb.model.Cliente" %>
-<%@ page import="com.example.gymtrackerweb.dao.PlanDAO" %>
-<%@ page import="com.example.gymtrackerweb.model.Plan" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.example.gymtrackerweb.dao.MembresiaDAO" %>
-<%@ page import="com.example.gymtrackerweb.model.Membresia" %>
-<%@ page import="com.example.gymtrackerweb.dao.EventoMembresiaDAO" %>
-<%@ page import="com.example.gymtrackerweb.model.EventoMembresia" %>
 <%@ page import="java.sql.Timestamp" %>
 <%@ page import="java.time.Instant" %>
 <%@ page import="java.sql.Date" %>
 <%@ page import="java.time.LocalDate" %>
-<%@ page import="java.text.SimpleDateFormat" %><%--
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.example.gymtrackerweb.dao.*" %>
+<%@ page import="com.example.gymtrackerweb.dto.IdNombre" %>
+<%@ page import="com.example.gymtrackerweb.model.*" %>
+<%@ page import="java.time.LocalDateTime" %><%--
   Created by IntelliJ IDEA.
   User: Juan
   Date: 10/28/2025
@@ -48,11 +44,15 @@
    Cliente cliente = clienteDAO.buscarPorCi(request.getParameter("ci"));
    PlanDAO planDAO = new PlanDAO();
    List<Plan> planes = planDAO.listarTodos();
+   MovimientoDAO movimientoDAO = new MovimientoDAO();
    MembresiaDAO membresiaDAO = new MembresiaDAO();
+   EventoMembresiaDAO eventoDAO = new EventoMembresiaDAO();
    Plan plan = null;
    Date fechaDeInicio = null;
    Date fechaDeFin = null;
    Membresia membresia = membresiaDAO.obtenerMembresiaPorCedula(request.getParameter("ci"));
+   List<IdNombre> mediosPago = movimientoDAO.listarMediosPago();
+   Staff logueado = (Staff) request.getSession().getAttribute("admin");
    %>
 <main class="layout__content">
     <section class="view card form-card membresia-registrar">
@@ -66,6 +66,7 @@
         <% } else if (request.getMethod().equals("POST")) {
             String idplan = request.getParameter("plan");
             String idcliente = request.getParameter("ci");
+            Byte medioPago = Byte.valueOf(request.getParameter("mp"));
             plan = planDAO.buscarPorId(Integer.parseInt(idplan));
             fechaDeInicio = Date.valueOf(LocalDate.now());
             if (plan.getDuracionUnidadId() == 1) {
@@ -81,8 +82,8 @@
                 fechaDeFin = Date.valueOf(LocalDate.now().plusYears(plan.getDuracionTotal()));
             }
             membresiaDAO.modificarMembresia(new Membresia(membresia.getId(), Integer.parseInt(idplan), idcliente, fechaDeInicio, fechaDeFin, 1));
-            EventoMembresiaDAO eventoDAO = new EventoMembresiaDAO();
-            eventoDAO.agregarEventoMembresia(new EventoMembresia(-1, 1, membresia.getId(), 5, Timestamp.from(Instant.now()), "web")); %>
+            eventoDAO.agregarEventoMembresia(new EventoMembresia(-1, logueado.getId(), membresia.getId(), 5, Timestamp.from(Instant.now()), "web"));
+            movimientoDAO.insertarMovimiento(new Movimiento(logueado.getId(), LocalDateTime.now(), plan.getValor(), medioPago, (byte) 1, (byte) 1, membresia.getId(), idcliente)); %>
         <div class="card__body">Se cambió la membresía con el plan <%= plan.getNombre() %>.<br>Fecha de inicio: <%= formateador.format(fechaDeInicio) %><br>Fecha de fin: <%= formateador.format(fechaDeFin)%></div>
          <% } else {
          Plan planActual = planDAO.buscarPorId(membresia.getIdPlan()); %>
@@ -107,6 +108,16 @@
                     </select>
                     <small class="hint">Seleccione el plan que el cliente desea.</small>
                     <div class="error" id="error-membresia-plan"></div>
+                </div>
+                <div class="field">
+                    <label for="membresia-mp" class="label">Medio de pago</label>
+                    <select id="membresia-mp" name="mp" required class="control">
+                        <% for (IdNombre i : mediosPago) {%>
+                        <option value="<%= i.getId() %>"><%= i.getNombre() %></option>
+                        <% } %>
+                    </select>
+                    <small class="hint">Seleccione el medio de pago usado para pagar.</small>
+                    <div class="error" id="error-membresia-mp"></div>
                 </div>
             </div>
 
