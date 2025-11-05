@@ -53,7 +53,7 @@
     <!-- Filtro -->
     <section class="alinear-centro-between u-mb-24 arrow">
         <div class="filtros-izquierda">
-            <form id="formFiltros"
+            <form id="formFiltros" style="margin:0"
                   method="get"
                   action="${pageContext.request.contextPath}/cliente/progreso"
                   class="alinear-centro gap-2">
