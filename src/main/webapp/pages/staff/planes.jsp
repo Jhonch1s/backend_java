@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Cliente | Perfil · Golden Gym</title>
+    <title>Planes</title>
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
@@ -31,8 +31,6 @@
 </head>
 
 <body class="layout vista--plan-administrar">
-
-<div class="layout">
     <%@ include file="/pages/modulos/aside-nav-staff.jsp" %>
 
     <main class="u-maxw-1100 u-mx-auto u-p-32 main-panel" tabindex="-1">
@@ -55,6 +53,7 @@
                             <th>Nombre</th>
                             <th>Precio</th>
                             <th>Duracion</th>
+                            <th>Imagen</th>
                             <th>Estado</th>
                             <th class="u-text-right">Acciones</th>
                         </tr>
@@ -67,13 +66,26 @@
                                 data-valor="${p.valor}"
                                 data-cantidad="${p.duracionTotal}"
                                 data-unidad="${p.duracionUnidadId}"
-                                data-estado="${p.estado}">
+                                data-estado="${p.estado}"
+                                data-urlimagen="${pageContext.request.contextPath}${p.urlImagen}">
                                 <td><span class="tabla-entidades__id">${p.id}</span></td>
                                 <td><strong>${p.nombre}</strong></td>
                                 <td>
                                     $ <fmt:formatNumber value="${p.valor}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
                                 </td>
                                 <td>${p.duracionTotal} ${p.duracionUnidadNombre}</td>
+                                <td class="col-imagen">
+                                    <div class="plan-thumb">
+                                        <c:choose>
+                                            <c:when test="${not empty p.urlImagen}">
+                                                <img src="${pageContext.request.contextPath}${p.urlImagen}" alt="${p.nombre}">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${pageContext.request.contextPath}/assets/img/plan-default.jpg" alt="Sin imagen">
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </td>
                                 <td>
                                     <span class="badge ${p.estado ? 'badge--activo' : 'badge--inactivo'}">
                                             ${p.estado ? 'Activo' : 'Inactivo'}
@@ -102,12 +114,12 @@
 
 <!-- Modal Nuevo Plan -->
 <div id="modalNuevo" class="modal oculto" role="dialog">
-    <div class="modal__contenido borde-redondeado sombra-suave tarjeta">
+    <div class="modal__contenido borde-redondeado sombra-suave tarjeta" >
         <button class="modal-cerrar">✖</button>
         <h3 id="titulo-modal-nuevo" class="titillium-negra texto-dorado" style="margin:0 0 1rem;">Crear Plan</h3>
 
         <form id="formNuevo" action="${pageContext.request.contextPath}/staff/planes" method="post" novalidate
-              class="form-grid">
+              class="form-grid" enctype="multipart/form-data">
             <input type="hidden" name="accion" value="add"/>
             <div class="group-2">
                 <label>Nombre
@@ -134,6 +146,15 @@
                 </label>
             </div>
 
+            <div class="group-2">
+                <div>
+                    <label>Reemplazar imagen:
+                        <input type="file" name="imagen" id="editFile" accept="image/*">
+                    </label>
+                    <small class="help">JPG/PNG, max 5MB.</small>
+                </div>
+            </div>
+
             <label class="toggle" for="nuevoActivo">
                 <span class="toggle__label">Plan activo</span>
                 <input type="checkbox" id="nuevoActivo" name="activo" checked>
@@ -157,7 +178,7 @@
         <h3 id="titulo-modal-editar" class="titillium-negra texto-dorado" style="margin:0 0 1rem;">Editar Plan</h3>
 
         <form id="formEditar" action="${pageContext.request.contextPath}/staff/planes" method="post" novalidate
-              class="form-grid">
+              class="form-grid" enctype="multipart/form-data">
             <input type="hidden" name="accion" value="edit"/>
             <input type="hidden" name="id" id="editId"/>
 
@@ -183,6 +204,15 @@
                         </c:forEach>
                     </select>
                 </label>
+            </div>
+
+            <div class="group-2">
+                <div>
+                    <label>Reemplazar imagen:
+                        <input type="file" name="imagen" id="editFile" accept="image/*">
+                    </label>
+                    <small class="help">JPG/PNG, max 5MB.</small>
+                </div>
             </div>
 
             <label class="toggle" for="editActivo">

@@ -5,17 +5,16 @@ import com.example.gymtrackerweb.dao.PlanDAO;
 import com.example.gymtrackerweb.model.Plan;
 import com.example.gymtrackerweb.model.UnidadDuracion;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet(name = "PlanesServlet", value = "/staff/planes")
+@MultipartConfig(maxFileSize = 5 * 1024 * 1024) // hasta 5MB
 public class PlanesServlet extends HttpServlet {
 
     @Override
@@ -50,51 +49,70 @@ public class PlanesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        request.setCharacterEncoding("UTF-8");
         String accion = request.getParameter("accion");
         PlanDAO dao = new PlanDAO();
 
         try {
-            if ("add".equals(accion)) {
+            if ("add".equals(accion) || "edit".equals(accion)) {
                 Plan p = new Plan();
+
+                if ("edit".equals(accion)) {
+                    p.setId(Integer.parseInt(request.getParameter("id")));
+                }
+
                 p.setNombre(request.getParameter("nombre").trim());
                 p.setValor(new BigDecimal(request.getParameter("valor")));
                 p.setDuracionTotal(Short.parseShort(request.getParameter("cantidad")));
                 p.setDuracionUnidadId(Byte.parseByte(request.getParameter("unidad")));
-                p.setUrlImagen(null);
                 p.setEstado(request.getParameter("activo") != null);
-                dao.agregarPlanCompleto(p);
 
-            } else if ("edit".equals(accion)) {
-                Plan p = new Plan();
-                p.setId(Integer.parseInt(request.getParameter("id")));
-                p.setNombre(request.getParameter("nombre").trim());
-                p.setValor(new BigDecimal(request.getParameter("valor")));
-                p.setDuracionTotal(Short.parseShort(request.getParameter("cantidad")));
-                p.setDuracionUnidadId(Byte.parseByte(request.getParameter("unidad")));
-                p.setUrlImagen(null);
-                p.setEstado(request.getParameter("activo") != null);
-                dao.modificarPlan(p);
+                // --- Manejo del archivo ---
+                Part filePart = request.getPart("imagen");
+                if (filePart != null && filePart.getSize() > 0) {
+                    // Ruta donde guardar
+                    String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                    String uploadDir = getServletContext().getRealPath("/uploads/planes");
+                    java.nio.file.Files.createDirectories(java.nio.file.Path.of(uploadDir));
 
-            } else if ("toggle".equals(accion)) {
+                    // Guardar físicamente
+                    java.nio.file.Path filePath = java.nio.file.Path.of(uploadDir, fileName);
+                    filePart.write(filePath.toString());
+
+                    String relative = "/uploads/planes/" + fileName;
+                    p.setUrlImagen(relative);
+                } else {
+                    // Si no sube nueva imagen (modo edit), mantener la existente
+                    if ("edit".equals(accion)) {
+                        Plan existente = dao.buscarPorId(p.getId());
+                        p.setUrlImagen(existente != null ? existente.getUrlImagen() : null);
+                    } else {
+                        p.setUrlImagen(null);
+                    }
+                }
+
+                // Guardar o actualizar
+                if ("add".equals(accion)) {
+                    dao.agregarPlanCompleto(p);
+                } else {
+                    dao.modificarPlan(p);
+                }
+
+                response.sendRedirect(request.getContextPath() + "/staff/planes");
+                return;
+            }
+
+            if ("toggle".equals(accion)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 boolean toEstado = Boolean.parseBoolean(request.getParameter("toEstado"));
                 dao.actualizarEstado(id, toEstado);
-
-            } else {
-                throw new IllegalArgumentException("Accion no reconocida: " + accion);
-            }
-
-
-            String referer = request.getHeader("referer");
-            if (referer != null && referer.contains("/staff/planes")) {
-                response.sendRedirect(referer);
-            } else {
                 response.sendRedirect(request.getContextPath() + "/staff/planes");
+                return;
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            response.sendError(500, "Error al procesar plan: " + e.getMessage());
         }
     }
 }
