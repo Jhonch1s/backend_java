@@ -52,6 +52,7 @@ public class ClienteDashboardServlet extends HttpServlet {
             BigDecimal kgLevantadosTotal =  progresoEjercicioDAO.obtenerKgLevantadosTotal(usuario.getCi());
             var fotoDao = new ClienteFotoDAO();
             var urlOpt  = fotoDao.obtenerUrlPorCliente(usuario.getCi());
+            req.setAttribute("cliente", usuario);
             req.setAttribute("clienteFotoUrl", urlOpt.orElse(null));
             //depurando...
             //System.out.println("Kg levantados (mes): " + kgLevantadosMes);

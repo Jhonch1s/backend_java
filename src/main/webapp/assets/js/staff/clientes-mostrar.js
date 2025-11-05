@@ -141,11 +141,20 @@
             const daysBadge = document.getElementById("sum-membresia-dias");
             if (daysBadge) { daysBadge.textContent = "—"; daysBadge.className = "mini-badge"; }
 
+            // Setear botones de membresía
+            const registrarBtn = document.getElementById("sum-registrar-btn");
+            const renovarBtn = document.getElementById("sum-renovar-btn");
+            const cambiarBtn = document.getElementById("sum-cambiar-btn");
+            registrarBtn.href = APP_ROOT + "/staff/membresia/registrar?ci=" + ci;
+            renovarBtn.href = APP_ROOT + "/staff/membresia/renovar?ci=" + ci;
+            cambiarBtn.href = APP_ROOT + "/staff/membresia/cambiar?ci=" + ci;
+
             // Abrir modal y pedir KPIs/plan/membresía al servlet
+            modal.style.opacity = 0;
             openModal();
             setAvatar(null);
-            fetchResumen(ci);
-            fetchAvatar(ci);
+            fetchResumen(ci).then(r => fetchAvatar(ci).then(r =>
+                modal.style.opacity = 1));
         });
 
         function setAvatar(url, altText) {

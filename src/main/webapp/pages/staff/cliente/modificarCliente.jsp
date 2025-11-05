@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-perfil.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
 </head>
 <body class="layout vista--cliente-modificar"
@@ -179,84 +180,75 @@
       </form>
 
       <!-- Columna derecha: RESUMEN (MISMA CARD) -->
-      <aside class="client-summary" aria-live="polite" aria-busy="false">
-        <div class="client-summary__header">
-          <img class="client-summary__avatar"
-               src="${pageContext.request.contextPath}/assets/img/user-placeholder.svg"
-               alt="Foto del cliente">
-          <div>
-            <div class="client-summary__name" id="sum-nombre">—</div>
-            <div class="client-summary__meta" id="sum-ci">CI —</div>
-          </div>
-        </div>
+        <aside class="client-summary" aria-live="polite" aria-busy="false">
+            <div class="client-summary__header">
+                <img class="client-summary__avatar" id="sum-avatar"
+                     src="${pageContext.request.contextPath}/assets/img/user-placeholder.svg"
+                     alt="Foto del cliente">
+                <div>
+                    <div class="client-summary__name" id="sum-nombre">—</div>
+                    <div class="client-summary__meta" id="sum-ci">CI —</div>
+                </div>
+            </div>
 
-        <!-- ====== Card de Membresía (tu diseño) ====== -->
-        <article class="tarjeta mt-2">
-          <div class="bloque__head">
-            <h2 class="bloque__title m-0">Membresía</h2>
-          </div>
+            <article class="tarjeta mt-2">
+                <div class="bloque__head">
+                    <h2 class="bloque__title m-0">Datos del cliente</h2>
+                </div>
 
-          <!-- Imagen del plan -->
-          <div class="mt-2">
-            <img id="sum-membresia-img"
-                 src="${pageContext.request.contextPath}/assets/img/plan-placeholder.png"
-                 alt="Plan"
-                 style="width:100%;max-height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--gg-border);" />
-          </div>
+                <div class="client-summary__kpis">
+                    <div class="kpi">
+                        <div class="kpi__label">Visitas mes</div>
+                        <div class="kpi__value" id="sum-visitas-mes">-</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi__label">Prom. minutos</div>
+                        <div class="kpi__value" id="sum-prom-minutos">-</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi__label">Entrenos totales</div>
+                        <div class="kpi__value" id="sum-total-entrenos">-</div>
+                    </div>
+                </div>
 
-          <div class="membresia-grid mt-2">
-            <p class="m-0 mt-2">
-              Plan: <strong id="sum-plan-nombre">Sin plan</strong>
-            </p>
+                <div class="client-summary__contact">
+                    <p><strong>Email:</strong> <span id="sum-email">-</span></p>
+                    <p><strong>Teléfono:</strong> <span id="sum-tel">-</span></p>
+                    <p><strong>Ciudad/Pais:</strong> <span id="sum-ciudad-pais">-</span></p>
+                    <p><strong>Ingreso:</strong> <span id="sum-ingreso">-</span></p>
+                </div>
+            </article>
 
-            <p class="m-0 mt-1">
-              Vence: <strong id="sum-membresia-vence">-</strong>
-            </p>
+            <article class="tarjeta mt-2">
+                <div class="bloque__head">
+                    <h2 class="bloque__title m-0">Membresía</h2>
+                </div>
 
-            <!-- Badge de días restantes (el JS setea texto y, si querés, clases mini-badge--warning/--alerta) -->
-            <p class="m-0 mt-1">
-              <span id="sum-membresia-dias" class="mini-badge">-</span>
-            </p>
+                <div class="mt-2">
+                    <img id="sum-membresia-img"
+                         src="${pageContext.request.contextPath}/assets/img/plan-placeholder.png"
+                         alt="Plan"
+                         style="width:100%;max-height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--gg-border);" />
+                </div>
 
-            <p class="m-0 mt-1">
-              Estado:
-              <span id="sum-membresia-estado" class="">Sin membresía</span>
-              <!-- el JS puede cambiar a chip-ok si es Activa -->
-            </p>
-          </div>
-        </article>
+                <div class="membresia-grid mt-2">
+                    <p class="m-0 mt-2">Plan: <strong id="sum-plan-nombre">Sin plan</strong></p>
+                    <p class="m-0 mt-1">Estado: <span id="sum-membresia-estado">Sin membresía</span></p>
+                    <p class="m-0 mt-1">Vence: <strong id="sum-membresia-vence">-</strong>&nbsp;&nbsp;<span id="sum-membresia-dias" class="mini-badge">-</span></p>
+                </div>
 
-        <!-- ====== KPIs ====== -->
-        <div class="client-summary__kpis">
-          <div class="kpi">
-            <div class="kpi__label">Visitas mes</div>
-            <div class="kpi__value" id="sum-visitas-mes">-</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi__label">Prom. minutos</div>
-            <div class="kpi__value" id="sum-prom-minutos">-</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi__label">Entrenos totales</div>
-            <div class="kpi__value" id="sum-total-entrenos">-</div>
-          </div>
-        </div>
-
-        <!-- ====== Contacto ====== -->
-        <div class="client-summary__contact">
-          <p><strong>Email:</strong> <span id="sum-email">-</span></p>
-          <p><strong>Teléfono:</strong> <span id="sum-tel">-</span></p>
-          <p><strong>Dirección:</strong> <span id="sum-dir">-</span></p>
-          <p><strong>Ciudad/Pais:</strong> <span id="sum-ciudad-pais">-</span></p>
-          <p><strong>Ingreso:</strong> <span id="sum-ingreso">-</span></p>
-        </div>
-      </aside>
+                <div class="form__actions">
+                    <a id="sum-registrar-btn" href="#" class="btn btn--ghost">Registrar</a><a id="sum-renovar-btn" href="#" class="btn btn--ghost">Renovar</a><a id="sum-cambiar-btn" href="#" class="btn btn--ghost">Cambiar</a>
+                </div>
+            </article>
+        </aside>
     </div>
       <div id="toast-container" class="toast-container"></div>
 </main>
 
 
 <div id="toast-container" class="toast-container"></div>
+<script>const APP_ROOT = "${pageContext.request.contextPath}";</script>
 <script src="${pageContext.request.contextPath}/assets/js/staff/clientes-modificar.js" defer></script>
 </body>
 </html>

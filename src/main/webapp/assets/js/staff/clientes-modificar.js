@@ -308,6 +308,14 @@
             }
         }
 
+        // Setear botones de membresía
+        const registrarBtn = document.getElementById("sum-registrar-btn");
+        const renovarBtn = document.getElementById("sum-renovar-btn");
+        const cambiarBtn = document.getElementById("sum-cambiar-btn");
+        registrarBtn.href = APP_ROOT + "/staff/membresia/registrar?ci=" + resumen.ci;
+        renovarBtn.href = APP_ROOT + "/staff/membresia/renovar?ci=" + resumen.ci;
+        cambiarBtn.href = APP_ROOT + "/staff/membresia/cambiar?ci=" + resumen.ci;
+
     };
 
     const renderSuggestions = (items) => {

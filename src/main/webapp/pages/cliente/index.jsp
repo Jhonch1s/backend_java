@@ -58,7 +58,7 @@
                              style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--gg-border);" />
                     </c:when>
                     <c:otherwise>
-                        <div class="hero__avatar">JG</div>
+                        <div class="hero__avatar">${fn:substring(cliente.nombre, 0, 1)}${fn:substring(cliente.apellido, 0, 1)}</div>
                     </c:otherwise>
                 </c:choose>
                 <div>

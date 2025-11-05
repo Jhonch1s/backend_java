@@ -24,7 +24,7 @@ public class ClientesSearchServlet extends HttpServlet {
 
         // Autenticación (ajusta clave de sesión si difiere)
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuario") == null) {
+        if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             writeJson(response, Map.of("success", false, "message", "Sesión no válida"));
             return;

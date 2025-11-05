@@ -21,7 +21,6 @@
 
     <!-- Normalize -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-          integrity="sha512-NhSC1X0f3zp3p2JtYh8C2W4TyTX0b6x1n00x4bZ4Zk3E2b9GmZy1wKkPe4v5YyX1Y9i6w5W2rszj0o9uGZ7xwA=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Utilidades y estilos -->
@@ -42,7 +41,7 @@
             <div class="login__campo">
                 <label class="login__label" for="usuario">Usuario</label>
                 <input class="login__input" type="text" id="usuario" name="usuario" inputmode="numeric"
-                       placeholder="Nombre de Usuario" autocomplete="username" required
+                       placeholder="Nombre de Usuario" autocomplete="username" autofocus required
                        aria-describedby="error-usuario">
                 <p class="login__error" id="error-usuario" role="alert" aria-live="polite"></p>
             </div>
