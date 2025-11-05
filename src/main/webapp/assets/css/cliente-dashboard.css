@@ -163,3 +163,9 @@ body { overflow: auto; background: var(--gg-bg); color: var(--gg-white); }
 #btnCheckin.is-closed { background-color:var(--gg-yellow) !important; color:#000 !important; border-color:var(--gg-yellow) !important; }
 #btnCheckin.is-busy   { opacity:.7; pointer-events:none; }
 #btnCheckin.is-open, #btnCheckin.is-closed { background-image:none !important; }
+
+main {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+}

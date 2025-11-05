@@ -44,7 +44,7 @@
    ClienteDAO clienteDAO = new ClienteDAO();
    Cliente cliente = clienteDAO.buscarPorCi(request.getParameter("ci"));
    PlanDAO planDAO = new PlanDAO();
-   List<Plan> planes = planDAO.listarTodos();
+   List<Plan> planes = planDAO.listarActivos();
    MovimientoDAO movimientoDAO = new MovimientoDAO();
    MembresiaDAO membresiaDAO = new MembresiaDAO();
    EventoMembresiaDAO eventoDAO = new EventoMembresiaDAO();
