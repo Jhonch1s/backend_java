@@ -424,3 +424,26 @@ input[type=number]::-webkit-outer-spin-button,
     grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
     gap: 0.75rem; /* Mismo 'gap' que el resto de los filtros */
 }
+
+.vista--rutina-crear .sidebar__nav a[href*="/admin/gestion-rutinas"],
+.vista--rutina-editar .sidebar__nav a[href*="/admin/gestion-rutinas"] {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 20%, #000);
+    color: var(--color-principal, #fff112);
+    border-radius: 3px;
+    font-weight: 700;
+    padding-left: 12px;
+}
+
+/* * Aplica al SVG dentro del link
+ */
+.vista--rutina-crear .sidebar__nav a[href*="/admin/gestion-rutinas"] svg,
+.vista--rutina-editar .sidebar__nav a[href*="/admin/gestion-rutinas"] svg {
+    stroke: var(--color-principal, #fff112);
+}
+
+/* * Aplica al :hover del link
+ */
+.vista--rutina-crear .sidebar__nav a[href*="/admin/gestion-rutinas"]:hover,
+.vista--rutina-editar .sidebar__nav a[href*="/admin/gestion-rutinas"]:hover {
+    background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
+}

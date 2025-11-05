@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/editarRutina.css">
 </head>
-<body class="layout">
+<body class="layout vista--rutina-editar">
 <jsp:include page="/pages/modulos/aside-nav-staff.jsp" />
 
 <main class="layout__content">
