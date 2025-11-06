@@ -1,17 +1,22 @@
 package com.example.gymtrackerweb.servlet.staff;
 
 
+import com.cloudinary.utils.ObjectUtils;
 import com.example.gymtrackerweb.dao.PlanDAO;
 import com.example.gymtrackerweb.model.Plan;
 import com.example.gymtrackerweb.model.UnidadDuracion;
+import com.example.gymtrackerweb.utils.CloudinaryConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "PlanesServlet", value = "/staff/planes")
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024) // hasta 5MB
@@ -67,22 +72,28 @@ public class PlanesServlet extends HttpServlet {
                 p.setDuracionUnidadId(Byte.parseByte(request.getParameter("unidad")));
                 p.setEstado(request.getParameter("activo") != null);
 
-                // --- Manejo del archivo ---
                 Part filePart = request.getPart("imagen");
                 if (filePart != null && filePart.getSize() > 0) {
-                    // Ruta donde guardar
-                    String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
-                    String uploadDir = getServletContext().getRealPath("/uploads/planes");
-                    java.nio.file.Files.createDirectories(java.nio.file.Path.of(uploadDir));
+                    File tmp = File.createTempFile("plan_", ".img");
+                    try (var in = filePart.getInputStream(); var out = new FileOutputStream(tmp)) {
+                        in.transferTo(out);
+                    }
 
-                    // Guardar físicamente
-                    java.nio.file.Path filePath = java.nio.file.Path.of(uploadDir, fileName);
-                    filePart.write(filePath.toString());
+                    Map resCld;
+                    try {
+                        var cloud = CloudinaryConfig.getInstance();
+                        resCld = cloud.uploader().upload(tmp, ObjectUtils.asMap(
+                                "folder", "gymtracker/planes",
+                                "overwrite", true,
+                                "resource_type", "image"
+                        ));
+                    } finally {
+                        tmp.delete();
+                    }
 
-                    String relative = "/uploads/planes/" + fileName;
-                    p.setUrlImagen(relative);
+                    String secureUrl = (String) resCld.get("secure_url");
+                    p.setUrlImagen(secureUrl);
                 } else {
-                    // Si no sube nueva imagen (modo edit), mantener la existente
                     if ("edit".equals(accion)) {
                         Plan existente = dao.buscarPorId(p.getId());
                         p.setUrlImagen(existente != null ? existente.getUrlImagen() : null);
@@ -91,7 +102,6 @@ public class PlanesServlet extends HttpServlet {
                     }
                 }
 
-                // Guardar o actualizar
                 if ("add".equals(accion)) {
                     dao.agregarPlanCompleto(p);
                 } else {

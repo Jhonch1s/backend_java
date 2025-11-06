@@ -66,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnEditar = row.querySelector(".btn--editar");
         const btnEstado = row.querySelector(".btn--estado");
 
-        // Al cargar la página, el botón de estado muestra "Activar"/"Desactivar" acorde al estado
         if (btnEstado) {
             const estado = row.dataset.estado === "true";
             btnEstado.textContent = estado ? "Desactivar" : "Activar";
@@ -89,9 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (editCantidad) editCantidad.value = cantidad;
             if (editUnidad)   editUnidad.value = unidad;
             if (editActivo)   editActivo.checked = estado;
-
-            // Cargar preview:
-            // preferimos data-urlimagen; si no existe, tomamos el <img> de la fila
             let currentUrl = row.dataset.urlimagen;
             if (!currentUrl || currentUrl === "null" || currentUrl === "undefined") {
                 const imgInRow = row.querySelector(".plan-thumb img, td img");
@@ -102,12 +98,11 @@ document.addEventListener("DOMContentLoaded", () => {
             abrir(modalEditar);
         });
 
-        // Preview inmediata al elegir un archivo nuevo en el modal Editar
         editFile?.addEventListener("change", () => {
             const f = editFile.files && editFile.files[0];
             if (!f) return;
             if (!f.type || !f.type.startsWith("image/")) {
-                alert('Seleccioná una imagen válida.');
+                alert('Selecciona una imagen valida.');
                 editFile.value = '';
                 return;
             }
@@ -133,4 +128,38 @@ document.addEventListener("DOMContentLoaded", () => {
             abrir(modalEstado);
         });
     });
+
+    const modalImgContainer = document.getElementById("modalImagen");
+    const modalImgDialog  = modalImgContainer?.querySelector(".modal__dialog");
+    const modalImgOverlay = modalImgContainer?.querySelector(".modal__overlay");
+    const modalImg        = document.getElementById("modalImagenVista");
+    const modalImgClose   = modalImgContainer?.querySelector(".modal-cerrar");
+
+    const abrirModalImagen = (src) => {
+        if (!modalImgContainer || !modalImg) return;
+        modalImg.src = src;
+        modalImgContainer.classList.remove("oculto");
+    };
+
+    const cerrarModalImagen = () => {
+        if (!modalImgContainer || !modalImg) return;
+        modalImgContainer.classList.add("oculto");
+        modalImg.src = "";
+    };
+
+    document.querySelectorAll(".plan-img-clickable").forEach(img => {
+        img.addEventListener("click", () => {
+            const src = img.getAttribute("src");
+            if (!src || src.trim() === "" || src.includes("plan-default.jpg")) return;
+            abrirModalImagen(src);
+        });
+    });
+
+    modalImgClose?.addEventListener("click", cerrarModalImagen);
+    modalImgOverlay?.addEventListener("click", cerrarModalImagen);
+    modalImgContainer?.addEventListener("click", (e) => {
+        if (e.target === modalImgContainer) cerrarModalImagen();
+    });
+    modalImgDialog?.addEventListener("click", (e) => e.stopPropagation());
+
 });
