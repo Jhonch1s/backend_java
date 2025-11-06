@@ -29,10 +29,6 @@
     font-size: .85rem;
 }
 
-.btn--icon:hover {
-    background: rgba(255,255,255,.05);
-}
-
 .modal {
     position: fixed;
     inset: 0;
@@ -215,4 +211,52 @@
     max-height: 100%;
     object-fit: contain;
     display: block;
+}
+
+#modalImagen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.90);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+#modalImagen.oculto { display: none; }
+
+#modalImagen .modal__overlay {
+    position: absolute;
+    inset: 0;
+}
+
+#modalImagen .modal__dialog {
+    position: relative;
+    z-index: 1;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--gg-surface-2);
+    border: 1px solid var(--gg-border);
+    box-shadow: var(--gg-shadow-lg, 0 28px 60px rgba(0,0,0,.45));
+}
+
+#modalImagen #modalImagenVista {
+    display: block;
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+#modalImagen .modal-cerrar {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--gg-surface, #141417);
+    color: var(--color-rojo);
+    cursor: pointer;
 }
