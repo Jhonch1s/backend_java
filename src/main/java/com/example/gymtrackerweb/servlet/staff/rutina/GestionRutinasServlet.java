@@ -1,8 +1,7 @@
-package com.example.gymtrackerweb.servlet.staff; // Asegúrate que el paquete sea el correcto
+package com.example.gymtrackerweb.servlet.staff.rutina; // Asegúrate que el paquete sea el correcto
 
 import com.example.gymtrackerweb.dao.RutinaDAO; // Necesitarás importar tu RutinaDAO
 import com.example.gymtrackerweb.model.Rutina; // Necesitarás importar tu DTO/Modelo Rutina
-import com.example.gymtrackerweb.model.Staff; // Asumiendo que tenés un modelo Staff para la sesión de admin
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -10,7 +9,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,5 +47,4 @@ public class GestionRutinasServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    // pero lo necesitarás para los servlets de Crear y Eliminar.
 }

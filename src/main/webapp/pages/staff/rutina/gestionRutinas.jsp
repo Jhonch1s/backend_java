@@ -120,6 +120,7 @@
                                 </p>
                             </div>
                             <div class="rutina-card__actions">
+                                <button class="btn btn--sm btn--asignar btn-abrir-modal-asignar" data-id="${rutina.id}" data-nombre="${rutina.nombre}">Asignar</button>
                                 <button class="btn btn--sm btn--detalle" data-id="${rutina.id}">Editar</button>
                                 <a href="${pageContext.request.contextPath}/admin/editar-rutina?id=${rutina.id}" class="btn btn--sm btn--ejercicios">Ejercicios</a>
                                 <button class="btn btn--sm btn--eliminar btn-eliminar-rutina" data-id="${rutina.id}">Eliminar</button>
@@ -255,6 +256,57 @@
             <button id="btn-confirmar-eliminar" class="btn btn--eliminar btn--xl">Confirmar Eliminación</button>
         </div>
         <p id="feedback-eliminar" class="modal-feedback"></p>
+    </div>
+</div>
+
+<div id="modal-asignar-cliente" class="modal">
+    <div class="modal-contenido">
+
+        <button id="btn-cerrar-asignar" class="modal-cerrar" aria-label="Cerrar modal">
+            <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <h2 class="titillium-negra">Asignar Rutina: <br>
+            <span id="nombre-rutina-asignar" style="color: var(--color-principal);"></span>
+        </h2>
+
+        <input type="hidden" id="id-rutina-para-asignar" value="">
+
+        <div class="field" style="margin-top: 1rem;">
+            <label for="input-buscar-cliente" class="label">Buscar Cliente por CI:</label>
+            <input type="text" id="input-buscar-cliente" class="control" placeholder="Escribe para buscar...">
+        </div>
+
+        <div id="lista-resultados-clientes" class_name="lista-scroll-modal">
+            <p id="feedback-busqueda" style="text-align: center; color: var(--gg-text-muted);">
+                Escribe al menos 3 caracteres...
+            </p>
+        </div>
+
+        <form id="form-asignar-cliente" class="form" style="margin-top: 1rem;">
+            <input type="hidden" id="id-cliente-seleccionado" name="clienteId">
+
+            <div class="field">
+                <label for="fecha-asignacion-simple" class="label">Fecha de Inicio:</label>
+                <input type="date" id="fecha-asignacion-simple" name="fechaAsignacion" class="control" required>
+            </div>
+
+            <div class="form__actions">
+                <button type="submit" id="btn-confirmar-asignacion" class="btn btn--primary btn--xl" disabled>
+                    Asignar Rutina
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-notificacion-simple" class="modal">
+    <div class="modal-contenido modal-notificacion-simple">
+        <p id="mensaje-notificacion" style="font-size: 1.1rem; margin: 1.5rem 0.5rem;"></p>
+        <button id="btn-cerrar-notificacion" class="btn btn--primary btn--xl">OK</button>
     </div>
 </div>
 

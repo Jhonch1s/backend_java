@@ -329,10 +329,10 @@ public class RutinaDAO {
 
     }
 
-    public void asignarNuevaRutinaCliente(Connection conn, String clienteId, int rutinaId, LocalDate fechaAsignacion) throws SQLException {
+    public void asignarNuevaRutinaCliente(String clienteId, int rutinaId, LocalDate fechaAsignacion) throws SQLException {
 
         String sqlInsertNew = "INSERT INTO rutina_cliente (id_cliente, id_rutina, fecha_asignacion, estado) VALUES (?, ?, ?, 'activa')";
-
+        Connection conn = databaseConection.getInstancia().getConnection();
             try (PreparedStatement psInsert = conn.prepareStatement(sqlInsertNew)) {
                 psInsert.setString(1, clienteId);
                 psInsert.setInt(2, rutinaId);
@@ -344,66 +344,6 @@ public class RutinaDAO {
         }
     }
 
-    public List<RutinaAsignadaConIdDTO> listarRutinasActivasPorCliente(String clienteId) {
-        List<RutinaAsignadaConIdDTO> asignadas = new ArrayList<>();
-
-        String sql = "SELECT rc.id as asignacion_id, r.id as rutina_id, r.nombre as rutina_nombre, rc.fecha_asignacion, rc.estado " +
-                "FROM rutina_cliente rc " +
-                "JOIN rutina r ON rc.id_rutina = r.id " +
-                "WHERE rc.id_cliente = ? AND rc.estado = 'activa' " +
-                "ORDER BY rc.fecha_asignacion DESC";
-
-        Connection conn = databaseConection.getInstancia().getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, clienteId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-
-                    asignadas.add(new RutinaAsignadaConIdDTO(
-                            rs.getInt("asignacion_id"),
-                            rs.getInt("rutina_id"),
-                            rs.getString("rutina_nombre"),
-                            rs.getDate("fecha_asignacion"),
-                            rs.getString("estado")
-                    ));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al listar rutinas activas por cliente: " + e.getMessage());
-        }
-        return asignadas;
-    }
-
-    public boolean eliminarAsignacion(int asignacionId) {
-        String sql = "DELETE FROM rutina_cliente WHERE id = ?";
-        Connection conn = databaseConection.getInstancia().getConnection();
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, asignacionId);
-            int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar asignación: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public void eliminarAsignacion(Connection conn, int asignacionId) throws SQLException {
-        String sql = "DELETE FROM rutina_cliente WHERE id = ?";
-        // Usamos la conexión que nos pasa el servlet
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, asignacionId);
-            int filasAfectadas = ps.executeUpdate();
-            if (filasAfectadas == 0) {
-                System.err.println("Advertencia: No se encontró la asignacionId " + asignacionId + " para eliminar.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar asignación (dentro de TX): " + e.getMessage());
-            throw e;
-        }
-    }
 
 
 

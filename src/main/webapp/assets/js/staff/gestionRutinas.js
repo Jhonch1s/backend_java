@@ -1,11 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const modal = document.getElementById('modal-crear-rutina');
-    const btnAbrirModal = document.getElementById('btn-abrir-modal-crear');
-    const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+    // --- Variables de Modales (Agrupadas) ---
+    const modalCrear = document.getElementById('modal-crear-rutina');
+    const modalDetalles = document.getElementById('modal-editar-detalles');
+    const modalEliminar = document.getElementById('modal-eliminar-rutina');
+    const modalAsignar = document.getElementById('modal-asignar-cliente');
+    // --- ¡NUEVO! Modal de Notificación ---
+    const modalNotificacion = document.getElementById('modal-notificacion-simple');
+    const mensajeNotificacion = document.getElementById('mensaje-notificacion');
+    const btnCerrarNotificacion = document.getElementById('btn-cerrar-notificacion');
+
+
+    // --- Formulario CREAR ---
+    const btnAbrirModalCrear = document.getElementById('btn-abrir-modal-crear');
     const formCrear = document.getElementById('form-crear-rutina');
     const feedbackCreacion = document.getElementById('feedback-creacion');
-
     const inputNombre = document.getElementById('rutina-nombre');
     const inputObjetivo = document.getElementById('rutina-objetivo');
     const inputDuracion = document.getElementById('rutina-duracion');
@@ -13,23 +22,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorObjetivo = document.getElementById('error-objetivo');
     const errorDuracion = document.getElementById('error-duracion');
 
-    const modalDetalles = document.getElementById('modal-editar-detalles');
-    const btnCerrarDetalles = document.getElementById('btn-cerrar-detalles');
+    // --- Formulario EDITAR DETALLES ---
     const formDetalles = document.getElementById('form-editar-detalles');
     const feedbackDetalles = document.getElementById('feedback-detalles');
-
     const inputEditNombre = document.getElementById('edit-nombre');
     const selectEditObjetivo = document.getElementById('edit-objetivo');
     const inputEditDuracion = document.getElementById('edit-duracion');
     const inputEditId = document.getElementById('edit-id');
     const nombreRutinaModal = document.getElementById('nombre-rutina-modal-detalles');
 
-    const modalEliminar = document.getElementById('modal-eliminar-rutina');
-    const btnCerrarEliminar = document.getElementById('btn-cerrar-eliminar');
+    // --- Modal ELIMINAR ---
     const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
     const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar');
     const spanNombreEliminar = document.getElementById('nombre-rutina-eliminar');
     const feedbackEliminar = document.getElementById('feedback-eliminar');
+
+    // --- Filtros y Paginación (Existente) ---
+    const filtroNombre = document.getElementById('filtro-nombre');
+    const filtroObjetivo = document.getElementById('filtro-objetivo');
+    const filtroDuracion = document.getElementById('filtro-duracion');
+    const btnBuscar = document.getElementById('btn-buscar-filtro');
+    const listaContenedor = document.getElementById('lista-rutinas-admin');
+    const todasLasTarjetas = listaContenedor ? Array.from(listaContenedor.querySelectorAll('.rutina-card')) : [];
+    const contadorResultados = document.getElementById('contador-resultados');
+    const mensajeVacioOriginal = listaContenedor ? listaContenedor.querySelector('.view__sub') : null;
+    const paginacionControles = document.getElementById('paginacion-rutinas-controles');
+    const btnAnterior = document.getElementById('btn-anterior-rutinas');
+    const btnSiguiente = document.getElementById('btn-siguiente-rutinas');
+    const numerosPagina = document.getElementById('numeros-pagina-rutinas');
+    const ITEMS_POR_PAGINA = 7;
+    let paginaActual = 1;
+    let tarjetasFiltradas = [...todasLasTarjetas];
+
+    // --- ¡NUEVO! Elementos del modal ASIGNAR ---
+    const inputBuscarCliente = document.getElementById('input-buscar-cliente');
+    const listaResultados = document.getElementById('lista-resultados-clientes');
+    const formAsignarCliente = document.getElementById('form-asignar-cliente');
+    const btnConfirmarAsignacion = document.getElementById('btn-confirmar-asignacion');
+    const inputRutinaIdHidden = document.getElementById('id-rutina-para-asignar');
+    const inputClienteIdHidden = document.getElementById('id-cliente-seleccionado');
+    const inputFechaAsignacion = document.getElementById('fecha-asignacion-simple');
+    let searchTimer;
+
 
     function formatearObjetivo(objetivoEnum) {
         switch(objetivoEnum) {
@@ -42,33 +76,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function abrirModal() {
-        formCrear.reset();
-        feedbackCreacion.textContent = '';
-        errorNombre.textContent = '';
-        errorObjetivo.textContent = '';
-        errorDuracion.textContent = '';
-        inputNombre.classList.remove('is-invalid');
-        inputObjetivo.classList.remove('is-invalid');
-        inputDuracion.classList.remove('is-invalid');
-        modal.style.display = 'flex';
-        inputNombre.focus();
+    // --- Lógica MODAL CREAR ---
+    if (btnAbrirModalCrear) {
+        btnAbrirModalCrear.addEventListener('click', () => {
+            formCrear.reset();
+            feedbackCreacion.textContent = '';
+            errorNombre.textContent = '';
+            errorObjetivo.textContent = '';
+            errorDuracion.textContent = '';
+            inputNombre.classList.remove('is-invalid');
+            inputObjetivo.classList.remove('is-invalid');
+            inputDuracion.classList.remove('is-invalid');
+            modalCrear.style.display = 'flex';
+            inputNombre.focus();
+        });
     }
-    function cerrarModal() {
-        modal.style.display = 'none';
-    }
-
-    if (btnAbrirModal) {
-        btnAbrirModal.addEventListener('click', abrirModal);
-    }
-    if (btnCerrarModal) {
-        btnCerrarModal.addEventListener('click', cerrarModal);
-    }
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            cerrarModal();
-        }
-    });
 
     if (formCrear) {
         formCrear.addEventListener('submit', async (event) => {
@@ -76,22 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackCreacion.textContent = 'Guardando...';
             feedbackCreacion.className = 'modal-feedback';
 
-            errorNombre.textContent = '';
-            errorObjetivo.textContent = '';
-            errorDuracion.textContent = '';
-            inputNombre.classList.remove('is-invalid');
-            inputObjetivo.classList.remove('is-invalid');
-
-            const formData = new FormData(formCrear);
-            const data = Object.fromEntries(formData.entries());
-
             let esValido = true;
-            if (!data.nombre || data.nombre.trim() === '') {
+            if (!inputNombre.value || inputNombre.value.trim() === '') {
                 errorNombre.textContent = 'El nombre es obligatorio.';
                 inputNombre.classList.add('is-invalid');
                 esValido = false;
             }
-            if (!data.objetivo) {
+            if (!inputObjetivo.value) {
                 errorObjetivo.textContent = 'Selecciona un objetivo.';
                 inputObjetivo.classList.add('is-invalid');
                 esValido = false;
@@ -102,10 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch(`${contextPath}/admin/crear-rutina`, {
+                const formData = new FormData(formCrear);
+                formData.append('action', 'crear');
+
+                const response = await fetch(`${contextPath}/admin/rutina-crud`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(data)
+                    body: new URLSearchParams(Object.fromEntries(formData.entries()))
                 });
                 const resultado = await response.json();
 
@@ -125,27 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const ITEMS_POR_PAGINA = 7;
-
-    const filtroNombre = document.getElementById('filtro-nombre');
-    const filtroObjetivo = document.getElementById('filtro-objetivo');
-    const filtroDuracion = document.getElementById('filtro-duracion');
-    const btnBuscar = document.getElementById('btn-buscar-filtro');
-
-    const listaContenedor = document.getElementById('lista-rutinas-admin');
-    // Corregido: Asegurarse de que listaContenedor exista antes de querySelectorAll
-    const todasLasTarjetas = listaContenedor ? Array.from(listaContenedor.querySelectorAll('.rutina-card')) : [];
-    const contadorResultados = document.getElementById('contador-resultados');
-    const mensajeVacioOriginal = listaContenedor ? listaContenedor.querySelector('.view__sub') : null; // Guardamos el mensaje de "no hay rutinas"
-
-    const paginacionControles = document.getElementById('paginacion-rutinas-controles');
-    const btnAnterior = document.getElementById('btn-anterior-rutinas');
-    const btnSiguiente = document.getElementById('btn-siguiente-rutinas');
-    const numerosPagina = document.getElementById('numeros-pagina-rutinas');
-
-    let paginaActual = 1;
-    let tarjetasFiltradas = [...todasLasTarjetas];
-
+    // --- Lógica FILTROS y PAGINACIÓN (Existente, sin cambios) ---
     function actualizarVista() {
         if (!listaContenedor) return;
 
@@ -254,17 +250,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return btnPagina;
     }
 
+    // Listeners de filtros
     if (btnBuscar) {
         btnBuscar.addEventListener('click', () => {
             paginaActual = 1;
             actualizarVista();
         });
     }
-
     if(filtroNombre) filtroNombre.addEventListener('input', () => { paginaActual = 1; actualizarVista(); });
     if(filtroObjetivo) filtroObjetivo.addEventListener('change', () => { paginaActual = 1; actualizarVista(); });
     if(filtroDuracion) filtroDuracion.addEventListener('change', () => { paginaActual = 1; actualizarVista(); });
-
     if (btnSiguiente) {
         btnSiguiente.addEventListener('click', () => {
             if (paginaActual < Math.ceil(tarjetasFiltradas.length / ITEMS_POR_PAGINA)) {
@@ -282,53 +277,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function abrirModalEliminar(id, nombre, tarjeta) {
+    function abrirModalEliminar(id, nombre) {
         btnConfirmarEliminar.dataset.id = id;
-
-        btnConfirmarEliminar.dataset.tarjetaId = tarjeta.dataset.id;
-
         spanNombreEliminar.textContent = nombre;
         feedbackEliminar.textContent = '';
         feedbackEliminar.className = 'modal-feedback';
         btnConfirmarEliminar.disabled = false;
-
         modalEliminar.style.display = 'flex';
     }
 
-    function cerrarModalEliminar() {
-        modalEliminar.style.display = 'none';
+    // Listener para el botón de cancelar del modal de eliminar
+    if (btnCancelarEliminar) {
+        btnCancelarEliminar.addEventListener('click', () => {
+            modalEliminar.style.display = 'none';
+        });
     }
 
-    // Asignar eventos de cierre
-    if (btnCerrarEliminar) btnCerrarEliminar.addEventListener('click', cerrarModalEliminar);
-    if (btnCancelarEliminar) btnCancelarEliminar.addEventListener('click', cerrarModalEliminar);
-    window.addEventListener('click', (event) => {
-        if (event.target === modalEliminar) {
-            cerrarModalEliminar();
-        }
-    });
-
-    document.querySelectorAll('.btn-eliminar-rutina').forEach(button => {
-        button.addEventListener('click', (event) => {
-            event.stopPropagation();
-
-            const boton = event.currentTarget;
-            const tarjeta = boton.closest('.rutina-card');
-            const rutinaId = boton.dataset.id;
-            const rutinaNombre = tarjeta.dataset.nombre;
-
-            if (!rutinaId) {
-                alert('Error: No se pudo encontrar el ID de la rutina.');
-                return;
-            }
-
-            abrirModalEliminar(rutinaId, rutinaNombre, tarjeta);
-        });
-    });
-
+    // Listener para el botón de confirmar del modal de eliminar
     if (btnConfirmarEliminar) {
         btnConfirmarEliminar.addEventListener('click', async (event) => {
-
             const boton = event.currentTarget;
             const rutinaId = boton.dataset.id;
 
@@ -337,12 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btnConfirmarEliminar.disabled = true;
 
             try {
-                const response = await fetch(`${contextPath}/admin/eliminar-rutina`, {
+                const response = await fetch(`${contextPath}/admin/rutina-crud`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ id: rutinaId })
+                    body: new URLSearchParams({ action: 'eliminar', id: rutinaId })
                 });
-
                 const resultado = await response.json();
 
                 if (response.ok && resultado.success) {
@@ -353,11 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (index > -1) {
                         todasLasTarjetas.splice(index, 1);
                     }
-
                     actualizarVista();
-
-                    setTimeout(cerrarModalEliminar, 1000);
-
+                    setTimeout(() => modalEliminar.style.display = 'none', 1000);
                 } else {
                     feedbackEliminar.textContent = resultado.error || 'Error al eliminar.';
                     feedbackEliminar.className = 'modal-feedback feedback-error';
@@ -372,70 +335,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.querySelectorAll('.btn--detalle').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.preventDefault();
-            // *** CORREGIDO: dataset.id
-            const idRutina = event.currentTarget.dataset.id;
-
-            nombreRutinaModal.textContent = 'Cargando...';
-            feedbackDetalles.textContent = '';
-            feedbackDetalles.className = 'modal-feedback';
-            formDetalles.reset();
-
-            try {
-                const response = await fetch(`${contextPath}/admin/rutina/detalles?id=${idRutina}`);
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    throw new Error(data.error || 'Fallo al obtener detalles');
-                }
-
-                const rutina = data.rutina;
-
-                nombreRutinaModal.textContent = rutina.nombre;
-                inputEditNombre.value = rutina.nombre;
-                selectEditObjetivo.value = rutina.objetivo;
-                inputEditDuracion.value = (rutina.duracionSemanas && rutina.duracionSemanas > 0) ? rutina.duracionSemanas : '';
-                inputEditId.value = rutina.id;
-
-                modalDetalles.style.display = 'flex';
-
-            } catch (error) {
-                console.error('Error al cargar detalles:', error);
-                alert('No se pudieron cargar los detalles de la rutina.');
-                nombreRutinaModal.textContent = 'Error';
-            }
-        });
-    });
-
-    if (btnCerrarDetalles) {
-        btnCerrarDetalles.addEventListener('click', () => {
-            modalDetalles.style.display = 'none';
-        });
-    }
-
-    window.addEventListener('click', (event) => {
-        if (event.target === modalDetalles) {
-            modalDetalles.style.display = 'none';
-        }
-    });
-
+    // --- Lógica MODAL EDITAR DETALLES ---
     if (formDetalles) {
         formDetalles.addEventListener('submit', async (event) => {
             event.preventDefault();
             feedbackDetalles.textContent = 'Guardando cambios...';
-            feedbackDetalles.className = 'modal-feedback'; // Clase por defecto para feedback
-
-            const formData = new FormData(formDetalles);
 
             try {
-                const response = await fetch(`${contextPath}/admin/rutina/modificar-detalles`, {
+                const formData = new FormData(formDetalles);
+                formData.append('action', 'modificar');
+
+                const response = await fetch(`${contextPath}/admin/rutina-crud`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(formData)
+                    body: new URLSearchParams(Object.fromEntries(formData.entries()))
                 });
-
                 const resultado = await response.json();
 
                 if (response.ok && resultado.success) {
@@ -447,30 +361,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     const objetivoNuevo = selectEditObjetivo.value;
                     const duracionNueva = inputEditDuracion.value;
 
-                    const botonDetalleDOM = document.querySelector(`.btn--detalle[data-id="${idModificado}"]`);
-                    const tarjetaDOM = botonDetalleDOM ? botonDetalleDOM.closest('.rutina-card') : null;
-
+                    // Actualizar tarjeta en la lista principal
+                    const tarjetaDOM = todasLasTarjetas.find(card => card.dataset.id === idModificado);
                     if (tarjetaDOM) {
                         tarjetaDOM.querySelector('h3').textContent = nombreNuevo;
                         const duracionTexto = (duracionNueva && duracionNueva > 0) ? ` | Duración: ${duracionNueva} sem.` : '';
                         const objetivoFormateado = formatearObjetivo(objetivoNuevo);
                         tarjetaDOM.querySelector('p').textContent = `Objetivo: ${objetivoFormateado}${duracionTexto}`;
-                        tarjetaDOM.querySelector('p').textContent = `Objetivo: ${objetivoNuevo.toLowerCase()}${duracionTexto}`;
 
                         tarjetaDOM.dataset.nombre = nombreNuevo;
                         tarjetaDOM.dataset.objetivo = objetivoNuevo;
                         tarjetaDOM.dataset.duracion = duracionNueva || 0;
                     }
-
-                    setTimeout(() => {
-                        modalDetalles.style.display = 'none';
-                    }, 1000);
-
+                    setTimeout(() => modalDetalles.style.display = 'none', 1000);
                 } else {
                     feedbackDetalles.textContent = resultado.error || 'Error al guardar los cambios.';
-                    feedbackDetalles.className = 'modal-feedback feedback-error'; // Clase para error
+                    feedbackDetalles.className = 'modal-feedback feedback-error';
                 }
-
             } catch (error) {
                 console.error('Error de conexión al guardar detalles:', error);
                 feedbackDetalles.textContent = 'Error de conexión con el servidor.';
@@ -479,7 +386,218 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(listaContenedor) {
+    if (listaContenedor) {
+        listaContenedor.addEventListener('click', async (e) => {
+
+            // --- Clic en "Eliminar" ---
+            const btnEliminar = e.target.closest('.btn-eliminar-rutina');
+            if (btnEliminar) {
+                e.stopPropagation();
+                const tarjeta = btnEliminar.closest('.rutina-card');
+                const rutinaId = btnEliminar.dataset.id;
+                const rutinaNombre = tarjeta.dataset.nombre;
+                if (rutinaId) {
+                    // ¡CAMBIO! Llama al modal HTML
+                    abrirModalEliminar(rutinaId, rutinaNombre);
+                }
+                return;
+            }
+
+            const btnDetalles = e.target.closest('.btn--detalle');
+            if (btnDetalles) {
+                e.preventDefault();
+                const idRutina = btnDetalles.dataset.id;
+
+                nombreRutinaModal.textContent = 'Cargando...';
+                feedbackDetalles.textContent = '';
+                formDetalles.reset();
+
+                try {
+                    const response = await fetch(`${contextPath}/admin/rutina-crud?id=${idRutina}`);
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || 'Fallo al obtener detalles');
+                    }
+                    const rutina = data.rutina;
+                    nombreRutinaModal.textContent = rutina.nombre;
+                    inputEditNombre.value = rutina.nombre;
+                    selectEditObjetivo.value = rutina.objetivo;
+                    inputEditDuracion.value = (rutina.duracionSemanas && rutina.duracionSemanas > 0) ? rutina.duracionSemanas : '';
+                    inputEditId.value = rutina.id;
+                    modalDetalles.style.display = 'flex';
+                } catch (error) {
+                    console.error('Error al cargar detalles:', error);
+                    alert('No se pudieron cargar los detalles de la rutina.');
+                }
+                return;
+            }
+
+            const btnAsignar = e.target.closest('.btn-abrir-modal-asignar');
+            if (btnAsignar) {
+                const rutinaId = btnAsignar.dataset.id;
+                const rutinaNombre = btnAsignar.dataset.nombre;
+
+                inputRutinaIdHidden.value = rutinaId;
+                document.getElementById('nombre-rutina-asignar').textContent = rutinaNombre;
+                inputBuscarCliente.value = '';
+                listaResultados.innerHTML = '<p id="feedback-busqueda" style="text-align: center; color: var(--gg-text-muted);">Escribe al menos 3 caracteres...</p>';
+                btnConfirmarAsignacion.disabled = true;
+                inputClienteIdHidden.value = '';
+                inputFechaAsignacion.value = new Date().toISOString().split('T')[0];
+
+                modalAsignar.style.display = 'flex';
+                inputBuscarCliente.focus();
+                return;
+            }
+        });
+    }
+
+    // --- Cierre de Modales (Optimizado) ---
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.modal-cerrar')) {
+            const modalAbierto = e.target.closest('.modal');
+            if (modalAbierto) {
+                modalAbierto.style.display = 'none';
+            }
+        }
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modalCrear) modalCrear.style.display = 'none';
+        if (event.target === modalDetalles) modalDetalles.style.display = 'none';
+        if (event.target === modalEliminar) modalEliminar.style.display = 'none';
+        if (event.target === modalAsignar) modalAsignar.style.display = 'none';
+        if (event.target === modalNotificacion) modalNotificacion.style.display = 'none';
+    });
+
+
+    if (listaContenedor) {
         actualizarVista();
     }
+
+    if (inputBuscarCliente) {
+        inputBuscarCliente.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            const query = inputBuscarCliente.value.trim();
+
+            if (query.length < 3) {
+                listaResultados.innerHTML = '<p id="feedback-busqueda" style="text-align: center; color: var(--gg-text-muted);">Escribe al menos 3 caracteres...</p>';
+                return;
+            }
+
+            listaResultados.innerHTML = '<p id="feedback-busqueda" style="text-align: center; color: var(--gg-text-muted);">Buscando...</p>';
+
+            searchTimer = setTimeout(() => {
+                buscarClientesAPI(query);
+            }, 300);
+        });
+    }
+
+    async function buscarClientesAPI(query) {
+        try {
+            const response = await fetch(`${contextPath}/api/clientes/search?ci=${query}&limit=5`);
+            const data = await response.json();
+
+            if (!response.ok || !data.success || !data.items || data.items.length === 0) {
+                listaResultados.innerHTML = '<p id="feedback-busqueda" style="text-align: center; color: var(--gg-text-muted);">No se encontraron clientes.</p>';
+                return;
+            }
+
+            listaResultados.innerHTML = '';
+            data.items.forEach(cliente => {
+                const itemHTML = `
+                    <div class="cliente-resultado-item" data-cliente-id="${cliente.ci}">
+                        <p class="m-0">${cliente.nombre} ${cliente.apellido}</p>
+                        <span class="m-0">CI: ${cliente.ci}</span>
+                    </div>
+                `;
+                listaResultados.insertAdjacentHTML('beforeend', itemHTML);
+            });
+
+        } catch (error) {
+            console.error('Error buscando clientes:', error);
+            listaResultados.innerHTML = '<p id="feedback-busqueda" style="text-align: center; color: var(--color-peligro);">Error al cargar clientes.</p>';
+        }
+    }
+
+    if (listaResultados) {
+        listaResultados.addEventListener('click', (e) => {
+            const item = e.target.closest('.cliente-resultado-item');
+            if (!item) return;
+
+            document.querySelectorAll('.cliente-resultado-item').forEach(el => {
+                el.classList.remove('seleccionado');
+            });
+            item.classList.add('seleccionado');
+
+            inputClienteIdHidden.value = item.dataset.clienteId;
+            btnConfirmarAsignacion.disabled = false;
+        });
+    }
+
+    if (formAsignarCliente) {
+        formAsignarCliente.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const rutinaId = inputRutinaIdHidden.value;
+            const clienteId = inputClienteIdHidden.value;
+            const fecha = inputFechaAsignacion.value;
+
+            if (!clienteId || !rutinaId || !fecha) {
+                // ¡CAMBIO! Llama al nuevo modal de notificación
+                mostrarNotificacion('Faltan datos (cliente, rutina o fecha)', 'error');
+                return;
+            }
+
+            btnConfirmarAsignacion.disabled = true;
+            btnConfirmarAsignacion.textContent = 'Asignando...';
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'agregar');
+                formData.append('clienteId', clienteId);
+                formData.append('rutinaId', rutinaId);
+                formData.append('fechaAsignacion', fecha);
+
+                // Apunta al servlet de AsignarCliente
+                const response = await fetch(`${contextPath}/admin/asignar-cliente-rutina`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const resultado = await response.json();
+                if (!response.ok || !resultado.success) {
+                    throw new Error(resultado.error || 'Error al asignar');
+                }
+
+                // --- ¡CAMBIO! ---
+                modalAsignar.style.display = 'none';
+                mostrarNotificacion('¡Rutina Asignada con éxito!');
+
+            } catch (error) {
+                // --- ¡CAMBIO! ---
+                mostrarNotificacion(`Error: ${error.message}`, 'error');
+            } finally {
+                btnConfirmarAsignacion.disabled = false;
+                btnConfirmarAsignacion.textContent = 'Asignar Rutina';
+            }
+        });
+    }
+
+    function mostrarNotificacion(mensaje, tipo = 'success') {
+        mensajeNotificacion.textContent = mensaje;
+        if (tipo === 'error') {
+            mensajeNotificacion.style.color = 'var(--color-peligro)';
+        } else {
+            mensajeNotificacion.style.color = 'var(--gg-text)';
+        }
+        modalNotificacion.style.display = 'flex';
+    }
+
+    if (btnCerrarNotificacion) {
+        btnCerrarNotificacion.addEventListener('click', () => {
+            modalNotificacion.style.display = 'none';
+        });
+    }
+
 });

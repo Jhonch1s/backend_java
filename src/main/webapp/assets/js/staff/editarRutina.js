@@ -18,17 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const biblioContador = document.getElementById('biblio-contador');
 
 
-    let diaActivo = 'LUNES'; // Estado inicial
+    let diaActivo = 'LUNES';
 
-    // ¡NUEVO! Estado de paginación
     let biblioPaginaActual = 1;
     const BIBLIO_POR_PAGINA = 10;
-    let ejerciciosFiltrados = [...jsonDataEjercicios]; // Array que vive globalmente
+    let ejerciciosFiltrados = [...jsonDataEjercicios];
 
-    // --- FUNCIÓN 1: INICIALIZACIÓN ---
     function inicializar() {
-        // 1. Llenar la biblioteca (¡AHORA RENDERIZA LA PÁG. 1!)
-        filtrarBiblioteca(); // Llama a filtrar (que ahora también renderiza)
+        // 1. Llenar la biblioteca
+        filtrarBiblioteca();
 
         // 2. Llenar los días con ejercicios ya guardados
         jsonDataAsignados.forEach(asig => {
@@ -106,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarChecksBiblioteca();
     }
 
-    // --- FUNCIÓN 2: ACTIVAR SORTABLEJS ---
     function inicializarDragAndDrop() {
         // (Esta función no cambia, se queda igual)
         new Sortable(bibliotecaLista, {
@@ -143,8 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- FUNCIÓN 3: HELPERS HTML ---
-    // (Estas funciones no cambian, se quedan igual)
     function crearTarjetaBiblioteca(ej) {
         const div = document.createElement('div');
         div.className = 'ejercicio-card';
@@ -152,10 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
         div.dataset.nombre = ej.nombre.toLowerCase();
         div.dataset.grupo = (ej.grupoMuscularNombre || '').toLowerCase();
 
-        // Guardamos la dificultad (por si el filtro la usa, aunque ya la filtra desde jsonData)
         div.dataset.dificultad = (ej.dificultad || 'PRINCIPIANTE');
 
-        // Formateamos el texto para que se vea "Principiante" en lugar de "PRINCIPIANTE"
         let dificultadTexto = 'Principiante'; // Default
         if (ej.dificultad) {
             dificultadTexto = ej.dificultad.charAt(0).toUpperCase() + ej.dificultad.slice(1).toLowerCase();
@@ -176,13 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
         div.className = 'ejercicio-card asignado';
         div.dataset.id = ejercicio.id;
 
-        // Formatear texto de dificultad (copiado de crearTarjetaBiblioteca)
         let dificultadTexto = 'Principiante'; // Default
         if (ejercicio.dificultad) {
             dificultadTexto = ejercicio.dificultad.charAt(0).toUpperCase() + ejercicio.dificultad.slice(1).toLowerCase();
         }
 
-        // --- ¡NUEVO HTML! ---
         div.innerHTML = `
             <div class="card-top-row">
                 <span class="drag-handle">::</span>
@@ -227,9 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.className = tarjetaCompleta.className;
     }
 
-    // --- FUNCIÓN 4: MANEJO DE UI (TABS, FILTROS) ---
     function cambiarTabDia(e) {
-        // (Esta función no cambia, se queda igual)
         const tab = e.target.closest('.tab-dia');
         if (!tab) return;
         diaActivo = tab.dataset.dia;
@@ -240,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarChecksBiblioteca();
     }
 
-    // ¡NUEVO! Esta función ahora FILTRA y guarda el resultado
     function filtrarBiblioteca() {
         const nombreF = filtroNombre.value.toLowerCase();
         const grupoF = filtroGrupo.value.toLowerCase();
@@ -253,15 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchNombre && matchGrupo && matchDificultad;
         });
 
-        // Llama a renderizar la página actual
         renderizarBiblioteca();
     }
 
-    // ¡NUEVO! Esta función ahora RENDERIZA LA PÁGINA ACTUAL
     function renderizarBiblioteca() {
         bibliotecaLista.innerHTML = ''; // Limpiar lista
 
-        // Paginar los ejercicios ya filtrados
         const totalPaginas = Math.ceil(ejerciciosFiltrados.length / BIBLIO_POR_PAGINA);
         if (biblioPaginaActual > totalPaginas) biblioPaginaActual = 1;
 
@@ -269,18 +254,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const fin = inicio + BIBLIO_POR_PAGINA;
         const ejerciciosPaginados = ejerciciosFiltrados.slice(inicio, fin);
 
-        // Renderizar solo la página
         ejerciciosPaginados.forEach(ej => {
             const el = crearTarjetaBiblioteca(ej);
             bibliotecaLista.appendChild(el);
         });
 
-        // Actualizar checks y botones
         actualizarChecksBiblioteca();
         renderizarPaginacionBiblioteca(totalPaginas);
     }
 
-    // ¡NUEVO! Función para actualizar los botones de paginación
     function renderizarPaginacionBiblioteca(totalPaginas) {
         if (totalPaginas <= 0) totalPaginas = 1; // Asegura que muestre "Pág 1 / 1"
 
@@ -289,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBiblioSig.disabled = (biblioPaginaActual === totalPaginas);
     }
 
-    // (Esta función no cambia, se queda igual)
     function actualizarChecksBiblioteca() {
         const panelActivo = document.getElementById(`dia-${diaActivo}`);
         if (!panelActivo) return;
@@ -306,12 +287,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- FUNCIÓN 5: GUARDAR RUTINA ---
     async function guardarRutina() {
         btnGuardar.textContent = 'Guardando...';
         btnGuardar.disabled = true;
 
-        // 1. MUESTRA EL SPINNER (con tema oscuro)
         Swal.fire({
             theme: 'dark', // <-- AÑADIDO
             title: 'Guardando Rutina...',
@@ -322,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // (Esta parte de construir el JSON queda igual)
         const payload = {
             rutinaId: rutinaId,
             dias: {}
@@ -339,7 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // 2. ENVÍA EL JSON AL SERVLET
         try {
             const response = await fetch(`${contextPath}/admin/guardar-rutina-completa`, {
                 method: 'POST',
@@ -350,9 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultado = await response.json();
 
             if (response.ok && resultado.success) {
-                // 3. MUESTRA ALERTA DE ÉXITO (con tema oscuro)
                 Swal.fire({
-                    theme: 'dark', // <-- AÑADIDO
+                    theme: 'dark',
                     icon: 'success',
                     title: '¡Guardada!',
                     text: 'La rutina se actualizó correctamente.',
@@ -366,19 +342,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(resultado.error || 'Error desconocido al guardar');
             }
         } catch (error) {
-            // 4. MUESTRA ALERTA DE ERROR (con tema oscuro)
             Swal.fire({
-                theme: 'dark', // <-- AÑADIDO
+                theme: 'dark',
                 icon: 'error',
                 title: 'Oops... Hubo un error',
                 text: error.message
             });
-            // Reactiva el botón solo si falló
             btnGuardar.textContent = 'Guardar Rutina Completa';
             btnGuardar.disabled = false;
         }
     }
 
-    // --- INICIAR TODO ---
     inicializar();
 });

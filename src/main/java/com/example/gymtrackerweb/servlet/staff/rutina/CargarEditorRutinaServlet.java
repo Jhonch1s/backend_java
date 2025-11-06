@@ -1,4 +1,4 @@
-package com.example.gymtrackerweb.servlet.staff;
+package com.example.gymtrackerweb.servlet.staff.rutina;
 
 import com.example.gymtrackerweb.dao.EjercicioDAO; // Deberás crear este DAO
 import com.example.gymtrackerweb.dao.GrupoMuscularDAO; // Deberás crear este DAO

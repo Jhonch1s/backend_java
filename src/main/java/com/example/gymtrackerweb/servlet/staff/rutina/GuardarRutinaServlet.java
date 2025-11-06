@@ -1,4 +1,4 @@
-package com.example.gymtrackerweb.servlet.staff;
+package com.example.gymtrackerweb.servlet.staff.rutina;
 
 import com.example.gymtrackerweb.dao.RutinaDAO;
 import com.example.gymtrackerweb.dto.GuardarRutinaPayloadDTO; // Lo creamos más abajo
