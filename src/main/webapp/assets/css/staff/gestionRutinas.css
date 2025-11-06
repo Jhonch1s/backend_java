@@ -249,3 +249,55 @@
     background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
 }
 
+.btn--asignar {
+    background-color: var(--color-exito); /* Verde (de utilidades.css) */
+    color: var(--gg-brand-ink, #1b1b1b);
+    border-color: var(--color-exito);
+}
+.btn--asignar:hover {
+    background-color: color-mix(in srgb, var(--color-exito) 90%, #fff 10%);
+}
+
+/* --- Estilos para la lista de resultados de clientes --- */
+#lista-resultados-clientes {
+    min-height: 150px;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: var(--gg-bg);
+    border-radius: var(--radio-md);
+    border: 1px solid var(--gg-border);
+    padding: 0.5rem;
+}
+
+.cliente-resultado-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+.cliente-resultado-item:hover {
+    background-color: var(--gg-surface-2);
+}
+.cliente-resultado-item.seleccionado {
+    background-color: var(--gg-surface-2);
+    border-color: var(--color-principal);
+    font-weight: 600;
+}
+.cliente-resultado-item span {
+    color: var(--gg-text-muted);
+    font-size: 0.9rem;
+}
+
+.modal-notificacion-simple {
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-notificacion-simple .btn {
+    width: 100%;
+    margin-top: 1rem;
+}
