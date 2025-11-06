@@ -184,18 +184,14 @@
         </c:when>
 
         <c:otherwise>
-          <div class="mt-2">
+          <!--<div class="mt-2">
             <img src="${membresiaImg}"
                  alt="Plan por defecto"
                  style="width:100%;max-height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--gg-border);" />
-          </div>
+          </div>-->
 
-          <p class="m-0 mt-2">Sin membresía activa.</p>
-          <p class="m-0 mt-1">Podés contratar o renovar un plan.</p>
-          <a class="btn btn--lg btn--primary-yellow mt-2"
-             href="${pageContext.request.contextPath}/membresias?ci=${cliente.ci}">
-            Contratar / Renovar
-          </a>
+          <p class="m-0 mt-2"><b>Sin membresía activa.</b></p>
+          <p class="m-0 mt-1">Acercate a una de nuestras sucursales para empezar hoy.</p>
         </c:otherwise>
       </c:choose>
           </div>
@@ -214,7 +210,8 @@
       <h3 id="modal-editar-titulo" class="m-0 titillium-negra">Editar perfil</h3>
       <button class="modal__close js-close" aria-label="Cerrar">×</button>
     </div>
-    <form class="modal__body" method="post" action="${pageContext.request.contextPath}/cliente/editar">
+    <div class="modal__body">
+    <form method="post" action="${pageContext.request.contextPath}/cliente/editar">
       <div class="form-grid">
         <label class="login__label">Nombre
           <input class="login__input" type="text" name="nombre" value="${cliente.nombre}" required>
@@ -253,7 +250,7 @@
       </div>
     </form>
     <!-- FORM 2: Foto de perfil (independiente) -->
-    <form class="modal__body mt-16"
+    <form class="mt-16"
           method="post"
           action="${pageContext.request.contextPath}/cliente/foto/subir"
           enctype="multipart/form-data">
@@ -290,6 +287,7 @@
         <button type="submit" class="btn btn--lg btn--primary-yellow">Actualizar foto</button>
       </div>
     </form>
+    </div>
   </div>
 </div>
   <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>

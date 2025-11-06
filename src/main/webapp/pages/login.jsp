@@ -62,15 +62,6 @@
                 <p class="login__error" id="error-contrasena" role="alert" aria-live="polite"></p>
             </div>
 
-            <div class="login__extras alinear-centro-between mt-2">
-                <label class="login__recordarme alinear-centro gap-1">
-                    <input type="checkbox" id="recordarme" name="recordarme" />
-                    <span>Recordarme</span>
-                </label>
-
-                <a href="#" class="login__olvido">¿Olvidaste tu contraseña?</a>
-            </div>
-
             <div class="login__acciones mt-3">
                 <button class="login__boton boton-primario" type="submit">Ingresar</button>
             </div>
