@@ -122,6 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const targetPanel = evt.to;
                     const ejercicioId = item.dataset.id;
 
+                    const cantidadEjercicios = targetPanel.children.length-1;
+                    if (cantidadEjercicios >= 5) {
+                        item.remove();
+                        alert("Solo se pueden agregar hasta 5 ejercicios por dia");
+                        return;
+                    }
+
                     let count = 0;
                     for (const child of targetPanel.children) {
                         if (child.dataset.id === ejercicioId) count++;

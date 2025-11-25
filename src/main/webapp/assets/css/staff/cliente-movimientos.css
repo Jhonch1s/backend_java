@@ -16,14 +16,6 @@
     align-self: flex-end;
 }
 
-.btn {
-    font-weight: 700;
-    border-radius: 8px;
-    padding: .6rem 1.25rem;
-    border: none;
-    cursor: pointer;
-    transition: background .2s ease, transform .1s ease;
-}
 
 .btn--amarillo {
     background: var(--gg-brand);
@@ -93,46 +85,6 @@
     display: flex;
     gap: .75rem;
     align-items: center;
-}
-
-/* ---------- Botones ---------- */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    padding: .75rem 1rem;
-    font-weight: 800;
-    letter-spacing: .3px;
-    cursor: pointer;
-    user-select: none;
-    transition: transform .06s ease, box-shadow .2s ease, background .2s ease, filter .2s ease;
-}
-
-.btn:active {
-    transform: translateY(0.5px);
-}
-
-.btn--primary {
-    background: var(--gg-brand);
-    color: var(--gg-brand-ink);
-    box-shadow: 0 6px 0 color-mix(in srgb, var(--gg-brand) 55%, #c5ad00),
-    0 12px 24px rgba(0, 0, 0, .35);
-}
-
-.btn--primary:hover {
-    filter: brightness(0.97);
-}
-
-.btn--ghost {
-    background: transparent;
-    color: var(--gg-text);
-    border: 1px solid var(--gg-border);
-}
-
-.btn--ghost:hover {
-    background: rgba(255,255,255,.04);
 }
 
 .form__error-message {
@@ -254,3 +206,4 @@
 .vista--movimiento-ver .sidebar__nav a[href*="/staff/movimientos"]:hover {
     background: color-mix(in srgb, var(--color-principal, #fff112) 30%, #000);
 }
+

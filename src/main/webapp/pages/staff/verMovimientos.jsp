@@ -26,14 +26,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/utilidades.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/cliente-movimientos.css">
-
-
-    <!-- Estilos del dashboard de cliente (referencia visual/hero/buttons) -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-dashboard.css">
-
-    <!-- Estilos específicos del perfil (ajustes mínimos) -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/cliente-perfil.css?v=20251016b">
 </head>
 
 
@@ -62,8 +56,8 @@
             </label>
 
         <div class="filtros__acciones">
-            <button type="submit" class="btn btn--amarillo">Filtrar</button>
-            <button type="button" class="btn btn--gris" id="btnReiniciar">Reiniciar</button>
+            <button type="submit" class="btn btn--primary">Filtrar</button>
+            <button type="button" class="btn btn--ghost" id="btnReiniciar">Reiniciar</button>
         </div>
     </form>
     <p id="filtroError" class="form__error-message" style="text-align:center;"></p>

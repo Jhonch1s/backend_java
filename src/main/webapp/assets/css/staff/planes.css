@@ -108,14 +108,7 @@
 
 .acciones { margin-top: 1rem; }
 
-.btn--editar,
-.btn--estado {
-    font-size: 0.9rem;
-    padding: .55rem 1rem;
-    border-radius: 10px;
-    font-weight: 700;
-    transition: all .18s ease;
-}
+
 .btn--peligro {
     background: var(--color-peligro-fondo-1);
     color: var(--color-peligro);
@@ -259,4 +252,21 @@
     background: var(--gg-surface, #141417);
     color: var(--color-rojo);
     cursor: pointer;
+}
+
+.btn{
+    box-shadow: none;
+    border-radius: 3px;
+}
+
+#btnfiltrar {
+    background: var(--color-principal, #fff112);
+    color: var(--color-principal, #fff112);
+    box-shadow: none;
+    border-radius: 3px;
+}
+
+.btn--xl {
+    background: var(--color-principal, #fff112);
+    color: var(--color-principal, #fff112);
 }

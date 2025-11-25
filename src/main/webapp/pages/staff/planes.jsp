@@ -31,6 +31,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout-spa.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/cliente-movimientos.css">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/forms-staff.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/staff/planes.css">
 </head>
 
@@ -178,7 +180,7 @@
             <p class="input-error oculto"></p>
 
             <div class="acciones">
-                <button type="submit" class="boton-primario">Crear</button>
+                <button type="submit" class="btn btn--primary">Crear</button>
             </div>
         </form>
     </div>
@@ -238,7 +240,7 @@
             <p class="input-error oculto"></p>
 
             <div class="acciones">
-                <button type="submit" class="boton-primario">Guardar cambios</button>
+                <button type="submit" class="btn btn--primary boton-primario">Guardar cambios</button>
             </div>
         </form>
     </div>
@@ -257,7 +259,7 @@
             <input type="hidden" name="id" id="estadoId"/>
             <input type="hidden" name="toEstado" id="toEstado"/>
             <div class="acciones">
-                <button type="submit" class="boton-primario">Si, confirmar</button>
+                <button type="submit" class="btn btn--primary boton-primario">Si, confirmar</button>
             </div>
         </form>
     </div>
