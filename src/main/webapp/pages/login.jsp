@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
-    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/manifest.json">
     <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
 
     <!-- Tipografía, la sacamo de google fonts -->
@@ -40,7 +40,7 @@
         <form class="login__formulario mt-3" id="form-login" action="${pageContext.request.contextPath}/login" method="POST" novalidate>
             <div class="login__campo">
                 <label class="login__label" for="usuario">Usuario</label>
-                <input class="login__input" type="text" id="usuario" name="usuario" inputmode="numeric"
+                <input class="login__input" type="text" id="usuario" name="usuario"
                        placeholder="Nombre de Usuario" autocomplete="username" autofocus required
                        aria-describedby="error-usuario">
                 <p class="login__error" id="error-usuario" role="alert" aria-live="polite"></p>

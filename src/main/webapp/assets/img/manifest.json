@@ -18,7 +18,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": ".",
+  "start_url": "/GymTrackerWeb/",
   "display": "standalone",
   "theme_color": "#fff112",
   "background_color": "#000000"

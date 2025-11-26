@@ -18,7 +18,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="${pageContext.request.contextPath}/assets/img/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
-    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/manifest.json">
     <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
 
     <!-- Tipografía + Normalize -->
@@ -109,7 +109,7 @@
             <div class="pr-item">
                 <div>
                     <p class="pr-title"><%= i.getRutinaNombre() %></p>
-                    <p class="pr-sub"> <%= i.getEstado() %> · Asignada el <%= i.getFechaAsignacion() %> </p>
+                    <p class="pr-sub"> <%= i.getEstado().substring(0, 1).toUpperCase() + i.getEstado().substring(1).toLowerCase() %> · Asignada el <%= i.getFechaAsignacion() %> </p>
                 </div>
                 <span class="pr-meta"><a class="btn btn--lg btn--primary-yellow" href="${pageContext.request.contextPath}/progreso-ejercicios?id=<%= i.getIdRutina() %>">Más detalles</a></span>
             </div>

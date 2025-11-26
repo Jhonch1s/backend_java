@@ -15,7 +15,7 @@
           href="${pageContext.request.contextPath}/assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16"
           href="${pageContext.request.contextPath}/assets/img/favicon-16x16.png">
-    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/site.webmanifest">
+    <link rel="manifest" href="${pageContext.request.contextPath}/assets/img/manifest.json">
     <link rel="icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
 
 
