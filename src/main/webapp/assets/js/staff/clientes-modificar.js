@@ -287,7 +287,7 @@
 
         // Membresía
         const mem = resumen.membresia || {};
-        if ($sumExtra.memEstado)      $sumExtra.memEstado.textContent      = nvl(mem.estado, "Sin membresía");
+        if ($sumExtra.memEstado)      $sumExtra.memEstado.textContent      = (mem.estado.charAt(0).toUpperCase() + mem.estado.slice(1).toLowerCase()).replace("_", " ");
         if ($sumExtra.memVencimiento) $sumExtra.memVencimiento.textContent = nvl(mem.venceHuman, "-");
 
         const daysLeft = diffDaysFromToday(mem.venceIso || null);
@@ -304,7 +304,7 @@
             if (resumen.planImgUrl) {
                 $memImg.src = resumen.planImgUrl;
             } else {
-                $memImg.src = `${BASE}/assets/img/plan-placeholder.jpg`;
+                $memImg.src = `${BASE}/assets/img/plan-placeholder.png`;
             }
         }
 

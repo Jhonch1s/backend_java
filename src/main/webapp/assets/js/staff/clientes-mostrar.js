@@ -90,9 +90,9 @@
                 if (kpi.entrenosTotales) kpi.entrenosTotales.textContent = String(num(r.entrenosTotales));
 
                 if (sum.planNombre) sum.planNombre.textContent = nvl(r.planNombre, "Sin plan");
-                if (memImg)         memImg.src = r.planImgUrl ? r.planImgUrl : (BASE + "/assets/img/plan-placeholder.jpg");
+                if (memImg)         memImg.src = r.planImgUrl ? r.planImgUrl : (BASE + "/assets/img/plan-placeholder.png");
 
-                if (sum.memEstado)  sum.memEstado.textContent  = nvl(mem.estado, "Sin membresía");
+                if (sum.memEstado)  sum.memEstado.textContent  = (mem.estado.charAt(0).toUpperCase() + mem.estado.slice(1).toLowerCase()).replace("_", " ");
                 if (sum.memVence)   sum.memVence.textContent   = nvl(mem.venceHuman, "—");
                 setDiasBadge(diffDaysFromToday(mem.venceIso || null));
 
@@ -134,7 +134,7 @@
 
             // Reset placeholders de plan/membresía mientras carga
             const memImg = document.getElementById("sum-membresia-img");
-            if (memImg) memImg.src = (document.body.dataset.base || "") + "/assets/img/plan-placeholder.jpg";
+            if (memImg) memImg.src = (document.body.dataset.base || "") + "/assets/img/plan-placeholder.png";
             set("sum-plan-nombre", "—");
             set("sum-membresia-estado", "—");
             set("sum-membresia-vence", "—");
